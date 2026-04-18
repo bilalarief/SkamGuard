@@ -1,0 +1,130 @@
+{
+  "common": {
+    "appName": "SkamGuard",
+    "tagline": "Teman Pertahanan Scam Anda",
+    "scan": "Imbas",
+    "check": "Semak",
+    "report": "Laporan",
+    "back": "Kembali",
+    "close": "Tutup",
+    "loading": "Memuatkan...",
+    "error": "Ralat berlaku",
+    "retry": "Cuba semula",
+    "share": "Kongsi",
+    "cancel": "Batal",
+    "confirm": "Sahkan",
+    "learnMore": "Ketahui Lebih Lanjut",
+    "poweredBy": "Dikuasakan oleh Gemini AI"
+  },
+  "nav": {
+    "home": "Utama",
+    "scan": "Imbas",
+    "history": "Sejarah",
+    "about": "Tentang"
+  },
+  "home": {
+    "hero": "Tak pasti sama ada ini scam?",
+    "heroSub": "Muat naik tangkapan skrin atau tampal mesej yang mencurigakan. Kami akan semak untuk anda dalam beberapa saat.",
+    "ctaScan": "Imbas Tangkapan Skrin",
+    "ctaScanDesc": "Muat naik screenshot WhatsApp, SMS, atau e-mel yang mencurigakan",
+    "ctaUrl": "Semak Pautan",
+    "ctaUrlDesc": "Tampal URL atau pautan yang anda rasa mencurigakan",
+    "ctaPhone": "Semak Nombor Telefon",
+    "ctaPhoneDesc": "Masukkan nombor telefon untuk disemak di pangkalan data scam",
+    "statsTitle": "Scam di Malaysia",
+    "statsLoss": "Kerugian 2025",
+    "statsCases": "Kes dilaporkan",
+    "statsDaily": "Kes setiap hari"
+  },
+  "scan": {
+    "title": "Imbas Mesej Mencurigakan",
+    "uploadTitle": "Muat Naik Tangkapan Skrin",
+    "uploadDesc": "Seret & lepas gambar di sini, atau tekan untuk memilih",
+    "uploadButton": "Pilih Gambar",
+    "cameraButton": "Ambil Gambar",
+    "pasteTitle": "Atau Tampal Mesej",
+    "pastePlaceholder": "Tampal mesej WhatsApp, SMS, atau e-mel di sini...",
+    "urlTitle": "Semak Pautan",
+    "urlPlaceholder": "Tampal URL di sini (contoh: https://...)",
+    "phoneTitle": "Semak Nombor Telefon",
+    "phonePlaceholder": "Masukkan nombor (contoh: 01X-XXXXXXX)",
+    "analyzeButton": "Analisis Sekarang",
+    "analyzing": "Sedang menganalisis..."
+  },
+  "report": {
+    "title": "Laporan Risiko",
+    "riskScore": "Skor Risiko",
+    "verdict": "Keputusan",
+    "redFlags": "Tanda Bahaya Dikesan",
+    "actionPlan": "Apa Yang Perlu Anda Lakukan",
+    "scamType": "Jenis Scam Dikesan",
+    "shareReport": "Kongsi Laporan Ini",
+    "shareWhatsApp": "Kongsi via WhatsApp",
+    "newScan": "Imbasan Baru",
+    "verdicts": {
+      "safe": "Selamat — Tiada tanda penipuan dikesan",
+      "low": "Risiko Rendah — Berhati-hati, tetapi kemungkinan selamat",
+      "medium": "Risiko Sederhana — Berwaspada, ada beberapa tanda mencurigakan",
+      "high": "Risiko Tinggi — Kemungkinan besar ini adalah penipuan",
+      "critical": "Bahaya Kritikal — Ini hampir pasti penipuan!"
+    },
+    "actionItems": {
+      "dontTransfer": "JANGAN pindahkan wang ke mana-mana akaun",
+      "screenshot": "Ambil tangkapan skrin perbualan ini sebagai bukti",
+      "callNSRC": "Hubungi NSRC 997 segera (8 pagi - 8 malam)",
+      "blockSender": "Blokir pengirim di platform berkenaan",
+      "reportPlatform": "Laporkan ke platform (WhatsApp/Telegram/dll)",
+      "reportPolice": "Buat laporan polis di balai terdekat",
+      "checkSemakMule": "Semak nombor di portal Semak Mule PDRM",
+      "dontClick": "JANGAN klik sebarang pautan dalam mesej ini",
+      "dontShareOTP": "JANGAN kongsi OTP atau kata laluan anda",
+      "verifyIdentity": "Sahkan identiti pengirim melalui saluran rasmi"
+    }
+  },
+  "scamTypes": {
+    "macauScam": {
+      "name": "Macau Scam",
+      "desc": "Penipu menyamar sebagai pihak berkuasa (polis, mahkamah, LHDN) dan menuntut wang untuk 'menyelesaikan kes'."
+    },
+    "loveScam": {
+      "name": "Love Scam",
+      "desc": "Penipu membina hubungan romantik palsu untuk mendapatkan wang daripada mangsa."
+    },
+    "jobScam": {
+      "name": "Job Scam",
+      "desc": "Tawaran kerja palsu yang memerlukan bayaran pendahuluan atau deposit."
+    },
+    "investmentScam": {
+      "name": "Penipuan Pelaburan",
+      "desc": "Skim pelaburan palsu yang menjanjikan pulangan luar biasa tinggi."
+    },
+    "parcelScam": {
+      "name": "Parcel Scam",
+      "desc": "Penipu mendakwa ada bungkusan yang ditahan dan memerlukan bayaran untuk pengeluaran."
+    },
+    "phishing": {
+      "name": "Phishing",
+      "desc": "Pautan palsu yang menyerupai laman web rasmi untuk mencuri maklumat peribadi."
+    },
+    "loanScam": {
+      "name": "Penipuan Pinjaman",
+      "desc": "Tawaran pinjaman palsu yang memerlukan 'yuran pemprosesan' terlebih dahulu."
+    },
+    "ecommerce": {
+      "name": "Penipuan E-Dagang",
+      "desc": "Penjualan barangan palsu atau tidak wujud melalui platform dalam talian."
+    }
+  },
+  "errors": {
+    "fileTooBig": "Saiz fail terlalu besar. Maksimum 10MB.",
+    "invalidFormat": "Format fail tidak disokong. Sila gunakan PNG, JPG, atau WEBP.",
+    "networkError": "Masalah rangkaian. Sila pastikan anda ada sambungan internet.",
+    "analysisError": "Ralat semasa analisis. Sila cuba semula.",
+    "invalidUrl": "URL tidak sah. Sila masukkan URL yang betul.",
+    "invalidPhone": "Nombor telefon tidak sah. Sila gunakan format Malaysia (01X-XXXXXXX)."
+  },
+  "footer": {
+    "disclaimer": "SkamGuard menggunakan AI untuk analisis. Keputusan adalah untuk rujukan sahaja dan bukan nasihat undang-undang.",
+    "emergency": "Jika anda telah menjadi mangsa penipuan, hubungi NSRC 997 segera."
+  }
+}

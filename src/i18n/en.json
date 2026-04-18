@@ -1,0 +1,130 @@
+{
+  "common": {
+    "appName": "SkamGuard",
+    "tagline": "Your Scam Defense Companion",
+    "scan": "Scan",
+    "check": "Check",
+    "report": "Report",
+    "back": "Back",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try again",
+    "share": "Share",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "learnMore": "Learn More",
+    "poweredBy": "Powered by Gemini AI"
+  },
+  "nav": {
+    "home": "Home",
+    "scan": "Scan",
+    "history": "History",
+    "about": "About"
+  },
+  "home": {
+    "hero": "Not sure if it's a scam?",
+    "heroSub": "Upload a screenshot or paste a suspicious message. We'll check it for you in seconds.",
+    "ctaScan": "Scan Screenshot",
+    "ctaScanDesc": "Upload a suspicious WhatsApp, SMS, or email screenshot",
+    "ctaUrl": "Check a Link",
+    "ctaUrlDesc": "Paste a URL or link that you find suspicious",
+    "ctaPhone": "Check Phone Number",
+    "ctaPhoneDesc": "Enter a phone number to check against scam databases",
+    "statsTitle": "Scams in Malaysia",
+    "statsLoss": "Losses in 2025",
+    "statsCases": "Cases reported",
+    "statsDaily": "Cases per day"
+  },
+  "scan": {
+    "title": "Scan Suspicious Message",
+    "uploadTitle": "Upload Screenshot",
+    "uploadDesc": "Drag & drop image here, or tap to select",
+    "uploadButton": "Choose Image",
+    "cameraButton": "Take Photo",
+    "pasteTitle": "Or Paste Message",
+    "pastePlaceholder": "Paste the WhatsApp, SMS, or email message here...",
+    "urlTitle": "Check a Link",
+    "urlPlaceholder": "Paste URL here (e.g. https://...)",
+    "phoneTitle": "Check Phone Number",
+    "phonePlaceholder": "Enter number (e.g. 01X-XXXXXXX)",
+    "analyzeButton": "Analyze Now",
+    "analyzing": "Analyzing..."
+  },
+  "report": {
+    "title": "Risk Report",
+    "riskScore": "Risk Score",
+    "verdict": "Verdict",
+    "redFlags": "Red Flags Detected",
+    "actionPlan": "What You Should Do",
+    "scamType": "Scam Type Detected",
+    "shareReport": "Share This Report",
+    "shareWhatsApp": "Share via WhatsApp",
+    "newScan": "New Scan",
+    "verdicts": {
+      "safe": "Safe — No signs of fraud detected",
+      "low": "Low Risk — Be cautious, but likely safe",
+      "medium": "Medium Risk — Be alert, some suspicious signs found",
+      "high": "High Risk — This is most likely a scam",
+      "critical": "Critical Danger — This is almost certainly a scam!"
+    },
+    "actionItems": {
+      "dontTransfer": "DO NOT transfer money to any account",
+      "screenshot": "Take a screenshot of this conversation as evidence",
+      "callNSRC": "Call NSRC 997 immediately (8 AM - 8 PM)",
+      "blockSender": "Block the sender on the relevant platform",
+      "reportPlatform": "Report to the platform (WhatsApp/Telegram/etc)",
+      "reportPolice": "File a police report at the nearest station",
+      "checkSemakMule": "Check the number on PDRM's Semak Mule portal",
+      "dontClick": "DO NOT click any links in this message",
+      "dontShareOTP": "DO NOT share your OTP or passwords",
+      "verifyIdentity": "Verify the sender's identity through official channels"
+    }
+  },
+  "scamTypes": {
+    "macauScam": {
+      "name": "Macau Scam",
+      "desc": "Scammers impersonate authorities (police, courts, LHDN) and demand money to 'settle a case'."
+    },
+    "loveScam": {
+      "name": "Love Scam",
+      "desc": "Scammers build fake romantic relationships to extract money from victims."
+    },
+    "jobScam": {
+      "name": "Job Scam",
+      "desc": "Fake job offers that require upfront payments or deposits."
+    },
+    "investmentScam": {
+      "name": "Investment Scam",
+      "desc": "Fake investment schemes promising unrealistically high returns."
+    },
+    "parcelScam": {
+      "name": "Parcel Scam",
+      "desc": "Scammers claim a package is held and require payment for release."
+    },
+    "phishing": {
+      "name": "Phishing",
+      "desc": "Fake links that mimic official websites to steal personal information."
+    },
+    "loanScam": {
+      "name": "Loan Scam",
+      "desc": "Fake loan offers that require 'processing fees' upfront."
+    },
+    "ecommerce": {
+      "name": "E-Commerce Scam",
+      "desc": "Sale of fake or non-existent goods through online platforms."
+    }
+  },
+  "errors": {
+    "fileTooBig": "File is too large. Maximum size is 10MB.",
+    "invalidFormat": "File format not supported. Please use PNG, JPG, or WEBP.",
+    "networkError": "Network issue. Please check your internet connection.",
+    "analysisError": "Error during analysis. Please try again.",
+    "invalidUrl": "Invalid URL. Please enter a valid URL.",
+    "invalidPhone": "Invalid phone number. Please use Malaysian format (01X-XXXXXXX)."
+  },
+  "footer": {
+    "disclaimer": "SkamGuard uses AI for analysis. Results are for reference only and do not constitute legal advice.",
+    "emergency": "If you have been a victim of fraud, call NSRC 997 immediately."
+  }
+}

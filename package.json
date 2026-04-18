@@ -1,12 +1,13 @@
 {
-  "name": "skamguard-app",
+  "name": "skamguard",
   "version": "0.1.0",
   "private": true,
+  "description": "SkamGuard — Malaysia's Real-Time AI Scam Defense Companion",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start -p ${PORT:-8080}",
+    "lint": "eslint ."
   },
   "dependencies": {
     "next": "16.2.4",
@@ -15,8 +16,15 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
