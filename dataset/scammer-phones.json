@@ -1,0 +1,269 @@
+{
+  "last_updated": "2026-04-18",
+  "total_records": 15,
+  "schema_version": "2.0",
+  "reported_numbers": [
+    {
+      "id": "PHONE-001",
+      "type": "Lottery Scam",
+      "title": "SCAMMER — Lottery Scam (+60123456789)",
+      "pattern": "Nombor +60123456789 berstatus SCAMMER. Menyamar sebagai wakil bank untuk tuntutan hadiah palsu",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Lottery Scam",
+        "Jumlah laporan: 12",
+        "Terakhir dilaporkan: 2026-03-15"
+      ],
+      "example_phrases": [
+        "Menyamar sebagai wakil bank untuk tuntutan hadiah palsu",
+        "Dilaporkan 12 kali oleh pengguna Malaysia"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-002",
+      "type": "Investment Scam",
+      "title": "MULE — Investment Scam (+60187654321)",
+      "pattern": "Nombor +60187654321 berstatus MULE. Akaun keldai untuk skim pelaburan emas palsu",
+      "red_flags": [
+        "Status: MULE",
+        "Jenis: Investment Scam",
+        "Jumlah laporan: 5",
+        "Terakhir dilaporkan: 2026-02-20"
+      ],
+      "example_phrases": [
+        "Akaun keldai untuk skim pelaburan emas palsu"
+      ],
+      "severity": "high",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-003",
+      "type": "Love Scam",
+      "title": "SCAMMER — Love Scam (+60112223333)",
+      "pattern": "Nombor +60112223333 berstatus SCAMMER. Menyamar sebagai jurutera offshore untuk minta wang",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Love Scam",
+        "Jumlah laporan: 8",
+        "Terakhir dilaporkan: 2026-01-10"
+      ],
+      "example_phrases": [
+        "Menyamar sebagai jurutera offshore untuk minta wang"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-004",
+      "type": "Macau Scam",
+      "title": "SCAMMER — Macau Scam (+60198887766)",
+      "pattern": "Nombor +60198887766 berstatus SCAMMER. Menyamar sebagai pegawai PDRM, ugut waran tangkap",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Macau Scam",
+        "Jumlah laporan: 20",
+        "Terakhir dilaporkan: 2026-04-01"
+      ],
+      "example_phrases": [
+        "Menyamar sebagai pegawai PDRM, ugut waran tangkap",
+        "Dilaporkan 20 kali oleh pengguna Malaysia"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-005",
+      "type": "Job Scam",
+      "title": "MULE — Job Scam (+60163334455)",
+      "pattern": "Nombor +60163334455 berstatus MULE. Akaun keldai untuk kutip bayaran pendaftaran kerja palsu",
+      "red_flags": [
+        "Status: MULE",
+        "Jenis: Job Scam",
+        "Jumlah laporan: 3",
+        "Terakhir dilaporkan: 2026-03-28"
+      ],
+      "example_phrases": [
+        "Akaun keldai untuk kutip bayaran pendaftaran kerja palsu"
+      ],
+      "severity": "high",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-006",
+      "type": "Phishing",
+      "title": "SCAMMER — Phishing (+60111223344)",
+      "pattern": "Nombor +60111223344 berstatus SCAMMER. Menghantar pautan phishing menyamar Maybank dan CIMB",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Phishing",
+        "Jumlah laporan: 15",
+        "Terakhir dilaporkan: 2026-04-10"
+      ],
+      "example_phrases": [
+        "Menghantar pautan phishing menyamar Maybank dan CIMB",
+        "Dilaporkan 15 kali oleh pengguna Malaysia"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-007",
+      "type": "Investment Scam",
+      "title": "SCAMMER — Investment Scam (+60177778899)",
+      "pattern": "Nombor +60177778899 berstatus SCAMMER. Mempromosi skim pelaburan kripto palsu",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Investment Scam",
+        "Jumlah laporan: 7",
+        "Terakhir dilaporkan: 2026-02-14"
+      ],
+      "example_phrases": [
+        "Mempromosi skim pelaburan kripto palsu"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-008",
+      "type": "e-Commerce Scam",
+      "title": "MULE — e-Commerce Scam (+60192223344)",
+      "pattern": "Nombor +60192223344 berstatus MULE. Jual barang di platform e-commerce, tiada penghantaran",
+      "red_flags": [
+        "Status: MULE",
+        "Jenis: e-Commerce Scam",
+        "Jumlah laporan: 4",
+        "Terakhir dilaporkan: 2026-03-05"
+      ],
+      "example_phrases": [
+        "Jual barang di platform e-commerce, tiada penghantaran"
+      ],
+      "severity": "high",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-009",
+      "type": "Macau Scam",
+      "title": "SCAMMER — Macau Scam (+60155556677)",
+      "pattern": "Nombor +60155556677 berstatus SCAMMER. Menyamar sebagai pegawai BNM tentang akaun dibekukan",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Macau Scam",
+        "Jumlah laporan: 11",
+        "Terakhir dilaporkan: 2026-04-08"
+      ],
+      "example_phrases": [
+        "Menyamar sebagai pegawai BNM tentang akaun dibekukan",
+        "Dilaporkan 11 kali oleh pengguna Malaysia"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-010",
+      "type": "Lottery Scam",
+      "title": "SCAMMER — Lottery Scam (+60133334455)",
+      "pattern": "Nombor +60133334455 berstatus SCAMMER. SMS hadiah TM atau Celcom palsu",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Lottery Scam",
+        "Jumlah laporan: 9",
+        "Terakhir dilaporkan: 2026-03-22"
+      ],
+      "example_phrases": [
+        "SMS hadiah TM atau Celcom palsu"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-011",
+      "type": "Love Scam",
+      "title": "MULE — Love Scam (+60144445566)",
+      "pattern": "Nombor +60144445566 berstatus MULE. Akaun keldai untuk terima wang mangsa love scam",
+      "red_flags": [
+        "Status: MULE",
+        "Jenis: Love Scam",
+        "Jumlah laporan: 6",
+        "Terakhir dilaporkan: 2026-01-30"
+      ],
+      "example_phrases": [
+        "Akaun keldai untuk terima wang mangsa love scam"
+      ],
+      "severity": "high",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-012",
+      "type": "Job Scam",
+      "title": "SCAMMER — Job Scam (+60166667788)",
+      "pattern": "Nombor +60166667788 berstatus SCAMMER. Tawaran kerja Shopee/Lazada palsu, minta bayaran pendaftaran",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Job Scam",
+        "Jumlah laporan: 18",
+        "Terakhir dilaporkan: 2026-04-12"
+      ],
+      "example_phrases": [
+        "Tawaran kerja Shopee/Lazada palsu, minta bayaran pendaftaran",
+        "Dilaporkan 18 kali oleh pengguna Malaysia"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-013",
+      "type": "Phishing",
+      "title": "SCAMMER — Phishing (+60188889900)",
+      "pattern": "Nombor +60188889900 berstatus SCAMMER. Pautan phishing Maybank2u dan HLB Connect",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Phishing",
+        "Jumlah laporan: 25",
+        "Terakhir dilaporkan: 2026-04-15"
+      ],
+      "example_phrases": [
+        "Pautan phishing Maybank2u dan HLB Connect",
+        "Dilaporkan 25 kali oleh pengguna Malaysia"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-014",
+      "type": "Investment Scam",
+      "title": "MULE — Investment Scam (+60100001122)",
+      "pattern": "Nombor +60100001122 berstatus MULE. Akaun keldai skim forex palsu",
+      "red_flags": [
+        "Status: MULE",
+        "Jenis: Investment Scam",
+        "Jumlah laporan: 2",
+        "Terakhir dilaporkan: 2026-02-28"
+      ],
+      "example_phrases": [
+        "Akaun keldai skim forex palsu"
+      ],
+      "severity": "high",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    },
+    {
+      "id": "PHONE-015",
+      "type": "Macau Scam",
+      "title": "SCAMMER — Macau Scam (+60122223334)",
+      "pattern": "Nombor +60122223334 berstatus SCAMMER. Menyamar sebagai pegawai kastam, tuntut duti import palsu",
+      "red_flags": [
+        "Status: SCAMMER",
+        "Jenis: Macau Scam",
+        "Jumlah laporan: 14",
+        "Terakhir dilaporkan: 2026-04-17"
+      ],
+      "example_phrases": [
+        "Menyamar sebagai pegawai kastam, tuntut duti import palsu",
+        "Dilaporkan 14 kali oleh pengguna Malaysia"
+      ],
+      "severity": "critical",
+      "source": "SkamGuard Phone Database v1.0 — last updated 2026-04-18"
+    }
+  ]
+}
