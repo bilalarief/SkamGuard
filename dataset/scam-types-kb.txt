@@ -1,0 +1,44 @@
+SKAMGUARD KNOWLEDGE BASE — JENIS PENIPUAN DI MALAYSIA
+Versi 1.0 | April 2026
+
+=== MACAU SCAM ===
+Definisi: Penipu menyamar sebagai pegawai kerajaan (PDRM, BNM, LHDN, Kastam) dan mendakwa mangsa terlibat dalam kes jenayah serius.
+Petanda utama: Ancaman tangkap, permintaan bayar denda segera, rahsia jangan beritahu sesiapa, gunakan nombor tidak rasmi.
+Contoh frasa: "Akaun bank anda terlibat dalam aktiviti pengubahan wang haram dan sedang disiasat pihak polis", "Waran tangkap akan dikeluarkan jika anda gagal memberi kerjasama dalam siasatan kes jenayah ini", "Ini adalah kes sulit daripada pihak PDRM dan anda tidak dibenarkan memberitahu sesiapa", "Nombor kad pengenalan anda digunakan dalam transaksi mencurigakan yang melibatkan akaun luar negara", "Anda perlu membuat bayaran denda segera bagi mengelakkan tindakan mahkamah diambil terhadap anda"
+Keparahan: KRITIKAL
+
+=== LOTTERY / PRIZE SCAM ===
+Definisi: Mangsa diberitahu memenangi hadiah besar (wang tunai, kereta, telefon) tetapi perlu bayar yuran atau cukai terlebih dahulu.
+Petanda utama: Hadiah tidak disertai, minta bayar upfront, domain luar biasa, tekanan masa.
+Contoh frasa: "Anda dipilih sebagai pemenang bertuah dalam cabutan hadiah utama bernilai RM50000", "Sila tuntut hadiah anda dalam masa 24 jam sebelum tawaran ini dibatalkan", "Anda perlu membayar cukai penghantaran sebelum hadiah boleh dihantar kepada anda", "Tahniah anda telah memenangi telefon pintar terbaru melalui promosi pengguna setia", "Hadiah kemenangan anda akan diproses selepas bayaran yuran pentadbiran dibuat"
+Keparahan: TINGGI
+
+=== LOVE SCAM ===
+Definisi: Penipu membina hubungan romantik secara dalam talian selama beberapa minggu atau bulan, kemudian meminta wang dengan alasan kecemasan.
+Petanda utama: Tidak dapat bertemu muka, bekerja di luar negara atau offshore, minta wang transfer.
+Contoh frasa: "Sayang aku tersangkut di lapangan terbang dan perlukan wang segera", "Hospital meminta deposit segera sebelum aku boleh menjalani rawatan", "Aku akan pulangkan wang kamu selepas aku sampai ke Malaysia", "Aku bekerja di offshore dan akaun bank aku dibekukan sementara", "Aku sudah hantar hadiah tetapi kastam meminta bayaran pelepasan"
+Keparahan: KRITIKAL
+
+=== INVESTMENT SCAM ===
+Definisi: Skim pelaburan palsu yang menjanjikan pulangan tidak realistik dalam masa singkat.
+Petanda utama: Jaminan untung tinggi, tiada lesen SC Malaysia, testimoni palsu, platform tidak sah.
+Contoh frasa: "Pelaburan ini menjanjikan keuntungan 30 peratus dalam tempoh tiga bulan", "Modal kecil boleh menjana pulangan besar tanpa sebarang risiko", "Ramai pelabur telah berjaya dan memperoleh keuntungan konsisten setiap minggu", "Platform pelaburan ini dijamin selamat dan diluluskan pihak tertentu", "Anda hanya perlu deposit awal untuk mula menjana keuntungan"
+Keparahan: TINGGI
+
+=== JOB SCAM ===
+Definisi: Tawaran kerja palsu yang meminta bayaran pendaftaran atau deposit sebelum bekerja.
+Petanda utama: Kerja mudah gaji tinggi, minta bayaran awal, hubungi WhatsApp peribadi bukan email rasmi.
+Contoh frasa: "Kerja hanya tiga jam sehari dari rumah dengan gaji lumayan tanpa pengalaman.", "Sila bayar yuran pendaftaran sebelum anda boleh memulakan tugasan pertama.", "Interview akan dijalankan melalui WhatsApp dan keputusan diberikan pada hari sama", "Majikan memerlukan deposit untuk kit permulaan sebelum kontrak kerja dihantar", "Ini peluang kerja mudah dengan bayaran tinggi dan proses pengambilan sangat cepat"
+Keparahan: TINGGI
+
+=== PHISHING ===
+Definisi: Pautan atau laman web palsu menyamar sebagai institusi kewangan atau kerajaan untuk mencuri maklumat log masuk.
+Petanda utama: Domain bukan rasmi, minta kata laluan dan TAC, logo bank tiruan, tekanan segera.
+Contoh frasa: "Akaun bank anda disekat dan anda perlu mengesahkan maklumat melalui pautan ini", "Klik pautan berikut untuk mengelakkan akaun anda digantung oleh pihak bank", "Masukkan OTP yang diterima untuk membuka semula akses akaun anda", "Sistem keselamatan mengesan aktiviti mencurigakan dan pengesahan segera diperlukan", "Sila log masuk menggunakan pautan ini untuk mengemaskini maklumat perbankan anda"
+Keparahan: KRITIKAL
+
+=== E-COMMERCE SCAM ===
+Definisi: Penjual palsu di platform e-commerce atau media sosial yang mengambil bayaran tetapi tidak menghantar barang.
+Petanda utama: Harga terlalu murah, minta bayar terus ke akaun peribadi, tiada rekod jualan sebelum ini.
+Contoh frasa: "Harga sangat murah kerana stok kilang lebihan dan perlu bayar sebelum penghantaran", "Transfer ke akaun peribadi ini dan barang akan dipos pada hari yang sama", "Promosi terhad dan pembelian perlu dibuat segera untuk mendapatkan diskaun besar", "Barang original tetapi pembayaran hanya diterima melalui bank transfer sahaja", "Stok hampir habis dan siapa bayar dulu akan dapat penghantaran segera"
+Keparahan: SEDERHANA
