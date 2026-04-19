@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useState, useCallback, useMemo, type ReactNode } from "react";
+import {
+  createContext,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  type ReactNode,
+} from "react";
 import {
   createTranslator,
   DEFAULT_LOCALE,
@@ -20,21 +27,19 @@ export const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 const STORAGE_KEY = "skamguard-lang";
 
-function getSavedLocale(): string {
-  if (typeof window === "undefined") return DEFAULT_LOCALE;
-
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && SUPPORTED_LOCALES.includes(saved)) return saved;
-  } catch {
-    // localStorage blocked in some privacy browsers — fail silently
-  }
-
-  return DEFAULT_LOCALE;
-}
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState(getSavedLocale);
+  const [locale, setLocaleState] = useState(DEFAULT_LOCALE);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved && SUPPORTED_LOCALES.includes(saved) && saved !== DEFAULT_LOCALE) {
+        setLocaleState(saved);
+      }
+    } catch {
+      // localStorage blocked — stay with default
+    }
+  }, []);
 
   const setLocale = useCallback((newLocale: string) => {
     if (!SUPPORTED_LOCALES.includes(newLocale)) return;
