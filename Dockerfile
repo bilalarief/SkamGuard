@@ -1,34 +1,29 @@
-# SkamGuard — Multi-stage Dockerfile for Google Cloud Run
-#
-# Usage:
-#   docker build -t skamguard .
-#   docker run -p 8080:8080 skamguard
-#
-# --- Install dependencies ---
-FROM node:20-alpine AS deps
+# ─── Stage 1: Dependencies ───
+FROM node:18-alpine AS deps
 WORKDIR /app
-
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci --production=false
 
-# --- Build ---
-FROM node:20-alpine AS builder
+# ─── Stage 2: Build ───
+FROM node:18-alpine AS builder
 WORKDIR /app
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
 RUN npm run build
 
-# --- Production runner ---
-FROM node:20-alpine AS runner
+# ─── Stage 3: Production ───
+FROM node:18-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
@@ -37,5 +32,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 EXPOSE 8080
+ENV PORT=8080
+ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]

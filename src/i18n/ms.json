@@ -14,7 +14,10 @@
     "cancel": "Batal",
     "confirm": "Sahkan",
     "learnMore": "Ketahui Lebih Lanjut",
-    "poweredBy": "Dikuasakan oleh Gemini AI"
+    "poweredBy": "Dikuasakan oleh Gemini AI",
+    "number": "Nombor",
+    "type": "Jenis",
+    "thankYou": "Terima kasih!"
   },
   "nav": {
     "home": "Utama",
@@ -49,7 +52,10 @@
     "phoneTitle": "Semak Nombor Telefon",
     "phonePlaceholder": "Masukkan nombor (contoh: 01X-XXXXXXX)",
     "analyzeButton": "Analisis Sekarang",
-    "analyzing": "Sedang menganalisis..."
+    "analyzing": "Sedang menganalisis...",
+    "loadingStep1": "Mengekstrak kandungan...",
+    "loadingStep2": "Menyemak URL & nombor telefon...",
+    "loadingStep3": "Menganalisis pola scam..."
   },
   "report": {
     "title": "Laporan Risiko",
@@ -61,6 +67,19 @@
     "shareReport": "Kongsi Laporan Ini",
     "shareWhatsApp": "Kongsi via WhatsApp",
     "newScan": "Imbasan Baru",
+    "aiExplanation": "Penjelasan AI",
+    "furtherVerification": "Semakan Lanjut",
+    "semakMuleTitle": "Semak di Semak Mule (PDRM)",
+    "semakMuleDesc": "Nombor {{number}} akan diisi automatik",
+    "reportNumberTitle": "Laporkan Nombor Ini",
+    "reportNumberDesc": "Bantu lindungi komuniti daripada nombor scam ini",
+    "reportModalTitle": "Laporkan Nombor Scam",
+    "reportDescription": "Keterangan (pilihan)",
+    "reportPlaceholder": "Terangkan bagaimana anda dihubungi...",
+    "reportSubmit": "Hantar Laporan",
+    "reportAnonymous": "Maklumat ini akan disimpan secara anonim untuk membantu pengguna lain.",
+    "reportSuccess": "Laporan anda membantu melindungi komuniti daripada scam.",
+    "shareMessage": "⚠️ *Laporan SkamGuard*\n\nSkor Risiko: {{score}}/100\nKeputusan: {{verdict}}\n{{scamLine}}\n{{explanation}}\n\nSemak mesej anda di SkamGuard 👉 {{url}}",
     "verdicts": {
       "safe": "Selamat — Tiada tanda penipuan dikesan",
       "low": "Risiko Rendah — Berhati-hati, tetapi kemungkinan selamat",
@@ -80,6 +99,11 @@
       "dontShareOTP": "JANGAN kongsi OTP atau kata laluan anda",
       "verifyIdentity": "Sahkan identiti pengirim melalui saluran rasmi"
     }
+  },
+  "ai": {
+    "langInstruction": "Respond with explanation and action_plan in Bahasa Malaysia (clear, non-technical, empathetic language that a 40-60 year old Malaysian would understand).",
+    "fallbackExplanation": "Maaf, analisis AI tidak dapat diselesaikan sepenuhnya. Sila cuba semula.",
+    "fallbackAction": "Sila cuba analisis semula"
   },
   "scamTypes": {
     "macauScam": {

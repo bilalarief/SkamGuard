@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ScanSearch, Link2, Phone } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useAnalysis, fileToBase64 } from "@/hooks/useAnalysis";
 import ScreenshotUploader from "@/components/scan/ScreenshotUploader";
 import UrlChecker from "@/components/scan/UrlChecker";
 import PhoneChecker from "@/components/scan/PhoneChecker";
@@ -19,9 +20,9 @@ const TABS: { mode: ScanMode; icon: typeof ScanSearch; labelKey: string }[] = [
 ];
 
 function ScanContent() {
-  const { t } = useLanguage();
-  const router = useRouter();
+  const { t, locale } = useLanguage();
   const searchParams = useSearchParams();
+  const { submit, isLoading, error } = useAnalysis();
 
   const initialMode = (searchParams.get("mode") as ScanMode) || "screenshot";
   const [activeMode, setActiveMode] = useState<ScanMode>(initialMode);
@@ -29,16 +30,33 @@ function ScanContent() {
   const [text, setText] = useState("");
   const [urlInput, setUrlInput] = useState("");
   const [phoneInput, setPhoneInput] = useState("");
-  const [loading, setLoading] = useState(false);
 
   async function handleAnalyze() {
-    setLoading(true);
+    const language = locale === "ms" ? "BM" : "EN";
 
-    // TODO: Replace with actual API calls in Phase 8 (AI integration)
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    if (activeMode === "screenshot") {
+      let imageData: string | undefined;
 
-    router.push("/report");
-    setLoading(false);
+      if (file) {
+        imageData = await fileToBase64(file);
+      }
+
+      await submit({
+        image: imageData,
+        text: text.trim() || undefined,
+        language,
+      });
+    } else if (activeMode === "url") {
+      await submit({
+        text: urlInput.trim(),
+        language,
+      });
+    } else if (activeMode === "phone") {
+      await submit({
+        phoneNumber: phoneInput.trim(),
+        language,
+      });
+    }
   }
 
   const canSubmit =
@@ -108,17 +126,40 @@ function ScanContent() {
         )}
 
         {activeMode === "url" && (
-          <UrlChecker onSubmit={setUrlInput} />
+          <UrlChecker onSubmit={setUrlInput} onChange={setUrlInput} />
         )}
 
         {activeMode === "phone" && (
-          <PhoneChecker onSubmit={setPhoneInput} />
+          <PhoneChecker onSubmit={setPhoneInput} onChange={setPhoneInput} />
         )}
       </div>
 
+      {/* Error display */}
+      {error && (
+        <div className="p-3 bg-risk-high-bg/50 border border-risk-high/20 rounded-radius-sm">
+          <p className="text-sm text-risk-high">{error}</p>
+        </div>
+      )}
+
       {/* Submit */}
-      {loading ? (
-        <LoadingSpinner size="md" message={t("scan.analyzing")} className="py-8" />
+      {isLoading ? (
+        <div className="space-y-4 py-8">
+          <LoadingSpinner size="lg" message={t("scan.analyzing")} />
+          <div className="space-y-2 max-w-xs mx-auto">
+            <div className="flex items-center gap-2 text-xs text-text-muted">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span>{t("scan.loadingStep1")}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-text-muted">
+              <div className="w-2 h-2 rounded-full bg-accent animate-pulse" style={{ animationDelay: "0.5s" }} />
+              <span>{t("scan.loadingStep2")}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-text-muted">
+              <div className="w-2 h-2 rounded-full bg-risk-medium animate-pulse" style={{ animationDelay: "1s" }} />
+              <span>{t("scan.loadingStep3")}</span>
+            </div>
+          </div>
+        </div>
       ) : (
         <Button
           variant="primary"

@@ -1,6 +1,6 @@
 "use client";
 
-import type { RiskLevel } from "@/data/redFlags";
+import type { RiskLevel } from "@/types/analysis";
 import { getRiskColor } from "@/lib/utils/formatters";
 
 interface RiskGaugeProps {

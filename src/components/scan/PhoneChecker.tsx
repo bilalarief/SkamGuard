@@ -7,9 +7,10 @@ import { isValidMalaysianPhone } from "@/lib/validators/phone";
 
 interface PhoneCheckerProps {
   onSubmit: (phone: string) => void;
+  onChange?: (phone: string) => void;
 }
 
-export default function PhoneChecker({ onSubmit }: PhoneCheckerProps) {
+export default function PhoneChecker({ onSubmit, onChange }: PhoneCheckerProps) {
   const { t } = useLanguage();
   const [phone, setPhone] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +36,7 @@ export default function PhoneChecker({ onSubmit }: PhoneCheckerProps) {
         <input
           type="tel"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => { setPhone(e.target.value); onChange?.(e.target.value); }}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           placeholder={t("scan.phonePlaceholder")}
           className="

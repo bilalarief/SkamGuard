@@ -1,40 +1,34 @@
-import { NextRequest, NextResponse } from "next/server";
-import { isValidMalaysianPhone, normalizeToE164 } from "@/lib/validators/phone";
+/**
+ * Phone number check API endpoint.
+ *
+ * POST /api/check-phone
+ *
+ * @module app/api/check-phone/route
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { isValidMalaysianPhone } from '@/lib/validators/phone'
+import { checkPhone } from '@/lib/ai/tools/phone-checker'
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone } = await request.json();
+    const { phone } = await request.json()
 
     if (!phone || !isValidMalaysianPhone(phone)) {
       return NextResponse.json(
-        { error: "Invalid phone number. Please use Malaysian format (01X-XXXXXXX)." },
+        { success: false, error: { code: 'INVALID_PHONE', message: 'Invalid phone number. Use Malaysian format (01X-XXXXXXX).' } },
         { status: 400 }
-      );
+      )
     }
 
-    const normalized = normalizeToE164(phone);
+    const result = await checkPhone(phone)
 
-    // TODO: Wire up phone number databases
-    // 1. Check against PDRM Semak Mule API (if available)
-    // 2. Check against community-reported scam numbers in Firestore
-    // 3. Cross-reference with known scam number patterns
-
-    const placeholderResponse = {
-      phone: normalized,
-      reported: true,
-      reportCount: 12,
-      lastReported: "2025-03-15",
-      semakMuleUrl: "https://semakmule.rmp.gov.my",
-      source: "placeholder",
-      timestamp: new Date().toISOString(),
-    };
-
-    return NextResponse.json(placeholderResponse);
+    return NextResponse.json({ success: true, data: result })
   } catch (error) {
-    console.error("[/api/check-phone] Error:", error);
+    console.error('[SkamGuard][/api/check-phone] Error:', error)
     return NextResponse.json(
-      { error: "Phone check failed. Please try again." },
+      { success: false, error: { code: 'CHECK_FAILED', message: 'Phone check failed. Please try again.' } },
       { status: 500 }
-    );
+    )
   }
 }

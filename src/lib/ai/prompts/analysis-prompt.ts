@@ -1,0 +1,73 @@
+/**
+ * Analysis prompt builder — combines extracted content with tool results.
+ * @module lib/ai/prompts/analysis-prompt
+ */
+
+import type { URLCheckResult, PhoneCheckResult } from '@/types/analysis'
+import msTranslations from '@/i18n/ms.json'
+import enTranslations from '@/i18n/en.json'
+
+const i18n = { BM: msTranslations, EN: enTranslations }
+
+/**
+ * Builds the analysis prompt with all tool results as enrichment context.
+ */
+export function buildAnalysisPrompt(params: {
+  extracted: {
+    messageText: string
+    urls: string[]
+    phoneNumbers: string[]
+    sender: string | null
+  }
+  urlResults: URLCheckResult[]
+  phoneResult: PhoneCheckResult | null
+  ragContext?: string
+  language: 'BM' | 'EN'
+}): string {
+  const { extracted, urlResults, phoneResult, ragContext, language } = params
+  const langInstruction = i18n[language].ai.langInstruction
+
+  const urlContext = urlResults.length > 0
+    ? `\nURL CHECK RESULTS:\n${urlResults.map((r) =>
+        `- ${r.url}: verdict=${r.verdict}, malicious=${r.isMalicious}, vendors_flagged=${r.vendorsFlagged}/${r.totalVendors}, TLD=${r.tld}, free_domain=${r.isFreeDomain}${
+          r.bankPhishingMatch ? `, PHISHING_TARGET=${r.bankPhishingMatch.bankName} (official: ${r.bankPhishingMatch.officialDomain})` : ''
+        }`
+      ).join('\n')}`
+    : ''
+
+  const phoneContext = phoneResult
+    ? `\nPHONE CHECK RESULT:\n- Number: ${phoneResult.number}, Status: ${phoneResult.status}, Reports: ${phoneResult.reportCount}${
+        phoneResult.scamType ? `, ScamType: ${phoneResult.scamType}` : ''
+      }`
+    : ''
+
+  const ragSection = ragContext
+    ? `\nKNOWN SCAM PATTERNS FROM DATABASE:\n${ragContext}\n`
+    : ''
+
+  return `ANALYZE the following content for scam indicators.
+
+EXTRACTED CONTENT:
+- Message: "${extracted.messageText}"
+- URLs found: ${extracted.urls.length > 0 ? extracted.urls.join(', ') : 'none'}
+- Phone numbers: ${extracted.phoneNumbers.length > 0 ? extracted.phoneNumbers.join(', ') : 'none'}
+- Sender: ${extracted.sender || 'unknown'}
+${urlContext}${phoneContext}${ragSection}
+
+ANALYSIS INSTRUCTIONS:
+1. Evaluate ALL extracted content for Malaysian scam indicators
+2. Consider the tool check results (URL, phone) as additional evidence
+3. Identify specific red flags with clear explanations
+4. Classify the scam type if detectable
+5. Generate a risk score from 0-100 based on evidence strength
+6. ${langInstruction}
+
+Respond ONLY with valid JSON in this exact format:
+{
+  "risk_score": 0,
+  "scam_type": "macauScam|loveScam|jobScam|investmentScam|parcelScam|phishing|loanScam|ecommerce|null",
+  "red_flags": ["specific red flag 1", "specific red flag 2"],
+  "explanation": "Clear explanation of the analysis in the requested language",
+  "action_plan": ["Step 1: specific action", "Step 2: specific action"]
+}`
+}

@@ -14,7 +14,10 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "learnMore": "Learn More",
-    "poweredBy": "Powered by Gemini AI"
+    "poweredBy": "Powered by Gemini AI",
+    "number": "Number",
+    "type": "Type",
+    "thankYou": "Thank you!"
   },
   "nav": {
     "home": "Home",
@@ -49,7 +52,10 @@
     "phoneTitle": "Check Phone Number",
     "phonePlaceholder": "Enter number (e.g. 01X-XXXXXXX)",
     "analyzeButton": "Analyze Now",
-    "analyzing": "Analyzing..."
+    "analyzing": "Analyzing...",
+    "loadingStep1": "Extracting content...",
+    "loadingStep2": "Checking URLs & phone numbers...",
+    "loadingStep3": "Analyzing scam patterns..."
   },
   "report": {
     "title": "Risk Report",
@@ -61,6 +67,19 @@
     "shareReport": "Share This Report",
     "shareWhatsApp": "Share via WhatsApp",
     "newScan": "New Scan",
+    "aiExplanation": "AI Analysis",
+    "furtherVerification": "Further Verification",
+    "semakMuleTitle": "Check on Semak Mule (PDRM)",
+    "semakMuleDesc": "Number {{number}} will be auto-filled",
+    "reportNumberTitle": "Report This Number",
+    "reportNumberDesc": "Help protect the community from this scam number",
+    "reportModalTitle": "Report Scam Number",
+    "reportDescription": "Description (optional)",
+    "reportPlaceholder": "Describe how you were contacted...",
+    "reportSubmit": "Submit Report",
+    "reportAnonymous": "This information is stored anonymously to help other users.",
+    "reportSuccess": "Your report helps protect the community from scams.",
+    "shareMessage": "⚠️ *SkamGuard Report*\n\nRisk Score: {{score}}/100\nVerdict: {{verdict}}\n{{scamLine}}\n{{explanation}}\n\nCheck your messages at SkamGuard 👉 {{url}}",
     "verdicts": {
       "safe": "Safe — No signs of fraud detected",
       "low": "Low Risk — Be cautious, but likely safe",
@@ -80,6 +99,11 @@
       "dontShareOTP": "DO NOT share your OTP or passwords",
       "verifyIdentity": "Verify the sender's identity through official channels"
     }
+  },
+  "ai": {
+    "langInstruction": "Respond with explanation and action_plan in English (clear, non-technical, empathetic language).",
+    "fallbackExplanation": "Sorry, AI analysis could not be completed fully. Please try again.",
+    "fallbackAction": "Please try the analysis again"
   },
   "scamTypes": {
     "macauScam": {

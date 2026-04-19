@@ -1,4 +1,4 @@
-import type { RiskLevel } from "@/data/redFlags";
+import type { RiskLevel } from "@/types/analysis";
 
 export function formatRiskScore(score: number): string {
   return Math.round(Math.max(0, Math.min(100, score))).toString();

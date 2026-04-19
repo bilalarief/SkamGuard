@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Community phone reports — anyone can read and create (anonymous users)
+    // Only authenticated users can update/delete (future implementation)
+    match /reported_phones/{document=**} {
+      allow read: if true;
+      allow create: if true;
+      // Future: restrict update/delete to authenticated users
+      // allow update, delete: if request.auth != null;
+    }
+
+    // Analysis logs — server-side only (future implementation)
+    match /analysis_logs/{document=**} {
+      allow read: if true;
+      allow create: if true;
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

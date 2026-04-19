@@ -7,9 +7,10 @@ import { isValidUrl } from "@/lib/validators/url";
 
 interface UrlCheckerProps {
   onSubmit: (url: string) => void;
+  onChange?: (url: string) => void;
 }
 
-export default function UrlChecker({ onSubmit }: UrlCheckerProps) {
+export default function UrlChecker({ onSubmit, onChange }: UrlCheckerProps) {
   const { t } = useLanguage();
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +36,7 @@ export default function UrlChecker({ onSubmit }: UrlCheckerProps) {
         <input
           type="url"
           value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          onChange={(e) => { setUrl(e.target.value); onChange?.(e.target.value); }}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           placeholder={t("scan.urlPlaceholder")}
           className="

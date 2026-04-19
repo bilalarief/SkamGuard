@@ -1,0 +1,24 @@
+{
+  "reported_numbers": [
+    { "number": "+60123456789", "status": "SCAMMER", "reports": 24, "type": "macauScam", "lastReported": "2025-11-10" },
+    { "number": "+60198765432", "status": "SCAMMER", "reports": 18, "type": "loveScam", "lastReported": "2025-10-22" },
+    { "number": "+60111234567", "status": "MULE", "reports": 9, "type": "jobScam", "lastReported": "2025-09-15" },
+    { "number": "+60132345678", "status": "SCAMMER", "reports": 31, "type": "investmentScam", "lastReported": "2025-12-01" },
+    { "number": "+60145678901", "status": "SCAMMER", "reports": 15, "type": "phishing", "lastReported": "2025-11-28" },
+    { "number": "+60169876543", "status": "MULE", "reports": 7, "type": "macauScam", "lastReported": "2025-08-30" },
+    { "number": "+60172345678", "status": "SCAMMER", "reports": 42, "type": "loanScam", "lastReported": "2025-12-05" },
+    { "number": "+60183456789", "status": "SCAMMER", "reports": 28, "type": "parcelScam", "lastReported": "2025-11-15" },
+    { "number": "+60193456789", "status": "SCAMMER", "reports": 11, "type": "ecommerce", "lastReported": "2025-10-08" },
+    { "number": "+60102345678", "status": "MULE", "reports": 5, "type": "investmentScam", "lastReported": "2025-07-20" },
+    { "number": "+60122345678", "status": "SCAMMER", "reports": 19, "type": "macauScam", "lastReported": "2025-12-03" },
+    { "number": "+60162345678", "status": "SCAMMER", "reports": 36, "type": "loveScam", "lastReported": "2025-11-22" },
+    { "number": "+60182345678", "status": "SCAMMER", "reports": 14, "type": "phishing", "lastReported": "2025-10-30" },
+    { "number": "+60112345678", "status": "MULE", "reports": 8, "type": "jobScam", "lastReported": "2025-09-25" },
+    { "number": "+60142345678", "status": "SCAMMER", "reports": 22, "type": "parcelScam", "lastReported": "2025-12-08" },
+    { "number": "+60152345678", "status": "SCAMMER", "reports": 17, "type": "loanScam", "lastReported": "2025-11-05" },
+    { "number": "+60109876543", "status": "SCAMMER", "reports": 45, "type": "macauScam", "lastReported": "2025-12-10" },
+    { "number": "+60129876543", "status": "MULE", "reports": 6, "type": "investmentScam", "lastReported": "2025-08-12" },
+    { "number": "+60159876543", "status": "SCAMMER", "reports": 33, "type": "phishing", "lastReported": "2025-12-02" },
+    { "number": "+60179876543", "status": "SCAMMER", "reports": 21, "type": "ecommerce", "lastReported": "2025-11-18" }
+  ]
+}
