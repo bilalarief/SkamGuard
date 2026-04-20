@@ -1,10 +1,13 @@
 # ─── Stage 1: Dependencies ───
-# Use Debian-slim instead of Alpine to avoid musl/glibc native binary issues
-# (lightningcss, @tailwindcss/oxide require platform-specific binaries)
 FROM node:20-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+
+# npm install (not npm ci) to resolve correct platform-specific native binaries
+# npm ci strictly uses the lockfile which only has Windows binaries when generated on Windows
+# npm install still respects lockfile version pinning but correctly resolves
+# optional dependencies like lightningcss-linux-x64-gnu for the current platform
+RUN npm install --prefer-offline
 
 # ─── Stage 2: Build ───
 FROM node:20-slim AS builder
@@ -18,7 +21,6 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # ─── Stage 3: Production ───
-# Slim runner — standalone output doesn't need native build modules
 FROM node:20-slim AS runner
 WORKDIR /app
 
