@@ -1,29 +1,25 @@
 /**
  * Genkit singleton — configured with Gemini 2.0 Flash via Google AI plugin.
  * IMPORTANT: Never import this in 'use client' components.
- *
- * Authentication: The plugin reads GEMINI_API_KEY by default.
- * We also support GOOGLE_GENAI_API_KEY as an alias.
- *
  * @module lib/ai/genkit
  */
 
 import { genkit } from 'genkit'
-import { googleAI } from '@genkit-ai/google-genai'
+import { vertexAI } from '@genkit-ai/google-genai'
 
-// Support both env var names — GEMINI_API_KEY is Genkit's default
-const resolvedApiKey = process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY
+const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID
+const location = process.env.VERTEX_SEARCH_LOCATION || 'us-central1'
 
-if (!resolvedApiKey && process.env.NODE_ENV !== 'production') {
+if (!projectId && process.env.NODE_ENV !== 'production') {
   console.warn(
-    '[SkamGuard] WARNING: No Gemini API key found.',
-    'Set GOOGLE_GENAI_API_KEY or GEMINI_API_KEY in .env.local'
+    '[SkamGuard] WARNING: No Google Cloud Project ID found.',
+    'Set GOOGLE_CLOUD_PROJECT_ID in .env.local to use Vertex AI'
   )
 }
 
 export const ai = genkit({
   plugins: [
-    googleAI({ apiKey: resolvedApiKey }),
+    vertexAI({ projectId, location }),
   ],
-  model: 'googleai/gemini-2.0-flash',
+  model: 'vertexai/gemini-2.0-flash',
 })
