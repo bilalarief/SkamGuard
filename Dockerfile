@@ -2,12 +2,15 @@
 FROM node:20-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
+RUN npm ci
 
-# npm install (not npm ci) to resolve correct platform-specific native binaries
-# npm ci strictly uses the lockfile which only has Windows binaries when generated on Windows
-# npm install still respects lockfile version pinning but correctly resolves
-# optional dependencies like lightningcss-linux-x64-gnu for the current platform
-RUN npm install --prefer-offline
+# Install Linux-specific native binaries that are missing from Windows lockfile
+# lightningcss and @tailwindcss/oxide ship platform-specific optional deps
+# that npm ci won't install when lockfile was generated on a different OS
+RUN npm install --no-save \
+    lightningcss-linux-x64-gnu \
+    @tailwindcss/oxide-linux-x64-gnu \
+    2>/dev/null || true
 
 # ─── Stage 2: Build ───
 FROM node:20-slim AS builder
