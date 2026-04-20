@@ -6,11 +6,14 @@
  */
 
 import { RISK_THRESHOLDS, SCORE_WEIGHTS, classifyRiskLevel } from '@/lib/constants/risk-thresholds'
+import { ACTION_TYPE_METADATA, VALID_ACTION_TYPES } from '@/data/actionPlans'
 import type {
   RiskReport,
   RiskLevel,
   Verdict,
   ScamTypeId,
+  ActionItem,
+  ActionType,
   URLCheckResult,
   PhoneCheckResult,
   ExtractedContent,
@@ -22,7 +25,7 @@ interface ScoringInput {
     scam_type: string | null
     red_flags: string[]
     explanation: string
-    action_plan: string[]
+    action_plan: { actionType: string; label: string }[]
   }
   urlResults: URLCheckResult[]
   phoneResult: PhoneCheckResult | null
@@ -98,7 +101,7 @@ export function calculateRiskScore(input: ScoringInput): RiskReport {
     scamType,
     redFlags: contentAnalysis.red_flags,
     explanation: contentAnalysis.explanation,
-    actionPlan: contentAnalysis.action_plan,
+    actionPlan: buildActionItems(contentAnalysis.action_plan, phoneResult),
     extractedContent: {
       messageText: extracted.messageText,
       urls: extracted.urls,
@@ -145,4 +148,34 @@ function mapScamType(scamType: string | null): ScamTypeId {
   }
 
   return mapping[scamType] ?? null
+}
+
+/**
+ * Enriches Gemini's raw action items with concrete URLs and phone numbers.
+ * Maps each actionType to a clickable behavior in the frontend.
+ */
+function buildActionItems(
+  rawActions: { actionType: string; label: string }[],
+  phoneResult: PhoneCheckResult | null
+): ActionItem[] {
+  return rawActions.map((raw) => {
+    const type: ActionType = VALID_ACTION_TYPES.includes(raw.actionType as ActionType)
+      ? (raw.actionType as ActionType)
+      : 'info'
+
+    // Start with base metadata from central config
+    const baseMeta = ACTION_TYPE_METADATA[type] || {}
+
+    // Override semak mule URL with phone-specific URL if available
+    const metadata = type === 'check_semak_mule' && phoneResult?.semakMuleRedirectUrl
+      ? { ...baseMeta, url: phoneResult.semakMuleRedirectUrl }
+      : baseMeta
+
+    return {
+      type,
+      label: raw.label,
+      ...(metadata.url && { url: metadata.url }),
+      ...(metadata.phone && { phone: metadata.phone }),
+    }
+  })
 }

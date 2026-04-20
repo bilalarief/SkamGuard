@@ -17,6 +17,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { useAnalysisStore } from "@/store/analysis.store";
 import { getRiskBgColor, getRiskColor } from "@/lib/utils/formatters";
 import RiskGauge from "@/components/report/RiskGauge";
+import ActionButton from "@/components/report/ActionButton";
 import Button from "@/components/shared/Button";
 import Modal from "@/components/shared/Modal";
 import type { RiskLevel } from "@/types/analysis";
@@ -87,10 +88,10 @@ export default function ReportPage() {
   // Verdict badge text
   const verdictBadgeText =
     riskLevel === "safe" || riskLevel === "low"
-      ? "This message appears to be safe."
+      ? t("report.verdictBadge.safe")
       : riskLevel === "medium"
-      ? "This message has some suspicious signs."
-      : "This message is likely a scam.";
+      ? t("report.verdictBadge.medium")
+      : t("report.verdictBadge.high");
 
   return (
     <div className="container-app py-6 space-y-6">
@@ -109,7 +110,7 @@ export default function ReportPage() {
 
       {/* Title */}
       <h1 className="text-2xl font-extrabold text-text-primary leading-tight">
-        Score
+        {t("report.scoreTitle")}
       </h1>
 
       {/* Risk gauge & verdict badge */}
@@ -177,20 +178,15 @@ export default function ReportPage() {
         </section>
       )}
 
-      {/* Action plan */}
+      {/* Action plan — Agent-style interactive buttons */}
       {actionPlan.length > 0 && (
         <section className="space-y-2">
           <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
             {t("report.actionPlan")}
           </h2>
-          <div className="p-4 bg-[#F0F8FF] rounded-2xl border border-primary/10 space-y-2">
-            {actionPlan.map((step, i) => (
-              <div key={`step-${i}`} className="flex items-start gap-3">
-                <span className="text-xs font-bold text-text-muted w-4 text-center mt-0.5 shrink-0">
-                  {i + 1}.
-                </span>
-                <span className="text-sm text-text-primary leading-snug">{step}</span>
-              </div>
+          <div className="space-y-2">
+            {actionPlan.map((action, i) => (
+              <ActionButton key={`action-${i}`} action={action} index={i} />
             ))}
           </div>
         </section>

@@ -40,6 +40,7 @@
     "statsDaily": "Kes setiap hari"
   },
   "scan": {
+    "recommended": "Disyorkan",
     "title": "Imbas Mesej Mencurigakan",
     "uploadTitle": "Muat Naik Tangkapan Skrin",
     "uploadDesc": "Seret & lepas gambar di sini, atau tekan untuk memilih",
@@ -72,6 +73,7 @@
   },
   "report": {
     "title": "Laporan Risiko",
+    "scoreTitle": "Skor",
     "riskScore": "Skor Risiko",
     "verdict": "Keputusan",
     "redFlags": "Tanda Bahaya Dikesan",
@@ -92,6 +94,7 @@
     "reportSubmit": "Hantar Laporan",
     "reportAnonymous": "Maklumat ini akan disimpan secara anonim untuk membantu pengguna lain.",
     "reportSuccess": "Laporan anda membantu melindungi komuniti daripada scam.",
+    "phoneLabel": "Talian",
     "shareMessage": "⚠️ *Laporan SkamGuard*\n\nSkor Risiko: {{score}}/100\nKeputusan: {{verdict}}\n{{scamLine}}\n{{explanation}}\n\nSemak mesej anda di SkamGuard 👉 {{url}}",
     "verdicts": {
       "safe": "Selamat — Tiada tanda penipuan dikesan",
@@ -99,6 +102,11 @@
       "medium": "Risiko Sederhana — Berwaspada, ada beberapa tanda mencurigakan",
       "high": "Risiko Tinggi — Kemungkinan besar ini adalah penipuan",
       "critical": "Bahaya Kritikal — Ini hampir pasti penipuan!"
+    },
+    "verdictBadge": {
+      "safe": "Mesej ini kelihatan selamat.",
+      "medium": "Mesej ini mempunyai beberapa tanda mencurigakan.",
+      "high": "Mesej ini berkemungkinan besar adalah penipuan."
     },
     "actionItems": {
       "dontTransfer": "JANGAN pindahkan wang ke mana-mana akaun",

@@ -28,7 +28,10 @@ const AnalysisOutputSchema = z.object({
   scam_type: z.string().nullable().describe('Scam type identifier or null'),
   red_flags: z.array(z.string()).describe('Specific red flags detected'),
   explanation: z.string().describe('Clear explanation in the requested language'),
-  action_plan: z.array(z.string()).describe('Numbered action steps'),
+  action_plan: z.array(z.object({
+    actionType: z.string().describe('Action type: call_police, call_nsrc, call_bnm, block_number, check_semak_mule, report_skmm, report_bnm, delete_message, do_not_respond, do_not_click, do_not_pay, verify_official, info'),
+    label: z.string().describe('Display label in user language'),
+  })).describe('Interactive action steps with typed actions'),
 })
 
 const AnalyzeInputSchema = z.object({
@@ -163,7 +166,7 @@ async function analyzeWithContext(params: {
   scam_type: string | null
   red_flags: string[]
   explanation: string
-  action_plan: string[]
+  action_plan: { actionType: string; label: string }[]
 }> {
   const prompt = buildAnalysisPrompt({
     extracted: params.extracted,
@@ -194,7 +197,12 @@ async function analyzeWithContext(params: {
       scam_type: output.scam_type || null,
       red_flags: Array.isArray(output.red_flags) ? output.red_flags : [],
       explanation: output.explanation || '',
-      action_plan: Array.isArray(output.action_plan) ? output.action_plan : [],
+      action_plan: Array.isArray(output.action_plan)
+        ? output.action_plan.map((a: { actionType?: string; label?: string }) => ({
+            actionType: a.actionType || 'info',
+            label: a.label || '',
+          }))
+        : [],
     }
   } catch (error) {
     console.error('[SkamGuard] Analysis failed:', error instanceof Error ? error.message : error)
@@ -232,6 +240,6 @@ function buildFallbackAnalysis(language: 'BM' | 'EN') {
     scam_type: null,
     red_flags: [],
     explanation: translations.ai.fallbackExplanation,
-    action_plan: [translations.ai.fallbackAction],
+    action_plan: [{ actionType: 'info', label: translations.ai.fallbackAction }],
   }
 }

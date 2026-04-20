@@ -158,7 +158,7 @@ function ScanContent() {
                 {/* Recommend badge */}
                 {card.recommended && (
                   <span className="absolute top-3 right-3 text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                    Recommend
+                    {t("scan.recommended")}
                   </span>
                 )}
 

@@ -131,6 +131,34 @@ export interface ToolResult {
   scamType: ScamTypeId
 }
 
+/** Action types for agent-style interactive buttons */
+export type ActionType =
+  | 'call_police'      // Hubungi PDRM 999
+  | 'call_nsrc'        // Hubungi NSRC 997
+  | 'call_bnm'         // Hubungi Bank Negara
+  | 'block_number'     // Block nombor ini
+  | 'check_semak_mule' // Semak di portal Semak Mule
+  | 'report_skmm'      // Laporkan ke SKMM
+  | 'report_bnm'       // Laporkan ke Bank Negara
+  | 'delete_message'    // Padam mesej ini
+  | 'do_not_respond'    // Jangan balas
+  | 'do_not_click'      // Jangan klik pautan
+  | 'do_not_pay'        // Jangan buat bayaran
+  | 'verify_official'   // Sahkan dengan saluran rasmi
+  | 'info'             // Generic info step (non-clickable)
+
+/** Interactive action item returned by the AI agent */
+export interface ActionItem {
+  /** Action type — determines icon, color, and click behavior */
+  type: ActionType
+  /** Display label in user's language */
+  label: string
+  /** URL to open (for web-based actions) */
+  url?: string
+  /** Phone number to dial (for call actions) */
+  phone?: string
+}
+
 /** Complete risk report returned to the client */
 export interface RiskReport {
   /** Composite risk score (0–100) */
@@ -145,8 +173,8 @@ export interface RiskReport {
   redFlags: string[]
   /** AI-generated explanation (in selected language) */
   explanation: string
-  /** Numbered action steps (in selected language) */
-  actionPlan: string[]
+  /** Interactive action items (agent-style clickable steps) */
+  actionPlan: ActionItem[]
   /** Content extracted from input */
   extractedContent: ExtractedContent
   /** URL check results */

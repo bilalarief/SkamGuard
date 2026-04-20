@@ -40,6 +40,7 @@
     "statsDaily": "Cases per day"
   },
   "scan": {
+    "recommended": "Recommend",
     "title": "Scan Suspicious Message",
     "uploadTitle": "Upload Screenshot",
     "uploadDesc": "Drag & drop image here, or tap to select",
@@ -72,6 +73,7 @@
   },
   "report": {
     "title": "Risk Report",
+    "scoreTitle": "Score",
     "riskScore": "Risk Score",
     "verdict": "Verdict",
     "redFlags": "Red Flags Detected",
@@ -92,6 +94,7 @@
     "reportSubmit": "Submit Report",
     "reportAnonymous": "This information is stored anonymously to help other users.",
     "reportSuccess": "Your report helps protect the community from scams.",
+    "phoneLabel": "Line",
     "shareMessage": "⚠️ *SkamGuard Report*\n\nRisk Score: {{score}}/100\nVerdict: {{verdict}}\n{{scamLine}}\n{{explanation}}\n\nCheck your messages at SkamGuard 👉 {{url}}",
     "verdicts": {
       "safe": "Safe — No signs of fraud detected",
@@ -99,6 +102,11 @@
       "medium": "Medium Risk — Be alert, some suspicious signs found",
       "high": "High Risk — This is most likely a scam",
       "critical": "Critical Danger — This is almost certainly a scam!"
+    },
+    "verdictBadge": {
+      "safe": "This message appears to be safe.",
+      "medium": "This message has some suspicious signs.",
+      "high": "This message is likely a scam."
     },
     "actionItems": {
       "dontTransfer": "DO NOT transfer money to any account",

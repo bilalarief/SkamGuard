@@ -5,7 +5,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { RiskReport, ScamTypeId, RiskLevel } from '@/types/analysis'
+import type { RiskReport, ScamTypeId, RiskLevel, ActionItem } from '@/types/analysis'
 
 export interface HistoryItem {
   id: string
@@ -15,7 +15,7 @@ export interface HistoryItem {
   explanation: string
   verdict: string
   redFlags: string[]
-  actionPlan: string[]
+  actionPlan: ActionItem[]
   timestamp: string
 }
 

@@ -32,21 +32,21 @@ function formatRelativeTime(timestamp: string, t: (key: string) => string): stri
   }
 }
 
-function getVerdictBadge(riskLevel: RiskLevel): { text: string; className: string } {
+function getVerdictBadge(riskLevel: RiskLevel, t: (key: string) => string): { text: string; className: string } {
   if (riskLevel === "safe" || riskLevel === "low") {
     return {
-      text: "This message appears to be safe.",
+      text: t("report.verdictBadge.safe"),
       className: "bg-risk-low-bg text-risk-low",
     };
   }
   if (riskLevel === "medium") {
     return {
-      text: "This message has some suspicious signs.",
+      text: t("report.verdictBadge.medium"),
       className: "bg-risk-medium-bg text-risk-medium",
     };
   }
   return {
-    text: "This message is likely a scam.",
+    text: t("report.verdictBadge.high"),
     className: "bg-risk-high-bg text-risk-high",
   };
 }
@@ -60,7 +60,7 @@ function HistoryCard({
   onClick: () => void;
   t: (key: string) => string;
 }) {
-  const badge = getVerdictBadge(item.riskLevel);
+  const badge = getVerdictBadge(item.riskLevel, t);
   const scamName = item.scamType ? t(`scamTypes.${item.scamType}.name`) : "Unknown";
   const scamDesc = item.scamType ? t(`scamTypes.${item.scamType}.desc`) : item.explanation?.slice(0, 60) || "";
 

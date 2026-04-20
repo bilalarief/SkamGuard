@@ -61,6 +61,20 @@ ANALYSIS INSTRUCTIONS:
 4. Classify the scam type if detectable
 5. Generate a risk score from 0-100 based on evidence strength
 6. ${langInstruction}
+7. For action_plan, assign each step an actionType from this list:
+   - "call_police" — when user should call PDRM (999)
+   - "call_nsrc" — when user should call NSRC (997) for scam reporting
+   - "call_bnm" — when user should contact Bank Negara
+   - "block_number" — when user should block the sender's number
+   - "check_semak_mule" — when user should verify number on Semak Mule portal
+   - "report_skmm" — when user should report to MCMC/SKMM
+   - "report_bnm" — when user should report to Bank Negara
+   - "delete_message" — when user should delete the suspicious message
+   - "do_not_respond" — when user should not reply to the message
+   - "do_not_click" — when user should not click any links
+   - "do_not_pay" — when user should not make any payment
+   - "verify_official" — when user should verify via official channels
+   - "info" — for general advice that doesn't fit other types
 
 Respond ONLY with valid JSON in this exact format:
 {
@@ -68,6 +82,10 @@ Respond ONLY with valid JSON in this exact format:
   "scam_type": "macauScam|loveScam|jobScam|investmentScam|parcelScam|phishing|loanScam|ecommerce|null",
   "red_flags": ["specific red flag 1", "specific red flag 2"],
   "explanation": "Clear explanation of the analysis in the requested language",
-  "action_plan": ["Step 1: specific action", "Step 2: specific action"]
+  "action_plan": [
+    {"actionType": "do_not_respond", "label": "Jangan balas mesej ini"},
+    {"actionType": "call_police", "label": "Hubungi PDRM di talian 999"},
+    {"actionType": "block_number", "label": "Block nombor pengirim"}
+  ]
 }`
 }
