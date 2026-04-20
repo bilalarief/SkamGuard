@@ -11,13 +11,17 @@
 import { genkit } from 'genkit'
 import { googleAI } from '@genkit-ai/google-genai'
 
-// Support both env var names — GEMINI_API_KEY is Genkit's default
-const resolvedApiKey = process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY
+// Using GOOGLE_GENAI_API_KEY as explicit env var
+const resolvedApiKey = process.env.GOOGLE_GENAI_API_KEY
+
+console.log('[SkamGuard Genkit Setup] API Key loaded status:', 
+  resolvedApiKey ? `YES (Length: ${resolvedApiKey.length})` : 'NO API KEY FOUND'
+)
 
 if (!resolvedApiKey && process.env.NODE_ENV !== 'production') {
   console.warn(
     '[SkamGuard] WARNING: No Gemini API key found.',
-    'Set GOOGLE_GENAI_API_KEY or GEMINI_API_KEY in .env.local'
+    'Set GOOGLE_GENAI_API_KEY in .env.local or Cloud Run via secret manager.'
   )
 }
 

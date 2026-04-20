@@ -50,12 +50,14 @@ export async function POST(request: NextRequest) {
   }
 
   // 3. Sanitize inputs
+  console.log('[API POST /analyze] Request validated. Sanitizing inputs...')
   const sanitizedImage = image ? sanitizeBase64(image) : undefined
   const sanitizedText = text ? sanitizeText(text) : undefined
   const sanitizedPhone = phoneNumber ? sanitizePhone(phoneNumber) : undefined
 
   // 4. Run Genkit orchestrator flow (all API keys handled server-side)
   try {
+    console.log('[API POST /analyze] Initiating analyzeFlow...')
     const result = await analyzeFlow({
       imageBase64: sanitizedImage ?? undefined,
       text: sanitizedText,
@@ -63,9 +65,10 @@ export async function POST(request: NextRequest) {
       language,
     })
 
+    console.log('[API POST /analyze] analyzeFlow completed successfully. Sending 200 OK.')
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (error) {
-    console.error('[SkamGuard][/api/analyze] Error:', error)
+    console.error('[API POST /analyze] FATAL Error running flow:', error)
     return NextResponse.json(
       { success: false, error: { code: 'ANALYSIS_FAILED', message: 'Analysis service unavailable. Please try again.' } },
       { status: 503 }

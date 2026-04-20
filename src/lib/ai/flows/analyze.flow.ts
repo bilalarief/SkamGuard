@@ -47,11 +47,25 @@ export const analyzeFlow = ai.defineFlow(
     inputSchema: AnalyzeInputSchema,
   },
   async (input: AnalyzeInput): Promise<RiskReport> => {
+    console.log('[Flow: analyzeFlow] START. Input summary:', {
+      hasImage: !!input.imageBase64,
+      textLength: input.text?.length || 0,
+      manualPhone: !!input.manualPhone,
+      language: input.language
+    })
+
+    console.log('[Flow: analyzeFlow] Step 1: Starting extraction...')
     const extracted = await extractContent(input)
+    console.log('[Flow: analyzeFlow] Extraction complete. Result:', {
+      urlsCount: extracted.urls.length,
+      phonesCount: extracted.phoneNumbers.length,
+      hasSender: !!extracted.sender
+    })
 
     const allUrls = extracted.urls
     const primaryPhone = input.manualPhone || extracted.phoneNumbers[0] || null
 
+    console.log('[Flow: analyzeFlow] Step 2: Running parallel tools (Url, Phone, RAG)...')
     const [urlResults, phoneResult, ragContext] = await Promise.all([
       allUrls.length > 0
         ? Promise.all(allUrls.map((url) => checkUrl(url)))
@@ -61,7 +75,13 @@ export const analyzeFlow = ai.defineFlow(
 
       searchScamDatabase(extracted.messageText.slice(0, 300)),
     ])
+    console.log('[Flow: analyzeFlow] Tools completed:', {
+      urlsChecked: urlResults.length,
+      phoneChecked: !!phoneResult?.number,
+      ragContextFound: !!ragContext
+    })
 
+    console.log('[Flow: analyzeFlow] Step 3: Starting deep analysis with context...')
     const contentAnalysis = await analyzeWithContext({
       extracted,
       urlResults,
@@ -69,7 +89,9 @@ export const analyzeFlow = ai.defineFlow(
       ragContext,
       language: input.language,
     })
+    console.log('[Flow: analyzeFlow] Deep analysis completed. Risk Score:', contentAnalysis.risk_score)
 
+    console.log('[Flow: analyzeFlow] Step 4: Finalizing Risk Report...')
     const riskReport = calculateRiskScore({
       contentAnalysis,
       urlResults,
@@ -77,6 +99,7 @@ export const analyzeFlow = ai.defineFlow(
       extracted,
     })
 
+    console.log('[Flow: analyzeFlow] DONE. Returning robust report.')
     return riskReport
   }
 )
@@ -102,11 +125,13 @@ async function extractContent(input: AnalyzeInput): Promise<ExtractedContent> {
 
     promptParts.push({ text: promptText })
 
+    console.log('[extractContent] Calling Gemini API (model: googleai/gemini-2.0-flash)...')
     const result = await ai.generate({
       system: SKAMGUARD_SYSTEM_PROMPT,
       prompt: promptParts,
       output: { schema: ExtractionOutputSchema },
     })
+    console.log('[extractContent] Gemini returned valid response.')
 
     const output = result.output
     if (!output) {
@@ -149,15 +174,18 @@ async function analyzeWithContext(params: {
   })
 
   try {
+    console.log('[analyzeWithContext] Calling Gemini API for deep analysis...')
     const result = await ai.generate({
       system: SKAMGUARD_SYSTEM_PROMPT,
       prompt: prompt,
       output: { schema: AnalysisOutputSchema },
     })
+    console.log('[analyzeWithContext] Deep analysis generated successfully.')
 
     const output = result.output
     if (!output) {
       console.warn('[SkamGuard] Analysis returned null output — using fallback')
+      console.log(output)
       return buildFallbackAnalysis(params.language)
     }
 
@@ -170,6 +198,7 @@ async function analyzeWithContext(params: {
     }
   } catch (error) {
     console.error('[SkamGuard] Analysis failed:', error instanceof Error ? error.message : error)
+    console.log(error)
     return buildFallbackAnalysis(params.language)
   }
 }
