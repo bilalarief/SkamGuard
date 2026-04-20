@@ -21,7 +21,7 @@
   },
   "nav": {
     "home": "Home",
-    "scan": "Scan",
+    "scan": "Check",
     "history": "History",
     "about": "About"
   },
@@ -52,10 +52,23 @@
     "phoneTitle": "Check Phone Number",
     "phonePlaceholder": "Enter number (e.g. 01X-XXXXXXX)",
     "analyzeButton": "Analyze Now",
-    "analyzing": "Analyzing...",
-    "loadingStep1": "Extracting content...",
-    "loadingStep2": "Checking URLs & phone numbers...",
-    "loadingStep3": "Analyzing scam patterns..."
+    "analyzing": "Analyzing",
+    "loadingStep1": "Receiving screenshot...",
+    "loadingStep2": "Converting image to text...",
+    "loadingStep3": "Extracting message content...",
+    "loadingStep4": "Detecting URLs and links...",
+    "loadingStep5": "Analysing message with Gemini AI...",
+    "checkMessage": "Check Message",
+    "checkMessageDesc": "Enter a message to check against scam databases"
+  },
+  "history": {
+    "title": "History",
+    "empty": "No scan history yet. Start by scanning a suspicious message.",
+    "clearAll": "Clear All",
+    "yesterday": "Yesterday",
+    "today": "Today",
+    "shareScore": "Share This Score",
+    "scanAgain": "Scan Again"
   },
   "report": {
     "title": "Risk Report",

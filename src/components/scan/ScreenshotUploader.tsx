@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type DragEvent, type ChangeEvent } from "react";
-import { Upload, Camera } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { validateImageFile } from "@/lib/validators/input";
 
@@ -47,7 +47,7 @@ export default function ScreenshotUploader({ onFileSelect }: ScreenshotUploaderP
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
         className={`
-          relative rounded-radius-md border-2 border-dashed
+          relative rounded-2xl border-2 border-dashed
           p-8 text-center cursor-pointer
           transition-colors duration-150
           ${isDragging
@@ -64,15 +64,34 @@ export default function ScreenshotUploader({ onFileSelect }: ScreenshotUploaderP
           />
         ) : (
           <div className="space-y-3">
-            <Upload className="w-8 h-8 text-text-muted mx-auto" />
+            <div className="w-12 h-12 mx-auto rounded-xl bg-primary/10 flex items-center justify-center">
+              <Upload className="w-6 h-6 text-primary" />
+            </div>
             <div>
-              <p className="text-sm font-medium text-text-primary">
-                {t("scan.uploadTitle")}
+              <p className="text-sm font-semibold text-text-primary">
+                Choose a file or drag & drop it here.
               </p>
               <p className="text-xs text-text-muted mt-1">
-                {t("scan.uploadDesc")}
+                JPEG, PNG, JPG, and other image formats, max 5 MB.
               </p>
             </div>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                inputRef.current?.click();
+              }}
+              className="
+                inline-flex items-center justify-center
+                px-5 py-2 rounded-lg
+                border border-border bg-surface
+                text-sm font-medium text-text-primary
+                hover:bg-surface-hover active:scale-[0.98]
+                transition-all duration-150 cursor-pointer
+              "
+            >
+              Browse File
+            </button>
           </div>
         )}
 
@@ -84,21 +103,6 @@ export default function ScreenshotUploader({ onFileSelect }: ScreenshotUploaderP
           className="hidden"
         />
       </div>
-
-      <button
-        onClick={() => inputRef.current?.click()}
-        className="
-          w-full flex items-center justify-center gap-2
-          h-10 rounded-radius-sm
-          bg-surface border border-border
-          text-sm font-medium text-text-primary
-          hover:bg-surface-hover transition-colors duration-150
-          cursor-pointer
-        "
-      >
-        <Camera className="w-4 h-4" />
-        {t("scan.cameraButton")}
-      </button>
 
       {error && (
         <p className="text-sm text-risk-high">{error}</p>

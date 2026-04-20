@@ -8,7 +8,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 const NAV_ITEMS = [
   { href: "/", icon: Home, labelKey: "nav.home" },
   { href: "/scan", icon: ScanSearch, labelKey: "nav.scan" },
-  { href: "/report", icon: History, labelKey: "nav.history" },
+  { href: "/history", icon: History, labelKey: "nav.history" },
 ];
 
 export default function BottomNav() {

@@ -1,7 +1,6 @@
 "use client";
 
 import type { RiskLevel } from "@/types/analysis";
-import { getRiskColor } from "@/lib/utils/formatters";
 
 interface RiskGaugeProps {
   score: number;
@@ -11,7 +10,6 @@ interface RiskGaugeProps {
 export default function RiskGauge({ score, level }: RiskGaugeProps) {
   const circumference = 2 * Math.PI * 54;
   const offset = circumference - (score / 100) * circumference;
-  const colorClass = getRiskColor(level);
 
   const strokeColorMap: Record<RiskLevel, string> = {
     safe: "#2ECC71",
@@ -21,16 +19,31 @@ export default function RiskGauge({ score, level }: RiskGaugeProps) {
     critical: "#8E1B1B",
   };
 
+  const labelMap: Record<RiskLevel, string> = {
+    safe: "Safe",
+    low: "Low Risk",
+    medium: "Warning",
+    high: "Danger",
+    critical: "Critical",
+  };
+
+  const textColorMap: Record<RiskLevel, string> = {
+    safe: "text-risk-low",
+    low: "text-risk-low",
+    medium: "text-risk-medium",
+    high: "text-risk-high",
+    critical: "text-risk-critical",
+  };
+
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="relative w-32 h-32">
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-36 h-36">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
           <circle
             cx="60" cy="60" r="54"
             fill="none"
-            stroke="currentColor"
+            stroke="#E5E7EB"
             strokeWidth="8"
-            className="text-border"
           />
           <circle
             cx="60" cy="60" r="54"
@@ -43,9 +56,12 @@ export default function RiskGauge({ score, level }: RiskGaugeProps) {
             className="transition-all duration-700 ease-out"
           />
         </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className={`text-3xl font-extrabold ${colorClass}`}>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className={`text-4xl font-extrabold ${textColorMap[level]}`}>
             {Math.round(score)}
+          </span>
+          <span className={`text-xs font-semibold ${textColorMap[level]}`}>
+            {labelMap[level]}
           </span>
         </div>
       </div>

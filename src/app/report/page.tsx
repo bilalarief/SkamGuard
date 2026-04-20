@@ -3,18 +3,20 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  ArrowLeft,
+  AlertTriangle,
   MessageCircle,
   RotateCcw,
   ShieldAlert,
   ExternalLink,
   Flag,
   CheckCircle,
+  Sparkles,
 } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAnalysisStore } from "@/store/analysis.store";
 import { getRiskBgColor, getRiskColor } from "@/lib/utils/formatters";
 import RiskGauge from "@/components/report/RiskGauge";
-import RedFlagsList from "@/components/report/RedFlagsList";
 import Button from "@/components/shared/Button";
 import Modal from "@/components/shared/Modal";
 import type { RiskLevel } from "@/types/analysis";
@@ -82,76 +84,111 @@ export default function ReportPage() {
     }
   }
 
+  // Verdict badge text
+  const verdictBadgeText =
+    riskLevel === "safe" || riskLevel === "low"
+      ? "This message appears to be safe."
+      : riskLevel === "medium"
+      ? "This message has some suspicious signs."
+      : "This message is likely a scam.";
+
   return (
     <div className="container-app py-6 space-y-6">
-      {/* Risk gauge & verdict */}
-      <section className="text-center space-y-3">
-        <h1 className="text-xs font-semibold text-text-muted uppercase tracking-widest">
-          {t("report.riskScore")}
-        </h1>
-        <RiskGauge score={overallScore} level={riskLevel as RiskLevel} />
-        <div
-          className={`
-            inline-block px-4 py-2 rounded-radius-full
-            text-sm font-semibold border
-            ${getRiskBgColor(riskLevel as RiskLevel)} ${getRiskColor(riskLevel as RiskLevel)}
-          `}
-        >
-          {t(`report.verdicts.${riskLevel}`)}
+      {/* Back button */}
+      <button
+        onClick={() => router.push("/scan")}
+        className="
+          flex items-center gap-2 text-sm font-medium text-text-primary
+          hover:text-primary active:scale-[0.98]
+          transition-all duration-150 cursor-pointer
+        "
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>{t("common.back")}</span>
+      </button>
+
+      {/* Title */}
+      <h1 className="text-2xl font-extrabold text-text-primary leading-tight">
+        Score
+      </h1>
+
+      {/* Risk gauge & verdict badge */}
+      <section className="text-center space-y-4">
+        <div className="bg-gradient-to-b from-[#f8f9fa] to-[#ffffff] rounded-2xl p-6">
+          <RiskGauge score={overallScore} level={riskLevel as RiskLevel} />
+        </div>
+
+        {/* Verdict badge */}
+        <div className="flex justify-center">
+          <div
+            className={`
+              inline-flex items-center gap-2 px-4 py-2 rounded-full
+              text-xs font-semibold
+              ${riskLevel === "safe" || riskLevel === "low"
+                ? "bg-risk-low-bg text-risk-low"
+                : riskLevel === "medium"
+                ? "bg-risk-medium-bg text-risk-medium"
+                : "bg-risk-high-bg text-risk-high"
+              }
+            `}
+          >
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span>{verdictBadgeText}</span>
+          </div>
         </div>
       </section>
-
-      {/* AI explanation */}
-      {explanation && (
-        <section className="space-y-2">
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-widest">
-            {t("report.aiExplanation")}
-          </h2>
-          <div className="p-4 bg-surface rounded-radius-md border border-border">
-            <p className="text-sm text-text-primary leading-relaxed">{explanation}</p>
-          </div>
-        </section>
-      )}
 
       {/* Scam type */}
       {scamType && (
         <section className="space-y-2">
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-widest">
+          <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
             {t("report.scamType")}
           </h2>
-          <div className="flex items-start gap-3 p-4 bg-surface rounded-radius-md border border-border">
-            <ShieldAlert className="w-5 h-5 text-risk-high shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-text-primary">
-                {t(`scamTypes.${scamType}.name`)}
-              </h3>
-              <p className="text-sm text-text-secondary mt-1 leading-relaxed">
-                {t(`scamTypes.${scamType}.desc`)}
-              </p>
+          <div className="p-4 bg-surface rounded-2xl border border-border">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-4 h-4 text-risk-high shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold text-sm text-text-primary">
+                  {t(`scamTypes.${scamType}.name`)}
+                </span>
+                <span className="text-sm text-text-secondary">
+                  {" – "}{t(`scamTypes.${scamType}.desc`)}
+                </span>
+              </div>
             </div>
           </div>
         </section>
       )}
 
       {/* Red flags */}
-      {redFlags.length > 0 && <RedFlagsList flags={redFlags} />}
+      {redFlags.length > 0 && (
+        <section className="space-y-2">
+          <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
+            {t("report.redFlags")}
+          </h2>
+          <div className="p-4 bg-surface rounded-2xl border border-border space-y-3">
+            {redFlags.map((flag, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <AlertTriangle className="w-4 h-4 text-risk-high shrink-0 mt-0.5" />
+                <span className="text-sm text-text-primary leading-snug">{flag}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Action plan */}
       {actionPlan.length > 0 && (
         <section className="space-y-2">
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-widest">
+          <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
             {t("report.actionPlan")}
           </h2>
-          <div className="space-y-2">
+          <div className="p-4 bg-[#F0F8FF] rounded-2xl border border-primary/10 space-y-2">
             {actionPlan.map((step, i) => (
-              <div
-                key={`step-${i}`}
-                className={`
-                  flex items-start gap-3 p-3 rounded-radius-sm
-                  ${i < 2 ? "bg-risk-high-bg/50" : i < 4 ? "bg-risk-medium-bg/50" : "bg-primary-50"}
-                `}
-              >
-                <span className="text-xs font-bold text-text-muted w-4 text-center mt-0.5">{i + 1}</span>
+              <div key={`step-${i}`} className="flex items-start gap-3">
+                <span className="text-xs font-bold text-text-muted w-4 text-center mt-0.5 shrink-0">
+                  {i + 1}.
+                </span>
                 <span className="text-sm text-text-primary leading-snug">{step}</span>
               </div>
             ))}
@@ -162,15 +199,15 @@ export default function ReportPage() {
       {/* Semak Mule + community report */}
       {phoneResult && phoneResult.number !== "UNKNOWN" && (
         <section className="space-y-2">
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-widest">
+          <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
             {t("report.furtherVerification")}
           </h2>
 
           <button
             onClick={handleSemakMule}
-            className="w-full flex items-center gap-3 p-4 bg-surface rounded-radius-md border border-border hover:border-primary/30 hover:shadow-sm active:scale-[0.99] transition-all duration-150 text-left cursor-pointer"
+            className="w-full flex items-center gap-3 p-4 bg-surface rounded-2xl border border-border hover:border-primary/30 hover:shadow-sm active:scale-[0.99] transition-all duration-150 text-left cursor-pointer"
           >
-            <div className="w-10 h-10 rounded-radius-sm bg-primary/10 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
               <ExternalLink className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1">
@@ -183,9 +220,9 @@ export default function ReportPage() {
 
           <button
             onClick={() => setShowReportModal(true)}
-            className="w-full flex items-center gap-3 p-4 bg-surface rounded-radius-md border border-border hover:border-accent/30 hover:shadow-sm active:scale-[0.99] transition-all duration-150 text-left cursor-pointer"
+            className="w-full flex items-center gap-3 p-4 bg-surface rounded-2xl border border-border hover:border-accent/30 hover:shadow-sm active:scale-[0.99] transition-all duration-150 text-left cursor-pointer"
           >
-            <div className="w-10 h-10 rounded-radius-sm bg-accent/10 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
               <Flag className="w-5 h-5 text-accent-dark" />
             </div>
             <div className="flex-1">
@@ -198,15 +235,44 @@ export default function ReportPage() {
 
       {/* Action buttons */}
       <div className="space-y-3 pt-2">
-        <Button variant="accent" size="lg" fullWidth onClick={handleShareWhatsApp}>
-          <MessageCircle className="w-4 h-4" />
-          {t("report.shareWhatsApp")}
-        </Button>
-        <Button variant="ghost" size="md" fullWidth onClick={() => router.push("/scan")}>
-          <RotateCcw className="w-4 h-4" />
-          {t("report.newScan")}
-        </Button>
+        <button
+          onClick={handleShareWhatsApp}
+          className="
+            w-full h-12 rounded-xl
+            bg-primary text-white text-base font-semibold
+            hover:bg-primary-dark active:scale-[0.98]
+            transition-all duration-200 cursor-pointer shadow-sm
+            flex items-center justify-center gap-2
+          "
+        >
+          {t("history.shareScore")}
+        </button>
+
+        <button
+          onClick={() => router.push("/scan")}
+          className="
+            w-full h-12 rounded-xl
+            bg-surface text-text-primary text-base font-semibold
+            border border-border
+            hover:bg-surface-hover active:scale-[0.98]
+            transition-all duration-200 cursor-pointer
+            flex items-center justify-center gap-2
+          "
+        >
+          {t("history.scanAgain")}
+        </button>
       </div>
+
+      {/* Footer disclaimer */}
+      <footer className="text-center space-y-2 pt-2">
+        <p className="text-xs text-text-muted leading-relaxed">
+          {t("footer.disclaimer")}
+        </p>
+        <div className="flex items-center justify-center gap-1.5 text-xs text-text-secondary">
+          <Sparkles className="w-3 h-3" />
+          <span className="font-medium">{t("common.poweredBy")}</span>
+        </div>
+      </footer>
 
       {/* Community report modal */}
       <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)} title={t("report.reportModalTitle")}>
@@ -218,7 +284,7 @@ export default function ReportPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="p-3 bg-surface-hover rounded-radius-sm">
+            <div className="p-3 bg-surface-hover rounded-xl">
               <p className="text-sm font-medium text-text-primary">
                 {t("common.number")}: {phoneResult?.number}
               </p>
@@ -237,7 +303,7 @@ export default function ReportPage() {
                 placeholder={t("report.reportPlaceholder")}
                 rows={3}
                 maxLength={500}
-                className="w-full p-3 bg-surface border border-border rounded-radius-sm text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors duration-150 resize-none"
+                className="w-full p-3 bg-surface border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors duration-150 resize-none"
               />
             </div>
 
