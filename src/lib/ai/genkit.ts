@@ -8,7 +8,7 @@ import { genkit } from 'genkit'
 import { vertexAI } from '@genkit-ai/google-genai'
 
 const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID
-const location = process.env.VERTEX_SEARCH_LOCATION || 'us-central1'
+const location = process.env.VERTEX_SEARCH_LOCATION || 'asia-southeast1'
 
 if (!projectId && process.env.NODE_ENV !== 'production') {
   console.warn(
