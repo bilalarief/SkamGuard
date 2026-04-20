@@ -4,6 +4,13 @@ const nextConfig: NextConfig = {
   // Standalone output for Cloud Run container deployment
   output: "standalone",
 
+  // Genkit + Firebase use native Node modules — exclude from client bundling
+  serverExternalPackages: [
+    "genkit",
+    "@genkit-ai/google-genai",
+    "@genkit-ai/next",
+  ],
+
   images: {
     remotePatterns: [],
   },

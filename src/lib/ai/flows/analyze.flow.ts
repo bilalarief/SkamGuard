@@ -14,6 +14,22 @@ import { searchScamDatabase } from '../tools/scam-db-search'
 import { calculateRiskScore } from '../scoring/risk-engine'
 import type { RiskReport, ExtractedContent, URLCheckResult, PhoneCheckResult } from '@/types/analysis'
 
+// --- Zod schemas for Gemini structured output ---
+
+const ExtractionOutputSchema = z.object({
+  messageText: z.string().describe('Full extracted text content'),
+  urls: z.array(z.string()).describe('All URLs found in the content'),
+  phoneNumbers: z.array(z.string()).describe('All phone numbers found, or "PARTIAL" if cut off'),
+  sender: z.string().nullable().describe('Sender name, number, or null if unknown'),
+})
+
+const AnalysisOutputSchema = z.object({
+  risk_score: z.number().describe('Risk score from 0-100 based on evidence strength'),
+  scam_type: z.string().nullable().describe('Scam type identifier or null'),
+  red_flags: z.array(z.string()).describe('Specific red flags detected'),
+  explanation: z.string().describe('Clear explanation in the requested language'),
+  action_plan: z.array(z.string()).describe('Numbered action steps'),
+})
 
 const AnalyzeInputSchema = z.object({
   imageBase64: z.string().optional(),
@@ -72,12 +88,7 @@ async function extractContent(input: AnalyzeInput): Promise<ExtractedContent> {
   })
 
   try {
-    const generateOptions: Record<string, unknown> = {
-      system: SKAMGUARD_SYSTEM_PROMPT,
-      prompt: [] as Array<Record<string, unknown>>,
-      output: { format: 'json' },
-    }
-
+    // Build multimodal prompt parts for image + text
     const promptParts: Array<Record<string, unknown>> = []
 
     if (input.imageBase64) {
@@ -90,12 +101,16 @@ async function extractContent(input: AnalyzeInput): Promise<ExtractedContent> {
     }
 
     promptParts.push({ text: promptText })
-    generateOptions.prompt = promptParts
 
-    const result = await ai.generate(generateOptions)
+    const result = await ai.generate({
+      system: SKAMGUARD_SYSTEM_PROMPT,
+      prompt: promptParts,
+      output: { schema: ExtractionOutputSchema },
+    })
+
     const output = result.output
-
     if (!output) {
+      console.warn('[SkamGuard] Extraction returned null output — using fallback')
       return buildFallbackExtraction(input)
     }
 
@@ -106,7 +121,7 @@ async function extractContent(input: AnalyzeInput): Promise<ExtractedContent> {
       sender: output.sender || null,
     }
   } catch (error) {
-    console.error('[SkamGuard] Extraction failed:', error)
+    console.error('[SkamGuard] Extraction failed:', error instanceof Error ? error.message : error)
     return buildFallbackExtraction(input)
   }
 }
@@ -137,11 +152,12 @@ async function analyzeWithContext(params: {
     const result = await ai.generate({
       system: SKAMGUARD_SYSTEM_PROMPT,
       prompt: prompt,
-      output: { format: 'json' },
+      output: { schema: AnalysisOutputSchema },
     })
 
     const output = result.output
     if (!output) {
+      console.warn('[SkamGuard] Analysis returned null output — using fallback')
       return buildFallbackAnalysis(params.language)
     }
 
@@ -153,13 +169,13 @@ async function analyzeWithContext(params: {
       action_plan: Array.isArray(output.action_plan) ? output.action_plan : [],
     }
   } catch (error) {
-    console.error('[SkamGuard] Analysis failed:', error)
+    console.error('[SkamGuard] Analysis failed:', error instanceof Error ? error.message : error)
     return buildFallbackAnalysis(params.language)
   }
 }
 
 /**
- * Fallback extraction when Gemini call fails.
+ * Fallback extraction when Gemini call fails — regex-based.
  */
 function buildFallbackExtraction(input: AnalyzeInput): ExtractedContent {
   const text = input.text || ''
@@ -190,4 +206,3 @@ function buildFallbackAnalysis(language: 'BM' | 'EN') {
     action_plan: [translations.ai.fallbackAction],
   }
 }
-
