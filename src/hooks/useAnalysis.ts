@@ -10,6 +10,7 @@
 import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAnalysisStore } from '@/store/analysis.store'
+import { useHistoryStore } from '@/store/history.store'
 import type { AnalyzeResponse } from '@/types/api'
 
 interface SubmitParams {
@@ -32,6 +33,7 @@ interface SubmitParams {
  */
 export function useAnalysis() {
   const { isLoading, error, setReport, setLoading, setError } = useAnalysisStore()
+  const addHistoryItem = useHistoryStore((s) => s.addItem)
   const router = useRouter()
 
   const submit = useCallback(async (params: SubmitParams) => {
@@ -60,13 +62,16 @@ export function useAnalysis() {
         throw new Error(result.error?.message || 'Analysis failed')
       }
 
+      // Save to history
+      addHistoryItem(result.data)
+
       setReport(result.data)
       router.push('/report')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong'
       setError(message)
     }
-  }, [setReport, setLoading, setError, router])
+  }, [setReport, setLoading, setError, router, addHistoryItem])
 
   return { submit, isLoading, error }
 }

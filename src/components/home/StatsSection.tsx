@@ -6,30 +6,32 @@ import { SCAM_STATS } from "@/data/scamStats";
 export default function StatsSection() {
   const { t } = useLanguage();
 
+  // Show only statsCases and statsDaily (2 cards as per design)
+  const displayStats = SCAM_STATS.filter(
+    (stat) => stat.key === "statsCases" || stat.key === "statsDaily"
+  );
+
   return (
     <section className="space-y-3">
-      <h2 className="text-xs font-semibold text-text-muted uppercase tracking-widest">
-        {t("home.statsTitle")}
-      </h2>
-
-      <div className="grid grid-cols-3 gap-3">
-        {SCAM_STATS.map((stat) => {
+      <div className="grid grid-cols-2 gap-3">
+        {displayStats.map((stat) => {
           const Icon = stat.icon;
 
           return (
             <div
               key={stat.key}
               className="
-                bg-surface rounded-radius-md border border-border
-                p-4 text-center space-y-2
+                rounded-2xl border border-border
+                p-4 space-y-3
+                bg-gradient-to-b from-[#FBE8DF] to-[#FFFFFF]
               "
             >
-              <Icon className="w-4 h-4 text-text-muted mx-auto" />
-              <div className="text-lg font-bold text-risk-high">
-                {stat.value}
-              </div>
-              <div className="text-[11px] text-text-muted leading-tight">
+              <Icon className="w-8 h-8 p-1.5 rounded-full text-risk-high bg-[#FFE4E6]" />
+              <div className="text-xs text-text-secondary">
                 {t(`home.${stat.key}`)}
+              </div>
+              <div className="text-2xl font-bold text-text-primary">
+                {stat.value}
               </div>
             </div>
           );

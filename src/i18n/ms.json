@@ -52,10 +52,23 @@
     "phoneTitle": "Semak Nombor Telefon",
     "phonePlaceholder": "Masukkan nombor (contoh: 01X-XXXXXXX)",
     "analyzeButton": "Analisis Sekarang",
-    "analyzing": "Sedang menganalisis...",
-    "loadingStep1": "Mengekstrak kandungan...",
-    "loadingStep2": "Menyemak URL & nombor telefon...",
-    "loadingStep3": "Menganalisis pola scam..."
+    "analyzing": "Menganalisis",
+    "loadingStep1": "Menerima tangkapan skrin...",
+    "loadingStep2": "Menukar imej kepada teks...",
+    "loadingStep3": "Mengekstrak kandungan mesej...",
+    "loadingStep4": "Mengesan URL dan pautan...",
+    "loadingStep5": "Menganalisis mesej dengan Gemini AI...",
+    "checkMessage": "Semak Mesej",
+    "checkMessageDesc": "Masukkan mesej untuk disemak di pangkalan data scam"
+  },
+  "history": {
+    "title": "Sejarah",
+    "empty": "Belum ada sejarah imbasan. Mulakan dengan mengimbas mesej yang mencurigakan.",
+    "clearAll": "Padam Semua",
+    "yesterday": "Semalam",
+    "today": "Hari Ini",
+    "shareScore": "Kongsi Skor Ini",
+    "scanAgain": "Imbas Semula"
   },
   "report": {
     "title": "Laporan Risiko",
