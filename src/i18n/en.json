@@ -17,6 +17,8 @@
     "poweredBy": "Powered by Gemini AI",
     "number": "Number",
     "type": "Type",
+    "link": "Link",
+    "unknown": "Unknown",
     "thankYou": "Thank you!"
   },
   "nav": {
@@ -88,7 +90,9 @@
     "semakMuleDesc": "Number {{number}} will be auto-filled",
     "reportNumberTitle": "Report This Number",
     "reportNumberDesc": "Help protect the community from this scam number",
-    "reportModalTitle": "Report Scam Number",
+    "reportUrlTitle": "Report This Link",
+    "reportUrlDesc": "Help protect the community from this scam link",
+    "reportModalTitle": "Report Scam",
     "reportDescription": "Description (optional)",
     "reportPlaceholder": "Describe how you were contacted...",
     "reportSubmit": "Submit Report",

@@ -16,6 +16,7 @@ const ReportSchema = z.object({
   phoneNumber: z.string().min(1),
   scamType: z.string().optional(),
   description: z.string().max(500).optional(),
+  uid: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { phoneNumber, scamType, description } = parsed.data
+    const { phoneNumber, scamType, description, uid } = parsed.data
 
     if (!isValidMalaysianPhone(phoneNumber)) {
       return NextResponse.json(
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
       displayNumber: display,
       scamType: scamType || null,
       description: description || '',
+      uid: uid || 'anonymous',
     })
 
     return NextResponse.json({

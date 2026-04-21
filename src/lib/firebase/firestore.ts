@@ -4,11 +4,15 @@
 
 import {
   collection,
+  doc,
+  setDoc,
   addDoc,
   query,
   where,
   getDocs,
+  getDoc,
   serverTimestamp,
+  increment,
   orderBy,
   limit,
 } from 'firebase/firestore'
@@ -34,32 +38,42 @@ export async function submitPhoneReport(report: {
   displayNumber: string
   scamType: string | null
   description: string
+  uid?: string
 }): Promise<{ id: string; totalReports: number }> {
   try {
     const db = getFirestoreDb()
-    const colRef = collection(db, COLLECTION_NAME)
+    const docRef = doc(db, COLLECTION_NAME, report.phoneNumber)
 
-    const doc: FirestorePhoneReport = {
-      phoneNumber: report.phoneNumber,
-      displayNumber: report.displayNumber,
-      scamType: report.scamType,
-      description: report.description,
-      reportedAt: serverTimestamp(),
-      source: 'community',
-    }
-
-    const docRef = await addDoc(colRef, doc)
-
-    // Get total reports for this number
-    const countQuery = query(
-      colRef,
-      where('phoneNumber', '==', report.phoneNumber)
+    // Merge document to increment report count and append scam type
+    await setDoc(
+      docRef,
+      {
+        phoneNumber: report.phoneNumber,
+        displayNumber: report.displayNumber,
+        reportCount: increment(1),
+        lastReported: serverTimestamp(),
+        source: 'community',
+        ...(report.scamType ? { scamTypes: [report.scamType] } : {}), // Will overwrite field, but we check and merge on read
+      },
+      { merge: true }
     )
-    const snapshot = await getDocs(countQuery)
+
+    // Add detailed reporter record in subcollection to prevent abuse mapping
+    const reportersCol = collection(docRef, 'reporters')
+    await addDoc(reportersCol, {
+      uid: report.uid || 'anonymous',
+      description: report.description,
+      scamType: report.scamType,
+      createdAt: serverTimestamp(),
+    })
+
+    // Fetch the updated general stats
+    const snap = await getDoc(docRef)
+    const data = snap.data()
 
     return {
-      id: docRef.id,
-      totalReports: snapshot.size,
+      id: snap.id,
+      totalReports: data?.reportCount || 1,
     }
   } catch (error) {
     console.warn('[SkamGuard] Firestore write failed:', error)
@@ -90,12 +104,26 @@ export async function checkCommunityReports(normalizedPhone: string): Promise<{
     const snapshot = await getDocs(q)
 
     if (snapshot.empty) {
-      return { totalReports: 0, scamTypes: [], lastReported: null }
+      // It's possible the data structure is the new counter schema, check document directly
+      const docRef = doc(db, COLLECTION_NAME, normalizedPhone)
+      const directSnap = await getDoc(docRef)
+      
+      if (!directSnap.exists()) {
+        return { totalReports: 0, scamTypes: [], lastReported: null }
+      }
+      
+      const data = directSnap.data()
+      return {
+        totalReports: data.reportCount || 1,
+        scamTypes: data.scamTypes || [],
+        lastReported: data.lastReported?.toDate?.()?.toISOString() || null
+      }
     }
 
     const scamTypes = new Set<string>()
     let lastReported: string | null = null
 
+    // For backwards compatibility with old unstructured reports
     snapshot.forEach((doc) => {
       const data = doc.data()
       if (data.scamType) {
@@ -113,6 +141,84 @@ export async function checkCommunityReports(normalizedPhone: string): Promise<{
     }
   } catch (error) {
     console.warn('[SkamGuard] Firestore query failed:', error)
+    return { totalReports: 0, scamTypes: [], lastReported: null }
+  }
+}
+
+// ==========================================
+// URL REPORTING LOGIC
+// ==========================================
+
+const URL_COLLECTION_NAME = 'reports_url'
+
+export async function submitUrlReport(report: {
+  urlHash: string
+  url: string
+  scamType: string | null
+  description: string
+  uid?: string
+}): Promise<{ id: string; totalReports: number }> {
+  try {
+    const db = getFirestoreDb()
+    const docRef = doc(db, URL_COLLECTION_NAME, report.urlHash)
+
+    await setDoc(
+      docRef,
+      {
+        url: report.url,
+        urlHash: report.urlHash,
+        reportCount: increment(1),
+        lastReported: serverTimestamp(),
+        source: 'community',
+        ...(report.scamType ? { scamTypes: [report.scamType] } : {}),
+      },
+      { merge: true }
+    )
+
+    const reportersCol = collection(docRef, 'reporters')
+    await addDoc(reportersCol, {
+      uid: report.uid || 'anonymous',
+      description: report.description,
+      scamType: report.scamType,
+      createdAt: serverTimestamp(),
+    })
+
+    const snap = await getDoc(docRef)
+    const data = snap.data()
+
+    return {
+      id: snap.id,
+      totalReports: data?.reportCount || 1,
+    }
+  } catch (error) {
+    console.warn('[SkamGuard] Firestore URL write failed:', error)
+    throw new Error('Failed to submit URL report.')
+  }
+}
+
+export async function checkUrlCommunityReports(urlHash: string): Promise<{
+  totalReports: number
+  scamTypes: string[]
+  lastReported: string | null
+}> {
+  const db = getFirestoreDb()
+  const docRef = doc(db, URL_COLLECTION_NAME, urlHash)
+
+  try {
+    const snap = await getDoc(docRef)
+
+    if (!snap.exists()) {
+      return { totalReports: 0, scamTypes: [], lastReported: null }
+    }
+
+    const data = snap.data()
+    return {
+      totalReports: data.reportCount || 0,
+      scamTypes: data.scamTypes || [],
+      lastReported: data.lastReported?.toDate?.()?.toISOString() || null,
+    }
+  } catch (error) {
+    console.warn('[SkamGuard] Firestore URL query failed:', error)
     return { totalReports: 0, scamTypes: [], lastReported: null }
   }
 }

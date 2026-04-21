@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, type ReactNode } from "react";
 import { X } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface ModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ export default function Modal({
   children,
   showClose = true,
 }: ModalProps) {
+  const { t } = useLanguage();
+
   const handleEscape = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -75,7 +78,7 @@ export default function Modal({
                   text-text-muted hover:text-text-primary hover:bg-surface-hover
                   transition-colors duration-150 cursor-pointer
                 "
-                aria-label="Close"
+                aria-label={t("common.close")}
               >
                 <X className="w-4 h-4" />
               </button>

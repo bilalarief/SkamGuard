@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   AlertTriangle,
-  MessageCircle,
   RotateCcw,
   ShieldAlert,
-  ExternalLink,
-  Flag,
   CheckCircle,
-  Sparkles,
+  Flag,
 } from "lucide-react";
+import { signInAnonymously } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase/config";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAnalysisStore } from "@/store/analysis.store";
 import { getRiskBgColor, getRiskColor } from "@/lib/utils/formatters";
@@ -20,6 +19,11 @@ import RiskGauge from "@/components/report/RiskGauge";
 import ActionButton from "@/components/report/ActionButton";
 import Button from "@/components/shared/Button";
 import Modal from "@/components/shared/Modal";
+import ScamTypeCard from "@/components/report/ScamTypeCard";
+import RedFlagsCard from "@/components/report/RedFlagsCard";
+import VerdictBadge from "@/components/report/VerdictBadge";
+import CommunityReportButtons from "@/components/report/CommunityReportButtons";
+import FooterDisclaimer from "@/components/shared/FooterDisclaimer";
 import type { RiskLevel } from "@/types/analysis";
 
 export default function ReportPage() {
@@ -28,9 +32,19 @@ export default function ReportPage() {
   const { report } = useAnalysisStore();
 
   const [showReportModal, setShowReportModal] = useState(false);
+  const [reportType, setReportType] = useState<"phone" | "url">("phone");
   const [reportDescription, setReportDescription] = useState("");
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+
+  // Initialize anonymous auth session for spam prevention
+  useEffect(() => {
+    const auth = getFirebaseAuth();
+    signInAnonymously(auth)
+      .then((cred) => setUserId(cred.user.uid))
+      .catch((err) => console.warn("Firebase Auth failed:", err));
+  }, []);
 
   useEffect(() => {
     if (!report) router.replace("/scan");
@@ -38,7 +52,8 @@ export default function ReportPage() {
 
   if (!report) return null;
 
-  const { overallScore, riskLevel, verdict, scamType, redFlags, explanation, actionPlan, phoneResult, semakMuleUrl } = report;
+  const { overallScore, riskLevel, verdict, scamType, redFlags, explanation, actionPlan, phoneResult, urlResults, semakMuleUrl } = report;
+  const firstUrl = urlResults?.[0]?.url;
 
   function handleShareWhatsApp() {
     const verdictText = t(`report.verdicts.${riskLevel}`);
@@ -58,25 +73,34 @@ export default function ReportPage() {
     if (semakMuleUrl) window.open(semakMuleUrl, "_blank");
   }
 
-  async function handleReportPhone() {
-    if (!phoneResult?.number || phoneResult.number === "UNKNOWN") return;
-
+  async function handleReportSubmit() {
     setReportLoading(true);
+    
     try {
-      const response = await fetch("/api/report-phone", {
+      const endpoint = reportType === "phone" ? "/api/report-phone" : "/api/report-url";
+      const payload = reportType === "phone" 
+        ? { phoneNumber: phoneResult?.number }
+        : { url: firstUrl };
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phoneNumber: phoneResult.number,
+          ...payload,
           scamType: scamType || undefined,
           description: reportDescription.trim() || undefined,
+          uid: userId,
         }),
       });
 
       const result = await response.json();
       if (result.success) {
         setReportSubmitted(true);
-        setTimeout(() => setShowReportModal(false), 2000);
+        setTimeout(() => {
+          setShowReportModal(false);
+          setReportSubmitted(false); // Reset for next time
+          setReportDescription('');
+        }, 2000);
       }
     } catch (error) {
       console.error("Report failed:", error);
@@ -120,63 +144,14 @@ export default function ReportPage() {
         </div>
 
         {/* Verdict badge */}
-        <div className="flex justify-center">
-          <div
-            className={`
-              inline-flex items-center gap-2 px-4 py-2 rounded-full
-              text-xs font-semibold
-              ${riskLevel === "safe" || riskLevel === "low"
-                ? "bg-risk-low-bg text-risk-low"
-                : riskLevel === "medium"
-                ? "bg-risk-medium-bg text-risk-medium"
-                : "bg-risk-high-bg text-risk-high"
-              }
-            `}
-          >
-            <AlertTriangle className="w-3.5 h-3.5" />
-            <span>{verdictBadgeText}</span>
-          </div>
-        </div>
+        <VerdictBadge level={riskLevel as any} text={verdictBadgeText} />
       </section>
 
       {/* Scam type */}
-      {scamType && (
-        <section className="space-y-2">
-          <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
-            {t("report.scamType")}
-          </h2>
-          <div className="p-4 bg-surface rounded-2xl border border-border">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-4 h-4 text-risk-high shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-sm text-text-primary">
-                  {t(`scamTypes.${scamType}.name`)}
-                </span>
-                <span className="text-sm text-text-secondary">
-                  {" – "}{t(`scamTypes.${scamType}.desc`)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+      {scamType && <ScamTypeCard scamType={scamType} />}
 
       {/* Red flags */}
-      {redFlags.length > 0 && (
-        <section className="space-y-2">
-          <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
-            {t("report.redFlags")}
-          </h2>
-          <div className="p-4 bg-surface rounded-2xl border border-border space-y-3">
-            {redFlags.map((flag, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <AlertTriangle className="w-4 h-4 text-risk-high shrink-0 mt-0.5" />
-                <span className="text-sm text-text-primary leading-snug">{flag}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <RedFlagsCard flags={redFlags} />
 
       {/* Action plan — Agent-style interactive buttons */}
       {actionPlan.length > 0 && (
@@ -192,42 +167,16 @@ export default function ReportPage() {
         </section>
       )}
 
-      {/* Semak Mule + community report */}
-      {phoneResult && phoneResult.number !== "UNKNOWN" && (
-        <section className="space-y-2">
-          <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
-            {t("report.furtherVerification")}
-          </h2>
-
-          <button
-            onClick={handleSemakMule}
-            className="w-full flex items-center gap-3 p-4 bg-surface rounded-2xl border border-border hover:border-primary/30 hover:shadow-sm active:scale-[0.99] transition-all duration-150 text-left cursor-pointer"
-          >
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <ExternalLink className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-sm text-text-primary">{t("report.semakMuleTitle")}</h3>
-              <p className="text-xs text-text-secondary mt-0.5">
-                {t("report.semakMuleDesc").replace("{{number}}", phoneResult.number)}
-              </p>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setShowReportModal(true)}
-            className="w-full flex items-center gap-3 p-4 bg-surface rounded-2xl border border-border hover:border-accent/30 hover:shadow-sm active:scale-[0.99] transition-all duration-150 text-left cursor-pointer"
-          >
-            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
-              <Flag className="w-5 h-5 text-accent-dark" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-sm text-text-primary">{t("report.reportNumberTitle")}</h3>
-              <p className="text-xs text-text-secondary mt-0.5">{t("report.reportNumberDesc")}</p>
-            </div>
-          </button>
-        </section>
-      )}
+      {/* Community Report Buttons */}
+      <CommunityReportButtons 
+        phoneResult={phoneResult} 
+        firstUrl={firstUrl} 
+        semakMuleUrl={semakMuleUrl} 
+        onOpenModal={(type) => {
+          setReportType(type);
+          setShowReportModal(true);
+        }}
+      />
 
       {/* Action buttons */}
       <div className="space-y-3 pt-2">
@@ -260,15 +209,7 @@ export default function ReportPage() {
       </div>
 
       {/* Footer disclaimer */}
-      <footer className="text-center space-y-2 pt-2">
-        <p className="text-xs text-text-muted leading-relaxed">
-          {t("footer.disclaimer")}
-        </p>
-        <div className="flex items-center justify-center gap-1.5 text-xs text-text-secondary">
-          <Sparkles className="w-3 h-3" />
-          <span className="font-medium">{t("common.poweredBy")}</span>
-        </div>
-      </footer>
+      <FooterDisclaimer />
 
       {/* Community report modal */}
       <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)} title={t("report.reportModalTitle")}>
@@ -281,8 +222,8 @@ export default function ReportPage() {
         ) : (
           <div className="space-y-4">
             <div className="p-3 bg-surface-hover rounded-xl">
-              <p className="text-sm font-medium text-text-primary">
-                {t("common.number")}: {phoneResult?.number}
+              <p className="text-sm font-medium text-text-primary truncate">
+                {reportType === "phone" ? `${t("common.number")}: ${phoneResult?.number}` : `${t("common.link")}: ${firstUrl}`}
               </p>
               {scamType && (
                 <p className="text-xs text-text-secondary mt-1">
@@ -303,7 +244,7 @@ export default function ReportPage() {
               />
             </div>
 
-            <Button variant="primary" size="lg" fullWidth loading={reportLoading} onClick={handleReportPhone}>
+            <Button variant="primary" size="lg" fullWidth loading={reportLoading} onClick={handleReportSubmit}>
               <Flag className="w-4 h-4" />
               {t("report.reportSubmit")}
             </Button>

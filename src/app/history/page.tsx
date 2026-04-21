@@ -61,7 +61,7 @@ function HistoryCard({
   t: (key: string) => string;
 }) {
   const badge = getVerdictBadge(item.riskLevel, t);
-  const scamName = item.scamType ? t(`scamTypes.${item.scamType}.name`) : "Unknown";
+  const scamName = item.scamType ? t(`scamTypes.${item.scamType}.name`) : t("common.unknown");
   const scamDesc = item.scamType ? t(`scamTypes.${item.scamType}.desc`) : item.explanation?.slice(0, 60) || "";
 
   return (

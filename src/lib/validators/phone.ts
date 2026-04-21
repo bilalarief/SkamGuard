@@ -1,4 +1,5 @@
-const MY_PHONE_REGEX = /^(\+?60|0)(1[0-9])-?\d{7,8}$/;
+// Allows mobile (01X), landlines (03, 04, etc), and shortcodes (+60 or plain numbers)
+const MY_PHONE_REGEX = /^(\+?60|0|1)[0-9]{1,2}-?\d{5,8}$/;
 
 export function isValidMalaysianPhone(input: string): boolean {
   const cleaned = input.replace(/[\s\-().]/g, "");

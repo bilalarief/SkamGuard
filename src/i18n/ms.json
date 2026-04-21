@@ -17,6 +17,8 @@
     "poweredBy": "Dikuasakan oleh Gemini AI",
     "number": "Nombor",
     "type": "Jenis",
+    "link": "Pautan",
+    "unknown": "Tidak Diketahui",
     "thankYou": "Terima kasih!"
   },
   "nav": {
@@ -88,7 +90,9 @@
     "semakMuleDesc": "Nombor {{number}} akan diisi automatik",
     "reportNumberTitle": "Laporkan Nombor Ini",
     "reportNumberDesc": "Bantu lindungi komuniti daripada nombor scam ini",
-    "reportModalTitle": "Laporkan Nombor Scam",
+    "reportUrlTitle": "Laporkan Pautan Ini",
+    "reportUrlDesc": "Bantu lindungi komuniti daripada pautan penipuan ini",
+    "reportModalTitle": "Laporkan Scam",
     "reportDescription": "Keterangan (pilihan)",
     "reportPlaceholder": "Terangkan bagaimana anda dihubungi...",
     "reportSubmit": "Hantar Laporan",
