@@ -20,34 +20,34 @@ function formatRelativeTime(timestamp: string, t: (key: string) => string): stri
   });
 
   if (diffDays === 0) {
-    return `${t("history.today")} – ${timeStr}`;
+    return `${t("history.today")} · ${timeStr}`;
   } else if (diffDays === 1) {
-    return `${t("history.yesterday")} – ${timeStr}`;
+    return `${t("history.yesterday")} · ${timeStr}`;
   } else {
     const dateStr = date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });
-    return `${dateStr} – ${timeStr}`;
+    return `${dateStr} · ${timeStr}`;
   }
 }
 
-function getVerdictBadge(riskLevel: RiskLevel, t: (key: string) => string): { text: string; className: string } {
+function getVerdictBadge(riskLevel: RiskLevel, score: number, t: (key: string) => string): { text: string; className: string } {
   if (riskLevel === "safe" || riskLevel === "low") {
     return {
-      text: t("report.verdictBadge.safe"),
-      className: "bg-risk-low-bg text-risk-low",
+      text: `Safe · ${score}/100`,
+      className: "bg-[#E8F8F0] text-[#2ECC71]",
     };
   }
   if (riskLevel === "medium") {
     return {
-      text: t("report.verdictBadge.medium"),
-      className: "bg-risk-medium-bg text-risk-medium",
+      text: `Suspicious · ${score}/100`,
+      className: "bg-[#FEF5E7] text-[#F39C12]",
     };
   }
   return {
-    text: t("report.verdictBadge.high"),
-    className: "bg-risk-high-bg text-risk-high",
+    text: `Dangerous · ${score}/100`,
+    className: "bg-[#FDEDEC] text-[#E74C3C]",
   };
 }
 
@@ -60,45 +60,43 @@ function HistoryCard({
   onClick: () => void;
   t: (key: string) => string;
 }) {
-  const badge = getVerdictBadge(item.riskLevel, t);
+  const badge = getVerdictBadge(item.riskLevel, item.overallScore, t);
   const scamName = item.scamType ? t(`scamTypes.${item.scamType}.name`) : t("common.unknown");
-  const scamDesc = item.scamType ? t(`scamTypes.${item.scamType}.desc`) : item.explanation?.slice(0, 60) || "";
 
   return (
     <button
       onClick={onClick}
       className="
-        w-full text-left p-4
-        bg-surface rounded-2xl border border-border
-        hover:shadow-sm active:scale-[0.99]
+        w-full text-left p-5
+        bg-surface rounded-2xl border border-gray-100 shadow-sm
+        hover:bg-gray-50 active:scale-[0.99]
         transition-all duration-150 cursor-pointer
       "
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0 space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex-1 min-w-0 space-y-3">
           {/* Scam type title */}
-          <h3 className="font-bold text-sm text-text-primary">{scamName}</h3>
-          <p className="text-xs text-text-secondary leading-snug line-clamp-2">{scamDesc}</p>
+          <h3 className="font-bold text-[16px] text-[#1E293B]">{scamName}</h3>
 
           {/* Verdict badge */}
           <div
             className={`
-              inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
-              text-[10px] font-semibold
+              inline-flex items-center gap-1.5 px-3 py-1 rounded-lg
+              text-[11px] font-bold
               ${badge.className}
             `}
           >
-            <AlertTriangle className="w-3 h-3" />
+            <AlertTriangle className="w-3.5 h-3.5" />
             <span>{badge.text}</span>
           </div>
 
           {/* Timestamp */}
-          <p className="text-[11px] text-text-muted">
+          <p className="text-[12px] text-[#64748B]">
             {formatRelativeTime(item.timestamp, t)}
           </p>
         </div>
 
-        <ChevronRight className="w-4 h-4 text-text-muted shrink-0 mt-1" />
+        <ChevronRight className="w-5 h-5 text-[#94A3B8] shrink-0" />
       </div>
     </button>
   );

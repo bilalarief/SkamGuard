@@ -2,12 +2,13 @@
 
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { ScanSearch, Link2, Phone, MessageSquareText, ArrowLeft, Sparkles } from "lucide-react";
+import { ScanSearch, Link2, Phone, MessageSquareText, ArrowLeft, Sparkles, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAnalysis, fileToBase64 } from "@/hooks/useAnalysis";
 import ScreenshotUploader from "@/components/scan/ScreenshotUploader";
 import UrlChecker from "@/components/scan/UrlChecker";
 import PhoneChecker from "@/components/scan/PhoneChecker";
+import ScanModeCard from "@/components/scan/ScanModeCard";
 import AnalyzingProgress from "@/components/scan/AnalyzingProgress";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
@@ -30,9 +31,9 @@ const MODE_CARDS: ModeCard[] = [
     icon: ScanSearch,
     labelKey: "home.ctaScan",
     descKey: "home.ctaScanDesc",
-    gradient: "from-[#E8F4FD] via-[#F0F8FF] to-[#FFFFFF]",
-    iconBg: "bg-primary/10",
-    iconColor: "text-primary",
+    gradient: "bg-white",
+    iconBg: "bg-[#DDEBFF]",
+    iconColor: "text-[#3B82F6]",
     recommended: true,
   },
   {
@@ -40,27 +41,27 @@ const MODE_CARDS: ModeCard[] = [
     icon: MessageSquareText,
     labelKey: "scan.checkMessage",
     descKey: "scan.checkMessageDesc",
-    gradient: "from-[#F0EAFF] via-[#F5F0FF] to-[#FFFFFF]",
-    iconBg: "bg-[#8B5CF6]/10",
-    iconColor: "text-[#8B5CF6]",
+    gradient: "bg-white",
+    iconBg: "bg-[#F3E8FF]",
+    iconColor: "text-[#A855F7]",
   },
   {
     mode: "url",
     icon: Link2,
     labelKey: "home.ctaUrl",
     descKey: "home.ctaUrlDesc",
-    gradient: "from-[#FEF9E7] via-[#FFFDF0] to-[#FFFFFF]",
-    iconBg: "bg-[#F59E0B]/10",
-    iconColor: "text-[#D97706]",
+    gradient: "bg-white",
+    iconBg: "bg-[#FFF9C4]",
+    iconColor: "text-[#FACC15]",
   },
   {
     mode: "phone",
     icon: Phone,
     labelKey: "home.ctaPhone",
     descKey: "home.ctaPhoneDesc",
-    gradient: "from-[#ECFDF5] via-[#F0FFF4] to-[#FFFFFF]",
-    iconBg: "bg-[#10B981]/10",
-    iconColor: "text-[#059669]",
+    gradient: "bg-white",
+    iconBg: "bg-[#E8F5E9]",
+    iconColor: "text-[#4CAF50]",
   },
 ];
 
@@ -140,50 +141,19 @@ function ScanContent() {
           {t("scan.title")}
         </h1>
 
-        <div className="grid grid-cols-2 gap-3">
-          {MODE_CARDS.map((card) => {
-            const Icon = card.icon;
-            return (
-              <button
-                key={card.mode}
-                onClick={() => setActiveMode(card.mode)}
-                className={`
-                  relative text-left p-4 rounded-2xl border border-border
-                  bg-gradient-to-br ${card.gradient}
-                  hover:shadow-md active:scale-[0.98]
-                  transition-all duration-200 cursor-pointer
-                  flex flex-col gap-3 min-h-[160px]
-                `}
-              >
-                {/* Recommend badge */}
-                {card.recommended && (
-                  <span className="absolute top-3 right-3 text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                    {t("scan.recommended")}
-                  </span>
-                )}
-
-                {/* Icon */}
-                <div
-                  className={`
-                    w-10 h-10 rounded-xl flex items-center justify-center
-                    ${card.iconBg}
-                  `}
-                >
-                  <Icon className={`w-5 h-5 ${card.iconColor}`} />
-                </div>
-
-                {/* Text */}
-                <div className="mt-auto">
-                  <h3 className="font-bold text-sm text-text-primary leading-tight">
-                    {t(card.labelKey)}
-                  </h3>
-                  <p className="text-xs text-text-secondary mt-1 leading-snug">
-                    {t(card.descKey)}
-                  </p>
-                </div>
-              </button>
-            );
-          })}
+        <div className="space-y-4">
+          {MODE_CARDS.map((card) => (
+            <ScanModeCard
+              key={card.mode}
+              icon={card.icon}
+              labelKey={card.labelKey}
+              descKey={card.descKey}
+              iconBg={card.iconBg}
+              iconColor={card.iconColor}
+              recommended={card.recommended}
+              onClick={() => setActiveMode(card.mode)}
+            />
+          ))}
         </div>
       </div>
     );
