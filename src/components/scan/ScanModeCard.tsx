@@ -1,7 +1,9 @@
 "use client";
 
 import { LucideIcon, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
+import { cardHover } from "@/lib/motion";
 
 interface ScanModeCardProps {
   icon: LucideIcon;
@@ -25,12 +27,15 @@ export default function ScanModeCard({
   const { t } = useLanguage();
 
   return (
-    <button
+    <motion.button
       onClick={onClick}
+      whileHover={cardHover.whileHover}
+      whileTap={cardHover.whileTap}
+      transition={cardHover.transition}
       className="
         w-full text-left p-5 rounded-2xl border border-[#E2E8F0]
-        bg-white hover:bg-gray-50 active:scale-[0.99]
-        transition-all duration-200 cursor-pointer
+        bg-white
+        transition-colors duration-200 cursor-pointer
         flex flex-col gap-4 group relative
       "
     >
@@ -64,6 +69,6 @@ export default function ScanModeCard({
           {t(descKey)}
         </p>
       </div>
-    </button>
+    </motion.button>
   );
 }

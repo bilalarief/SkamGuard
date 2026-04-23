@@ -1,7 +1,9 @@
 "use client";
 
 import { Search, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
+import { cardHover } from "@/lib/motion";
 import Link from "next/link";
 
 export default function FeatureCardList() {
@@ -9,25 +11,25 @@ export default function FeatureCardList() {
 
   return (
     <section className="space-y-3">
-      {/* Single "Check Now" card that navigates to /scan (feature selection) */}
       <Link href="/scan" className="block no-underline">
-        <div
+        <motion.div
+          whileHover={cardHover.whileHover}
+          whileTap={cardHover.whileTap}
+          transition={cardHover.transition}
           className="
             relative overflow-hidden
             rounded-2xl border-none
             p-6
             bg-[#009bf3]
-            hover:shadow-md active:scale-[0.99]
-            transition-all duration-200
             cursor-pointer
           "
         >
           <div className="relative z-10 text-white space-y-1 pr-16">
             <h2 className="text-[10px] font-bold uppercase tracking-widest opacity-80">
-              Analyze
+              {t("home.ctaAnalyze")}
             </h2>
-            <h3 className="font-bold text-[22px] leading-tight">
-              Check The <br /> Message Now
+            <h3 className="font-bold text-[22px] leading-tight whitespace-pre-line">
+              {t("home.ctaCheckNow")}
             </h3>
             <div className="pt-2">
               <ArrowRight className="w-5 h-5 text-white" />
@@ -44,7 +46,7 @@ export default function FeatureCardList() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </Link>
     </section>
   );

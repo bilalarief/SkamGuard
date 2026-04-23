@@ -3,8 +3,10 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ScanSearch, Link2, Phone, MessageSquareText, ArrowLeft, Sparkles, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAnalysis, fileToBase64 } from "@/hooks/useAnalysis";
+import { fadeInUp, staggerContainer, staggerItem } from "@/lib/motion";
 import ScreenshotUploader from "@/components/scan/ScreenshotUploader";
 import UrlChecker from "@/components/scan/UrlChecker";
 import PhoneChecker from "@/components/scan/PhoneChecker";
@@ -136,26 +138,37 @@ function ScanContent() {
   // ──────────────────────────────────────────────
   if (!activeMode) {
     return (
-      <div className="container-app py-6 space-y-6">
+      <motion.div
+        className="container-app py-6 space-y-6"
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+      >
         <h1 className="text-2xl font-extrabold text-text-primary leading-tight">
           {t("scan.title")}
         </h1>
 
-        <div className="space-y-4">
+        <motion.div
+          className="space-y-4"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
           {MODE_CARDS.map((card) => (
-            <ScanModeCard
-              key={card.mode}
-              icon={card.icon}
-              labelKey={card.labelKey}
-              descKey={card.descKey}
-              iconBg={card.iconBg}
-              iconColor={card.iconColor}
-              recommended={card.recommended}
-              onClick={() => setActiveMode(card.mode)}
-            />
+            <motion.div key={card.mode} variants={staggerItem}>
+              <ScanModeCard
+                icon={card.icon}
+                labelKey={card.labelKey}
+                descKey={card.descKey}
+                iconBg={card.iconBg}
+                iconColor={card.iconColor}
+                recommended={card.recommended}
+                onClick={() => setActiveMode(card.mode)}
+              />
+            </motion.div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     );
   }
 
@@ -165,7 +178,12 @@ function ScanContent() {
   const currentCard = MODE_CARDS.find((c) => c.mode === activeMode);
 
   return (
-    <div className="container-app py-6 space-y-6">
+    <motion.div
+      className="container-app py-6 space-y-6"
+      variants={fadeInUp}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Back button */}
       <button
         onClick={handleBack}
@@ -185,7 +203,12 @@ function ScanContent() {
       </h1>
 
       {/* Mode Content */}
-      <div className="space-y-4">
+      <motion.div
+        className="space-y-4"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.35 }}
+      >
         {activeMode === "screenshot" && (
           <ScreenshotUploader onFileSelect={setFile} />
         )}
@@ -215,31 +238,37 @@ function ScanContent() {
         {activeMode === "phone" && (
           <PhoneChecker onSubmit={setPhoneInput} onChange={setPhoneInput} />
         )}
-      </div>
+      </motion.div>
 
       {/* Error display */}
       {error && (
-        <div className="p-3 bg-risk-high-bg/50 border border-risk-high/20 rounded-xl">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-3 bg-risk-high-bg/50 border border-risk-high/20 rounded-xl"
+        >
           <p className="text-sm text-risk-high">{error}</p>
-        </div>
+        </motion.div>
       )}
 
-      {/* Submit button — gray when disabled, blue when enabled */}
-      <button
+      {/* Submit button */}
+      <motion.button
         disabled={!canSubmit}
         onClick={handleAnalyze}
+        whileHover={canSubmit ? { scale: 1.01 } : {}}
+        whileTap={canSubmit ? { scale: 0.98 } : {}}
         className={`
           w-full h-12 rounded-xl
           text-base font-semibold
-          transition-all duration-200
+          transition-colors duration-200
           ${canSubmit
-            ? "bg-primary text-white hover:bg-primary-dark active:scale-[0.98] cursor-pointer shadow-sm"
+            ? "bg-primary text-white hover:bg-primary-dark cursor-pointer shadow-sm"
             : "bg-[#D1D5DB] text-[#9CA3AF] cursor-not-allowed"
           }
         `}
       >
         {t("scan.analyzeButton")}
-      </button>
+      </motion.button>
 
       {/* Footer disclaimer */}
       <footer className="text-center space-y-2 pt-4">
@@ -251,7 +280,7 @@ function ScanContent() {
           <span className="font-medium">{t("common.poweredBy")}</span>
         </div>
       </footer>
-    </div>
+    </motion.div>
   );
 }
 

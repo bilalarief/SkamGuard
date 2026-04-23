@@ -4,6 +4,7 @@
  *
  * POST /api/analyze
  *
+ * Security: Zod validation, rate limiting, input sanitization, size limits.
  * @module app/api/analyze/route
  */
 
@@ -11,6 +12,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { analyzeFlow } from '@/lib/ai/flows/analyze.flow'
 import { sanitizeBase64, sanitizeText, sanitizePhone } from '@/lib/utils/sanitize'
+import { rateLimit } from '@/lib/utils/rate-limit'
+
+/** Maximum request body size: 12MB (accounts for base64 overhead on 10MB images) */
+const MAX_BODY_SIZE = 12 * 1024 * 1024
 
 const RequestSchema = z.object({
   image: z.string().optional(),
@@ -20,7 +25,27 @@ const RequestSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  // 1. Parse and validate request body
+  // 1. Rate limiting — 10 requests per minute per IP
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous'
+  const { allowed, retryAfter } = rateLimit(clientIp, { maxRequests: 10, windowMs: 60_000 })
+
+  if (!allowed) {
+    return NextResponse.json(
+      { success: false, error: { code: 'RATE_LIMIT', message: `Too many requests. Retry after ${retryAfter}s.` } },
+      { status: 429, headers: { 'Retry-After': String(retryAfter) } }
+    )
+  }
+
+  // 2. Check Content-Length to reject oversized payloads early
+  const contentLength = request.headers.get('content-length')
+  if (contentLength && parseInt(contentLength) > MAX_BODY_SIZE) {
+    return NextResponse.json(
+      { success: false, error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body exceeds 12MB limit.' } },
+      { status: 413 }
+    )
+  }
+
+  // 3. Parse and validate request body
   let body: unknown
   try {
     body = await request.json()
@@ -41,7 +66,7 @@ export async function POST(request: NextRequest) {
 
   const { image, text, phoneNumber, language } = parsed.data
 
-  // 2. Must have at least one input
+  // 4. Must have at least one input
   if (!image && !text && !phoneNumber) {
     return NextResponse.json(
       { success: false, error: { code: 'EMPTY_INPUT', message: 'Provide image, text, or phone number' } },
@@ -49,15 +74,13 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 3. Sanitize inputs
-  console.log('[API POST /analyze] Request validated. Sanitizing inputs...')
+  // 5. Sanitize inputs
   const sanitizedImage = image ? sanitizeBase64(image) : undefined
   const sanitizedText = text ? sanitizeText(text) : undefined
   const sanitizedPhone = phoneNumber ? sanitizePhone(phoneNumber) : undefined
 
-  // 4. Run Genkit orchestrator flow (all API keys handled server-side)
+  // 6. Run Genkit orchestrator flow (all API keys handled server-side)
   try {
-    console.log('[API POST /analyze] Initiating analyzeFlow...')
     const result = await analyzeFlow({
       imageBase64: sanitizedImage ?? undefined,
       text: sanitizedText,
@@ -65,10 +88,12 @@ export async function POST(request: NextRequest) {
       language,
     })
 
-    console.log('[API POST /analyze] analyzeFlow completed successfully. Sending 200 OK.')
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (error) {
-    console.error('[API POST /analyze] FATAL Error running flow:', error)
+    // Log server-side only — never leak error details to client
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[API /analyze] Error:', error)
+    }
     return NextResponse.json(
       { success: false, error: { code: 'ANALYSIS_FAILED', message: 'Analysis service unavailable. Please try again.' } },
       { status: 503 }

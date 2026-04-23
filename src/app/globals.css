@@ -177,4 +177,65 @@ img, svg, video {
   .scrollbar-hidden::-webkit-scrollbar {
     display: none;
   }
+
+  /* ══════════════════════════════════════════════
+     ANALYZING PROGRESS — CSS-only animations
+     (Framer Motion not used here for performance)
+     ══════════════════════════════════════════════ */
+
+  .animate-spin-slow {
+    animation: spinSlow 4s linear infinite !important;
+  }
+
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .animate-gentle-pulse {
+    animation: gentlePulse 3s ease-in-out infinite !important;
+  }
+
+  @keyframes gentlePulse {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50%      { transform: scale(1.08); opacity: 1; }
+  }
+
+  .gemini-dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .gemini-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4285F4, #A142F4);
+    animation: geminiPulse 1.4s ease-in-out infinite;
+  }
+
+  .gemini-dot:nth-child(2) { animation-delay: 0.2s; }
+  .gemini-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes geminiPulse {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* ══════════════════════════════════════════════
+     SKELETON LOADER — shimmer effect
+     ══════════════════════════════════════════════ */
+
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-surface-hover) 25%,
+      var(--color-surface) 50%,
+      var(--color-surface-hover) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--radius-md);
+  }
 }

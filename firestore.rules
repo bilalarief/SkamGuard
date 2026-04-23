@@ -2,22 +2,53 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Community phone reports — anyone can read and create (anonymous users)
-    // Only authenticated users can update/delete (future implementation)
-    match /reported_phones/{document=**} {
+
+    // ═══════════════════════════════════════
+    // Community Phone Reports — public data
+    // ═══════════════════════════════════════
+    match /reported_phones/{phoneId} {
+      // Anyone can read community reports
       allow read: if true;
-      allow create: if true;
-      // Future: restrict update/delete to authenticated users
-      // allow update, delete: if request.auth != null;
+      // Authenticated users (including anonymous) can create/update
+      allow create, update: if request.auth != null;
     }
 
-    // Analysis logs — server-side only (future implementation)
-    match /analysis_logs/{document=**} {
+    // Phone report subcollection (individual reporter records)
+    match /reported_phones/{phoneId}/reporters/{reporterId} {
       allow read: if true;
-      allow create: if true;
+      allow create: if request.auth != null;
     }
 
-    // Default deny all other collections
+    // ═══════════════════════════════════════
+    // Community URL Reports — public data
+    // ═══════════════════════════════════════
+    match /reports_url/{urlId} {
+      allow read: if true;
+      allow create, update: if request.auth != null;
+    }
+
+    match /reports_url/{urlId}/reporters/{reporterId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+    }
+
+    // ═══════════════════════════════════════
+    // User Profiles — owner-only access
+    // ═══════════════════════════════════════
+    match /users/{userId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+
+    // User scan history — owner-only access
+    match /users/{userId}/scan_history/{scanId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+
+    // ═══════════════════════════════════════
+    // Default deny — block everything else
+    // ═══════════════════════════════════════
     match /{document=**} {
       allow read, write: if false;
     }

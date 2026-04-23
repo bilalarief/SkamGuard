@@ -8,7 +8,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 export default function LanguageSwitcher() {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const { locale, setLocale, localeLabels } = useLanguage();
+  const { t, locale, setLocale, localeLabels } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +23,7 @@ export default function LanguageSwitcher() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const currentLabel = locale === "ms" ? "Malay" : "English";
+  const currentLabel = t("common.currentLanguage");
 
   return (
     <div className="relative" ref={dropdownRef}>

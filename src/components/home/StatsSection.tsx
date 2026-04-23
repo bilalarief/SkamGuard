@@ -1,7 +1,9 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 import { SCAM_STATS } from "@/data/scamStats";
+import { staggerContainer, staggerItem, cardHover } from "@/lib/motion";
 
 export default function StatsSection() {
   const { t } = useLanguage();
@@ -13,13 +15,21 @@ export default function StatsSection() {
 
   return (
     <section className="space-y-3">
-      <div className="grid grid-cols-2 gap-4">
+      <motion.div
+        className="grid grid-cols-2 gap-4"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
         {displayStats.map((stat) => {
           const Icon = stat.icon;
 
           return (
-            <div
+            <motion.div
               key={stat.key}
+              variants={staggerItem}
+              whileHover={cardHover.whileHover}
+              whileTap={cardHover.whileTap}
               className="
                 rounded-2xl border-none shadow-[0_4px_20px_rgba(0,0,0,0.03)]
                 p-5 space-y-4
@@ -42,10 +52,10 @@ export default function StatsSection() {
                   </span>
                 )}
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     </section>
   );
 }

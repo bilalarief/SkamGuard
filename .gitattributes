@@ -1,0 +1,31 @@
+# Enforce consistent line endings across Windows/macOS/Linux team members
+# This is the #1 cause of package-lock.json desync on cross-platform teams
+
+# Default: auto-normalize
+* text=auto
+
+# Force LF for all source files (prevents CRLF issues in Docker/Cloud Run)
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# CRITICAL: Force LF for lockfile — prevents phantom diffs and CI failures
+package-lock.json text eol=lf
+
+# Binary files — never touch
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

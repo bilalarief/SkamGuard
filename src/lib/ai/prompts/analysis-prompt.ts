@@ -1,5 +1,7 @@
 /**
  * Analysis prompt builder — combines extracted content with tool results.
+ * All user-facing text pulled from i18n to ensure consistency.
+ *
  * @module lib/ai/prompts/analysis-prompt
  */
 
@@ -11,6 +13,7 @@ const i18n = { BM: msTranslations, EN: enTranslations }
 
 /**
  * Builds the analysis prompt with all tool results as enrichment context.
+ * Every user-facing string references the i18n files — no inline ternaries.
  */
 export function buildAnalysisPrompt(params: {
   extracted: {
@@ -25,7 +28,18 @@ export function buildAnalysisPrompt(params: {
   language: 'BM' | 'EN'
 }): string {
   const { extracted, urlResults, phoneResult, ragContext, language } = params
-  const langInstruction = i18n[language].ai.langInstruction
+  const t = i18n[language]
+
+  const langInstruction = t.ai.langInstruction
+  const languageName = t.ai.prompt.languageName
+  const enforceLanguage = t.ai.prompt.enforceLanguage
+
+  // Example values from i18n (shown to Gemini as format examples)
+  const exRedFlag = t.ai.prompt.exampleRedFlag
+  const exExplanation = t.ai.prompt.exampleExplanation
+  const exDoNotRespond = t.ai.prompt.exampleDoNotRespond
+  const exBlockNumber = t.ai.prompt.exampleBlockNumber
+  const exCallNsrc = t.ai.prompt.exampleCallNsrc
 
   const urlContext = urlResults.length > 0
     ? `\nURL CHECK RESULTS:\n${urlResults.map((r) =>
@@ -61,7 +75,8 @@ ANALYSIS INSTRUCTIONS:
 4. Classify the scam type if detectable
 5. Generate a risk score from 0-100 based on evidence strength
 6. ${langInstruction}
-7. For action_plan, assign each step an actionType from this list:
+7. ${enforceLanguage}
+8. For action_plan, assign each step an actionType from this list:
    - "call_police" — when user should call PDRM (999)
    - "call_nsrc" — when user should call NSRC (997) for scam reporting
    - "call_bnm" — when user should contact Bank Negara
@@ -76,16 +91,18 @@ ANALYSIS INSTRUCTIONS:
    - "verify_official" — when user should verify via official channels
    - "info" — for general advice that doesn't fit other types
 
+LANGUAGE RULE: All "red_flags", "explanation", and "label" values MUST be written in ${languageName}.
+
 Respond ONLY with valid JSON in this exact format:
 {
   "risk_score": 0,
   "scam_type": "macauScam|loveScam|jobScam|investmentScam|parcelScam|phishing|loanScam|ecommerce|null",
-  "red_flags": ["specific red flag 1", "specific red flag 2"],
-  "explanation": "Clear explanation of the analysis in the requested language",
+  "red_flags": ["${exRedFlag}", "..."],
+  "explanation": "${exExplanation}",
   "action_plan": [
-    {"actionType": "do_not_respond", "label": "Jangan balas mesej ini"},
-    {"actionType": "call_police", "label": "Hubungi PDRM di talian 999"},
-    {"actionType": "block_number", "label": "Block nombor pengirim"}
+    {"actionType": "do_not_respond", "label": "${exDoNotRespond}"},
+    {"actionType": "block_number", "label": "${exBlockNumber}"},
+    {"actionType": "call_nsrc", "label": "${exCallNsrc}"}
   ]
 }`
 }

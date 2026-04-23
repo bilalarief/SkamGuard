@@ -6,6 +6,7 @@
     "check": "Check",
     "report": "Report",
     "back": "Back",
+    "currentLanguage": "English",
     "close": "Close",
     "loading": "Loading...",
     "error": "An error occurred",
@@ -36,10 +37,22 @@
     "ctaUrlDesc": "Paste a URL or link that you find suspicious",
     "ctaPhone": "Check Phone Number",
     "ctaPhoneDesc": "Enter a phone number to check against scam databases",
+    "ctaAnalyze": "Analyze",
+    "ctaCheckNow": "Check The\nMessage Now",
     "statsTitle": "Scams in Malaysia",
     "statsLoss": "Losses in 2025",
     "statsCases": "Cases reported",
-    "statsDaily": "Cases per day"
+    "statsDaily": "Cases per day",
+    "statsCasesTitle": "Online Scam Cases Reported",
+    "statsLossTitle": "Scam Losses Recorded",
+    "heroSlides": {
+      "news": "News",
+      "slide1Title": "Police: RM1.47 Billion Lost To Investment Scams Last Year",
+      "alert": "Alert",
+      "slide2Title": "Stay Vigilant Against Online Scams",
+      "tip": "Tip",
+      "slide3Title": "Use SkamGuard to Verify Suspicious Messages"
+    }
   },
   "scan": {
     "recommended": "Recommend",
@@ -107,6 +120,11 @@
       "high": "High Risk — This is most likely a scam",
       "critical": "Critical Danger — This is almost certainly a scam!"
     },
+    "verdictLabels": {
+      "safe": "Safe",
+      "suspicious": "Suspicious",
+      "dangerous": "Dangerous"
+    },
     "verdictBadge": {
       "safe": "This message appears to be safe.",
       "medium": "This message has some suspicious signs.",
@@ -126,9 +144,18 @@
     }
   },
   "ai": {
-    "langInstruction": "Respond with explanation and action_plan in English (clear, non-technical, empathetic language).",
+    "langInstruction": "Respond with red_flags, explanation, and all action_plan labels in English (clear, non-technical, empathetic language). ALL text in red_flags and action_plan labels MUST be in English.",
     "fallbackExplanation": "Sorry, AI analysis could not be completed fully. Please try again.",
-    "fallbackAction": "Please try the analysis again"
+    "fallbackAction": "Please try the analysis again",
+    "prompt": {
+      "languageName": "English",
+      "enforceLanguage": "CRITICAL: ALL user-facing text MUST be in English — this includes \"red_flags\", \"explanation\", and all \"label\" fields in action_plan. Do NOT mix languages.",
+      "exampleRedFlag": "Unsolicited job offer via messaging app, a common tactic for job scams",
+      "exampleExplanation": "Clear explanation in English",
+      "exampleDoNotRespond": "Do not reply to this message",
+      "exampleBlockNumber": "Block the sender's phone number",
+      "exampleCallNsrc": "Call NSRC at 997 to report the scam"
+    }
   },
   "scamTypes": {
     "macauScam": {
@@ -175,5 +202,17 @@
   "footer": {
     "disclaimer": "SkamGuard uses AI for analysis. Results are for reference only and do not constitute legal advice.",
     "emergency": "If you have been a victim of fraud, call NSRC 997 immediately."
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "register": "Create Account",
+    "continueGoogle": "Continue with Google",
+    "or": "or",
+    "email": "Email",
+    "password": "Password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signOut": "Sign Out",
+    "myAccount": "My Account"
   }
 }

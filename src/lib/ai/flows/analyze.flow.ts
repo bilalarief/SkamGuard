@@ -13,6 +13,8 @@ import { checkPhone } from '../tools/phone-checker'
 import { searchScamDatabase } from '../tools/scam-db-search'
 import { calculateRiskScore } from '../scoring/risk-engine'
 import type { RiskReport, ExtractedContent, URLCheckResult, PhoneCheckResult } from '@/types/analysis'
+import msTranslations from '@/i18n/ms.json'
+import enTranslations from '@/i18n/en.json'
 
 // --- Zod schemas for Gemini structured output ---
 
@@ -228,18 +230,17 @@ function buildFallbackExtraction(input: AnalyzeInput): ExtractedContent {
 }
 
 /**
- * Fallback analysis when Gemini call fails — uses i18n for language.
+ * Fallback analysis when Gemini call fails — uses i18n map for language.
  */
 function buildFallbackAnalysis(language: 'BM' | 'EN') {
-  const translations = language === 'BM'
-    ? require('@/i18n/ms.json')
-    : require('@/i18n/en.json')
+  const i18nMap = { BM: msTranslations, EN: enTranslations }
+  const t = i18nMap[language]
 
   return {
     risk_score: 0,
     scam_type: null,
     red_flags: [],
-    explanation: translations.ai.fallbackExplanation,
-    action_plan: [{ actionType: 'info', label: translations.ai.fallbackAction }],
+    explanation: t.ai.fallbackExplanation,
+    action_plan: [{ actionType: 'info', label: t.ai.fallbackAction }],
   }
 }

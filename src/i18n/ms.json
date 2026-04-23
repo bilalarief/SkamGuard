@@ -6,6 +6,7 @@
     "check": "Semak",
     "report": "Laporan",
     "back": "Kembali",
+    "currentLanguage": "Malay",
     "close": "Tutup",
     "loading": "Memuatkan...",
     "error": "Ralat berlaku",
@@ -36,10 +37,22 @@
     "ctaUrlDesc": "Tampal URL atau pautan yang anda rasa mencurigakan",
     "ctaPhone": "Semak Nombor Telefon",
     "ctaPhoneDesc": "Masukkan nombor telefon untuk disemak di pangkalan data scam",
+    "ctaAnalyze": "Analisis",
+    "ctaCheckNow": "Semak Mesej\nSekarang",
     "statsTitle": "Scam di Malaysia",
     "statsLoss": "Kerugian 2025",
     "statsCases": "Kes dilaporkan",
-    "statsDaily": "Kes setiap hari"
+    "statsDaily": "Kes setiap hari",
+    "statsCasesTitle": "Kes Scam Dalam Talian Dilaporkan",
+    "statsLossTitle": "Kerugian Scam Direkodkan",
+    "heroSlides": {
+      "news": "Berita",
+      "slide1Title": "Polis: RM1.47 Bilion Kerugian Akibat Scam Pelaburan Tahun Lepas",
+      "alert": "Amaran",
+      "slide2Title": "Kekal Berwaspada Terhadap Scam Dalam Talian",
+      "tip": "Petua",
+      "slide3Title": "Gunakan SkamGuard Untuk Sahkan Mesej Mencurigakan"
+    }
   },
   "scan": {
     "recommended": "Disyorkan",
@@ -107,6 +120,11 @@
       "high": "Risiko Tinggi — Kemungkinan besar ini adalah penipuan",
       "critical": "Bahaya Kritikal — Ini hampir pasti penipuan!"
     },
+    "verdictLabels": {
+      "safe": "Selamat",
+      "suspicious": "Mencurigakan",
+      "dangerous": "Berbahaya"
+    },
     "verdictBadge": {
       "safe": "Mesej ini kelihatan selamat.",
       "medium": "Mesej ini mempunyai beberapa tanda mencurigakan.",
@@ -126,9 +144,18 @@
     }
   },
   "ai": {
-    "langInstruction": "Respond with explanation and action_plan in Bahasa Malaysia (clear, non-technical, empathetic language that a 40-60 year old Malaysian would understand).",
+    "langInstruction": "Respond with red_flags, explanation, and all action_plan labels in Bahasa Malaysia (clear, non-technical, empathetic language that a 40-60 year old Malaysian would understand). SEMUA teks red_flags dan action_plan label WAJIB dalam Bahasa Malaysia.",
     "fallbackExplanation": "Maaf, analisis AI tidak dapat diselesaikan sepenuhnya. Sila cuba semula.",
-    "fallbackAction": "Sila cuba analisis semula"
+    "fallbackAction": "Sila cuba analisis semula",
+    "prompt": {
+      "languageName": "Bahasa Malaysia",
+      "enforceLanguage": "KRITIKAL: SEMUA teks yang ditampilkan kepada pengguna WAJIB dalam Bahasa Malaysia — termasuk \"red_flags\", \"explanation\", dan semua \"label\" dalam action_plan. JANGAN campur bahasa.",
+      "exampleRedFlag": "Tawaran kerja yang tidak diminta melalui aplikasi pesanan, taktik biasa penipuan pekerjaan",
+      "exampleExplanation": "Penjelasan yang jelas dalam Bahasa Malaysia",
+      "exampleDoNotRespond": "Jangan balas mesej ini",
+      "exampleBlockNumber": "Block nombor pengirim",
+      "exampleCallNsrc": "Hubungi NSRC di talian 997 untuk lapor penipuan"
+    }
   },
   "scamTypes": {
     "macauScam": {
@@ -175,5 +202,17 @@
   "footer": {
     "disclaimer": "SkamGuard menggunakan AI untuk analisis. Keputusan adalah untuk rujukan sahaja dan bukan nasihat undang-undang.",
     "emergency": "Jika anda telah menjadi mangsa penipuan, hubungi NSRC 997 segera."
+  },
+  "auth": {
+    "signIn": "Log Masuk",
+    "register": "Daftar Akaun",
+    "continueGoogle": "Teruskan dengan Google",
+    "or": "atau",
+    "email": "E-mel",
+    "password": "Kata Laluan",
+    "noAccount": "Belum ada akaun?",
+    "hasAccount": "Sudah ada akaun?",
+    "signOut": "Log Keluar",
+    "myAccount": "Akaun Saya"
   }
 }

@@ -10,8 +10,7 @@ import {
   CheckCircle,
   Flag,
 } from "lucide-react";
-import { signInAnonymously } from "firebase/auth";
-import { getFirebaseAuth } from "@/lib/firebase/config";
+import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAnalysisStore } from "@/store/analysis.store";
 import { getRiskBgColor, getRiskColor } from "@/lib/utils/formatters";
@@ -29,26 +28,24 @@ import type { RiskLevel } from "@/types/analysis";
 export default function ReportPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { report } = useAnalysisStore();
+  const { report, source } = useAnalysisStore();
+  const { user } = useAuth();
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportType, setReportType] = useState<"phone" | "url">("phone");
   const [reportDescription, setReportDescription] = useState("");
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
-  const [userId, setUserId] = useState<string | undefined>(undefined);
 
-  // Initialize anonymous auth session for spam prevention
-  useEffect(() => {
-    const auth = getFirebaseAuth();
-    signInAnonymously(auth)
-      .then((cred) => setUserId(cred.user.uid))
-      .catch((err) => console.warn("Firebase Auth failed:", err));
-  }, []);
+  // Use authenticated user's uid if available, otherwise 'guest'
+  const userId = user?.uid || "guest";
+
+  // Back destination depends on where the user came from
+  const backPath = source === "history" ? "/history" : "/scan";
 
   useEffect(() => {
-    if (!report) router.replace("/scan");
-  }, [report, router]);
+    if (!report) router.replace(backPath);
+  }, [report, router, backPath]);
 
   if (!report) return null;
 
@@ -121,7 +118,7 @@ export default function ReportPage() {
     <div className="container-app py-6 space-y-6">
       {/* Back button */}
       <button
-        onClick={() => router.push("/scan")}
+        onClick={() => router.push(backPath)}
         className="
           flex items-center gap-2 text-sm font-medium text-text-primary
           hover:text-primary active:scale-[0.98]
