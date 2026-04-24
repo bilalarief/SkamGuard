@@ -10,8 +10,44 @@
 import type { URLCheckResult } from '@/types/analysis'
 import { HIGH_RISK_TLDS, FREE_DOMAIN_PROVIDERS } from '@/lib/constants/risk-thresholds'
 import { detectBankPhishing } from '@/data/bankDomains'
+import { ai } from '@/lib/ai/genkit'
+import { z } from 'genkit'
 
 const VIRUSTOTAL_BASE = 'https://www.virustotal.com/api/v3'
+
+/**
+ * Genkit-registered URL checker tool.
+ * Gemini can invoke this via tool-calling to check suspicious URLs.
+ */
+export const checkUrlTool = ai.defineTool(
+  {
+    name: 'checkUrl',
+    description: 'Check a URL for malicious indicators using VirusTotal, domain age analysis, TLD risk assessment, and Malaysian bank phishing detection. Call this for every URL found in the message.',
+    inputSchema: z.object({
+      url: z.string().describe('The URL to check for malicious indicators'),
+    }),
+    outputSchema: z.object({
+      url: z.string(),
+      domain: z.string(),
+      isMalicious: z.boolean(),
+      vendorsFlagged: z.number(),
+      totalVendors: z.number(),
+      domainAgeDays: z.number().nullable(),
+      tld: z.string(),
+      isFreeDomain: z.boolean(),
+      bankPhishingMatch: z.object({
+        bankName: z.string(),
+        officialDomain: z.string(),
+        similarity: z.number(),
+      }).nullable(),
+      verdict: z.enum(['SAFE', 'SUSPICIOUS', 'DANGEROUS']),
+    }),
+  },
+  async ({ url }) => {
+    const result = await checkUrl(url)
+    return result
+  }
+)
 
 /**
  * Performs comprehensive URL security analysis:

@@ -1,5 +1,11 @@
 /**
- * Main Genkit orchestrator flow — Extract → Tools → Analyze → Score
+ * Main Genkit orchestrator flow — Extract → Tool-Calling Analysis → Score
+ *
+ * HYBRID APPROACH:
+ * - Step 1: Gemini extracts content (structured output, no tools needed)
+ * - Step 2: Gemini analyzes + calls tools as needed (Genkit tool-calling)
+ * - Step 3: Risk engine calculates final score (deterministic, no AI)
+ *
  * @module lib/ai/flows/analyze.flow
  */
 
@@ -9,8 +15,11 @@ import { SKAMGUARD_SYSTEM_PROMPT } from '../prompts/system-prompt'
 import { buildExtractionPrompt } from '../prompts/extraction-prompt'
 import { buildAnalysisPrompt } from '../prompts/analysis-prompt'
 import { checkUrl } from '../tools/url-checker'
+import { checkUrlTool } from '../tools/url-checker'
 import { checkPhone } from '../tools/phone-checker'
+import { checkPhoneTool } from '../tools/phone-checker'
 import { searchScamDatabase } from '../tools/scam-db-search'
+import { searchScamDbTool } from '../tools/scam-db-search'
 import { calculateRiskScore } from '../scoring/risk-engine'
 import type { RiskReport, ExtractedContent, URLCheckResult, PhoneCheckResult } from '@/types/analysis'
 import msTranslations from '@/i18n/ms.json'
@@ -59,18 +68,25 @@ export const analyzeFlow = ai.defineFlow(
       language: input.language
     })
 
-    console.log('[Flow: analyzeFlow] Step 1: Starting extraction...')
+    // ═══════════════════════════════════════════════════════════════
+    // Step 1: Gemini extracts content (structured output — no tools)
+    // ═══════════════════════════════════════════════════════════════
+    console.log('[Flow: analyzeFlow] Step 1: Extracting content...')
     const extracted = await extractContent(input)
-    console.log('[Flow: analyzeFlow] Extraction complete. Result:', {
+    console.log('[Flow: analyzeFlow] Extraction complete:', {
       urlsCount: extracted.urls.length,
       phonesCount: extracted.phoneNumbers.length,
       hasSender: !!extracted.sender
     })
 
+    // ═══════════════════════════════════════════════════════════════
+    // Step 2: Run tools deterministically (we know what content was extracted)
+    // These run in parallel for speed, but only when relevant data exists
+    // ═══════════════════════════════════════════════════════════════
     const allUrls = extracted.urls
     const primaryPhone = input.manualPhone || extracted.phoneNumbers[0] || null
 
-    console.log('[Flow: analyzeFlow] Step 2: Running parallel tools (Url, Phone, RAG)...')
+    console.log('[Flow: analyzeFlow] Step 2: Running tools in parallel...')
     const [urlResults, phoneResult, ragContext] = await Promise.all([
       allUrls.length > 0
         ? Promise.all(allUrls.map((url) => checkUrl(url)))
@@ -82,21 +98,28 @@ export const analyzeFlow = ai.defineFlow(
     ])
     console.log('[Flow: analyzeFlow] Tools completed:', {
       urlsChecked: urlResults.length,
-      phoneChecked: !!phoneResult?.number,
+      phoneStatus: phoneResult?.status,
       ragContextFound: !!ragContext
     })
 
-    console.log('[Flow: analyzeFlow] Step 3: Starting deep analysis with context...')
-    const contentAnalysis = await analyzeWithContext({
+    // ═══════════════════════════════════════════════════════════════
+    // Step 3: Gemini deep analysis WITH tool-calling capability
+    // Gemini receives tool results AND can call tools again if needed
+    // ═══════════════════════════════════════════════════════════════
+    console.log('[Flow: analyzeFlow] Step 3: Gemini deep analysis with tool-calling...')
+    const contentAnalysis = await analyzeWithToolCalling({
       extracted,
       urlResults,
       phoneResult,
       ragContext,
       language: input.language,
     })
-    console.log('[Flow: analyzeFlow] Deep analysis completed. Risk Score:', contentAnalysis.risk_score)
+    console.log('[Flow: analyzeFlow] Analysis completed. Risk Score:', contentAnalysis.risk_score)
 
-    console.log('[Flow: analyzeFlow] Step 4: Finalizing Risk Report...')
+    // ═══════════════════════════════════════════════════════════════
+    // Step 4: Deterministic risk scoring (no AI — pure math)
+    // ═══════════════════════════════════════════════════════════════
+    console.log('[Flow: analyzeFlow] Step 4: Calculating final risk score...')
     const riskReport = calculateRiskScore({
       contentAnalysis,
       urlResults,
@@ -104,7 +127,7 @@ export const analyzeFlow = ai.defineFlow(
       extracted,
     })
 
-    console.log('[Flow: analyzeFlow] DONE. Returning robust report.')
+    console.log('[Flow: analyzeFlow] DONE. Score:', riskReport.overallScore, 'Verdict:', riskReport.verdict)
     return riskReport
   }
 )
@@ -130,17 +153,17 @@ async function extractContent(input: AnalyzeInput): Promise<ExtractedContent> {
 
     promptParts.push({ text: promptText })
 
-    console.log('[extractContent] Calling Gemini API (model: googleai/gemini-2.0-flash)...')
+    console.log('[extractContent] Calling Gemini for content extraction...')
     const result = await ai.generate({
       system: SKAMGUARD_SYSTEM_PROMPT,
       prompt: promptParts,
       output: { schema: ExtractionOutputSchema },
     })
-    console.log('[extractContent] Gemini returned valid response.')
+    console.log('[extractContent] Extraction successful.')
 
     const output = result.output
     if (!output) {
-      console.warn('[SkamGuard] Extraction returned null output — using fallback')
+      console.warn('[SkamGuard] Extraction returned null — using regex fallback')
       return buildFallbackExtraction(input)
     }
 
@@ -157,7 +180,12 @@ async function extractContent(input: AnalyzeInput): Promise<ExtractedContent> {
 }
 
 
-async function analyzeWithContext(params: {
+/**
+ * Deep analysis step with Genkit tool-calling.
+ * Gemini receives all extracted data + pre-computed tool results,
+ * AND has access to registered tools for additional verification.
+ */
+async function analyzeWithToolCalling(params: {
   extracted: ExtractedContent
   urlResults: URLCheckResult[]
   phoneResult: PhoneCheckResult | null
@@ -179,18 +207,18 @@ async function analyzeWithContext(params: {
   })
 
   try {
-    console.log('[analyzeWithContext] Calling Gemini API for deep analysis...')
+    console.log('[analyzeWithToolCalling] Calling Gemini with tool-calling enabled...')
     const result = await ai.generate({
       system: SKAMGUARD_SYSTEM_PROMPT,
       prompt: prompt,
+      tools: [checkUrlTool, checkPhoneTool, searchScamDbTool],
       output: { schema: AnalysisOutputSchema },
     })
-    console.log('[analyzeWithContext] Deep analysis generated successfully.')
+    console.log('[analyzeWithToolCalling] Analysis with tool-calling completed.')
 
     const output = result.output
     if (!output) {
       console.warn('[SkamGuard] Analysis returned null output — using fallback')
-      console.log(output)
       return buildFallbackAnalysis(params.language)
     }
 
@@ -207,8 +235,7 @@ async function analyzeWithContext(params: {
         : [],
     }
   } catch (error) {
-    console.error('[SkamGuard] Analysis failed:', error instanceof Error ? error.message : error)
-    console.log(error)
+    console.error('[SkamGuard] Tool-calling analysis failed:', error instanceof Error ? error.message : error)
     return buildFallbackAnalysis(params.language)
   }
 }

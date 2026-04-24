@@ -10,8 +10,36 @@
 import type { PhoneCheckResult, ScamTypeId } from '@/types/analysis'
 import scammerDb from '@/data/scammer-phones.json'
 import { checkCommunityReports } from '@/lib/firebase/firestore'
+import { ai } from '@/lib/ai/genkit'
+import { z } from 'genkit'
 
 const SEMAK_MULE_BASE = 'https://semakmule.rmp.gov.my'
+
+/**
+ * Genkit-registered phone checker tool.
+ * Gemini can invoke this via tool-calling to verify phone numbers.
+ */
+export const checkPhoneTool = ai.defineTool(
+  {
+    name: 'checkPhone',
+    description: 'Check a Malaysian phone number against scam databases (local DB + community reports) and generate a Semak Mule verification URL. Call this for every phone number found in the message.',
+    inputSchema: z.object({
+      phoneNumber: z.string().describe('The phone number to check (Malaysian format: +60, 60, or 0 prefix)'),
+    }),
+    outputSchema: z.object({
+      number: z.string(),
+      status: z.enum(['SCAMMER', 'MULE', 'UNVERIFIED', 'CLEAN']),
+      reportCount: z.number(),
+      scamType: z.string().nullable(),
+      semakMuleRedirectUrl: z.string(),
+      source: z.enum(['local_db', 'firebase_community', 'unverified']),
+    }),
+  },
+  async ({ phoneNumber }) => {
+    const result = await checkPhone(phoneNumber)
+    return result
+  }
+)
 
 /**
  * Performs comprehensive phone number check:

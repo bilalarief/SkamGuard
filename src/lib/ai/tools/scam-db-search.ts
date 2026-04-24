@@ -9,6 +9,30 @@
  * @module lib/ai/tools/scam-db-search
  */
 
+import { ai } from '@/lib/ai/genkit'
+import { z } from 'genkit'
+
+/**
+ * Genkit-registered scam database search tool (RAG).
+ * Gemini can invoke this to search the Malaysian scam knowledge base.
+ */
+export const searchScamDbTool = ai.defineTool(
+  {
+    name: 'searchScamDatabase',
+    description: 'Search the Malaysian scam knowledge base for known scam patterns, tactics, and indicators matching the given text. Use this to find similar scam cases and enrich your analysis with historical scam data.',
+    inputSchema: z.object({
+      query: z.string().describe('The text content to search for matching scam patterns (max 500 chars)'),
+    }),
+    outputSchema: z.object({
+      context: z.string().describe('Relevant scam pattern context from the knowledge base, or empty string if nothing found'),
+    }),
+  },
+  async ({ query }) => {
+    const context = await searchScamDatabase(query)
+    return { context }
+  }
+)
+
 /**
  * Searches the scam patterns knowledge base for relevant context.
  * This context is then fed to Gemini alongside the user's input
