@@ -130,7 +130,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0F172A]`}>
         <LanguageProvider>
           <AuthProvider>
-            <div className="max-w-[425px] mx-auto min-h-screen bg-bg relative shadow-2xl overflow-x-hidden">
+            <div className="max-w-[1024px] mx-auto min-h-screen bg-bg relative shadow-2xl overflow-x-hidden">
               <Header />
               <main className="pt-14 pb-20 min-h-screen">
                 {children}

@@ -13,7 +13,7 @@ function HomeContent() {
   return (
     <div className="w-full flex flex-col min-h-screen bg-surface">
       {/* Top Banner Area */}
-      <div className="-mt-14 h-[420px] relative w-full">
+      <div className="-mt-14 h-[440px] relative w-full overflow-hidden">
         <HeroSection />
       </div>
 

@@ -1,103 +1,135 @@
+/**
+ * Hero banner carousel with animated progress bar indicator.
+ * Slides are mapped dynamically from data/heroSlides.
+ *
+ * Uses next/image for optimized image loading.
+ *
+ * @module components/home/HeroSection
+ */
+
 "use client";
 
+import { useState, useCallback, useRef, useEffect } from "react";
+import Image from "next/image";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
+import { HERO_SLIDES, HERO_AUTOPLAY_DELAY } from "@/data/heroSlides";
+import type { Swiper as SwiperType } from "swiper";
 
 import "swiper/css";
-import "swiper/css/pagination";
 
 export default function HeroSection() {
   const { t } = useLanguage();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const animRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number>(0);
+
+  const totalSlides = HERO_SLIDES.length;
+
+  /** Start the progress bar animation for the current slide */
+  const startProgress = useCallback(() => {
+    // Cancel any running animation
+    if (animRef.current) cancelAnimationFrame(animRef.current);
+    setProgress(0);
+    startTimeRef.current = performance.now();
+
+    const animate = (now: number) => {
+      const elapsed = now - startTimeRef.current;
+      const pct = Math.min((elapsed / HERO_AUTOPLAY_DELAY) * 100, 100);
+      setProgress(pct);
+      if (pct < 100) {
+        animRef.current = requestAnimationFrame(animate);
+      }
+    };
+    animRef.current = requestAnimationFrame(animate);
+  }, []);
+
+  /** Restart progress on slide change */
+  const handleSlideChange = useCallback(
+    (swiper: SwiperType) => {
+      setActiveIndex(swiper.realIndex);
+      startProgress();
+    },
+    [startProgress]
+  );
+
+  /** Start progress on mount */
+  useEffect(() => {
+    startProgress();
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+    };
+  }, [startProgress]);
+
   return (
     <section className="w-full h-full relative">
       <Swiper
-        modules={[Pagination, Autoplay]}
-        pagination={{ clickable: true }}
-        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        modules={[Autoplay]}
+        autoplay={{ delay: HERO_AUTOPLAY_DELAY, disableOnInteraction: false }}
         loop
         className="w-full h-full"
+        onSlideChange={handleSlideChange}
       >
-        <SwiperSlide>
-          <div className="relative w-full h-full bg-[#003B73]">
-            <div className="absolute inset-0 w-full h-[45%] bg-red-500 object-cover">
-              <img
-                src="/img/Banner1.png"
-                alt="Scam news"
-                />
+        {HERO_SLIDES.map((slide) => (
+          <SwiperSlide key={slide.id}>
+            <div className="relative w-full h-full bg-[#003B73]">
+              {/* Banner image — fills entire slide */}
+              <Image
+                src={slide.imageSrc}
+                alt={slide.imageAlt}
+                fill
+                className="object-cover"
+                sizes="100vw"
+                priority={slide.id === "slide-1"}
+              />
+
+              {/* Gradient overlay for text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#022d52] via-[#022d52]/30 to-transparent" />
+
+              {/* Text content */}
+              <div className="absolute bottom-16 left-0 right-0 px-6 max-w-[85%]">
+                <span
+                  className={`
+                    inline-flex items-center self-start
+                    ${slide.badgeColor} ${slide.badgeTextColor}
+                    text-[10px] font-bold uppercase tracking-wider
+                    px-2.5 py-0.5 rounded-sm mb-3
+                  `}
+                >
+                  {t(slide.badgeKey)}
+                </span>
+                <h3 className="text-white text-[22px] font-medium leading-tight mb-2 pr-8">
+                  {t(slide.titleKey)}
+                </h3>
+              </div>
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#022d52] via-transparent to-transparent" />
-            <div className="absolute bottom-30 left-0 right-0 px-6 max-w-[85%]">
-              <span className="inline-flex items-center self-start bg-white text-[#003B73] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm mb-3">
-                {t("home.heroSlides.news")}
-              </span>
-              <h3 className="text-white text-[22px] font-medium leading-tight mb-2 pr-8">
-                {t("home.heroSlides.slide1Title")}
-              </h3>
-            </div>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="relative w-full h-full bg-[#003B73]">
-            <img
-              src="/img/Banner2.png"
-              className="absolute inset-0 w-full h-full object-cover"
-              alt="Scam news"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#022d52] via-transparent to-transparent" />
-            <div className="absolute bottom-30 left-0 right-0 px-6 max-w-[85%]">
-              <span className="inline-flex items-center self-start bg-white text-[#003B73] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm mb-3">
-                {t("home.heroSlides.alert")}
-              </span>
-              <h3 className="text-white text-[22px] font-medium leading-tight mb-2 pr-8">
-                {t("home.heroSlides.slide2Title")}
-              </h3>
-            </div>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-<div className="relative w-full h-full bg-[#003B73]">
-            <img
-              src="/img/Banner3.png"
-              className="absolute inset-0 w-full h-full object-cover"
-              alt="Scam news"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#022d52] via-transparent to-transparent" />
-            <div className="absolute bottom-30 left-0 right-0 px-6 max-w-[85%]">
-              <span className="inline-flex items-center self-start bg-white text-[#003B73] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm mb-3">
-                {t("home.heroSlides.tip")}
-              </span>
-              <h3 className="text-white text-[22px] font-medium leading-tight mb-2 pr-8">
-                {t("home.heroSlides.slide3Title")}
-              </h3>
-            </div>
-          </div>
-        </SwiperSlide>
+          </SwiperSlide>
+        ))}
       </Swiper>
 
-      {/* Swiper pagination dot styling */}
-      <style jsx global>{`
-        .swiper-pagination {
-          bottom: 32px !important;
-          text-align: left !important;
-          padding-left: 24px;
-        }
-
-        .swiper-pagination-bullet {
-          width: 16px;
-          height: 4px;
-          background: rgba(255, 255, 255, 0.4);
-          opacity: 1;
-          border-radius: 2px;
-          margin: 0 4px !important;
-          transition: all 0.3s ease;
-        }
-
-        .swiper-pagination-bullet-active {
-          width: 24px;
-          background: #00A3FF;
-        }
-      `}</style>
+      {/* Progress bar indicator */}
+      <div className="absolute bottom-5 left-6 right-6 z-20 flex items-center gap-2">
+        {HERO_SLIDES.map((slide, i) => (
+          <div
+            key={slide.id}
+            className="relative h-[3px] flex-1 rounded-full overflow-hidden bg-white/25"
+          >
+            <div
+              className="absolute inset-y-0 left-0 rounded-full bg-white transition-none"
+              style={{
+                width:
+                  i < activeIndex
+                    ? "100%"       // Past slides: filled
+                    : i === activeIndex
+                    ? `${progress}%` // Active slide: animating
+                    : "0%",         // Future slides: empty
+              }}
+            />
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
