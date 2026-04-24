@@ -97,23 +97,11 @@ img, svg, video {
 @layer utilities {
   .container-app {
     width: 100%;
-    max-width: 480px;
+    max-width: 425px;
     margin-left: auto;
     margin-right: auto;
     padding-left: 1rem;
     padding-right: 1rem;
-  }
-
-  @media (min-width: 640px) {
-    .container-app {
-      max-width: 640px;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .container-app {
-      max-width: 1024px;
-    }
   }
 
   .touch-target {

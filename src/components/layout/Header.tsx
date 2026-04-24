@@ -48,7 +48,7 @@ export default function Header() {
       <header
         id="main-header"
         className={`
-          fixed top-0 left-0 right-0 z-50 transition-colors duration-300
+          fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[425px] z-50 transition-colors duration-300
           ${isHome ? "bg-transparent text-white" : "bg-surface/80 backdrop-blur-md border-b border-border text-text-primary"}
         `}
       >
@@ -90,7 +90,7 @@ export default function Header() {
                         exit="exit"
                       />
                       <motion.div
-                        className="absolute right-0 top-10 z-50 bg-surface rounded-xl shadow-lg border border-border min-w-[160px] py-1"
+                        className="absolute right-0 top-10 z-50 bg-surface rounded-md shadow-lg border border-border min-w-[160px] py-1"
                         variants={scaleIn}
                         initial="hidden"
                         animate="visible"

@@ -36,7 +36,7 @@ export default function ActionPlan({ steps }: ActionPlanProps) {
               className={`
                 flex items-start gap-3 p-3
                 ${config.bg} border border-transparent
-                rounded-radius-sm
+                rounded-sm
               `}
             >
               <div className="flex items-center gap-2 shrink-0 mt-0.5">

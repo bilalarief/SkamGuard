@@ -20,13 +20,14 @@ export default function HeroSection() {
       >
         <SwiperSlide>
           <div className="relative w-full h-full bg-[#003B73]">
-            <img
-              src="/banner1.jpg"
-              className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay"
-              alt="Scam news"
-            />
+            <div className="absolute inset-0 w-full h-[45%] bg-red-500 object-cover">
+              <img
+                src="/img/Banner1.png"
+                alt="Scam news"
+                />
+            </div>
             <div className="absolute inset-0 bg-gradient-to-t from-[#022d52] via-transparent to-transparent" />
-            <div className="absolute bottom-16 left-0 right-0 px-6 max-w-[85%]">
+            <div className="absolute bottom-30 left-0 right-0 px-6 max-w-[85%]">
               <span className="inline-flex items-center self-start bg-white text-[#003B73] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm mb-3">
                 {t("home.heroSlides.news")}
               </span>
@@ -37,8 +38,14 @@ export default function HeroSection() {
           </div>
         </SwiperSlide>
         <SwiperSlide>
-          <div className="relative w-full h-full bg-[#003B73] flex items-center px-6 pt-10">
-            <div className="max-w-[85%]">
+          <div className="relative w-full h-full bg-[#003B73]">
+            <img
+              src="/img/Banner2.png"
+              className="absolute inset-0 w-full h-full object-cover"
+              alt="Scam news"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#022d52] via-transparent to-transparent" />
+            <div className="absolute bottom-30 left-0 right-0 px-6 max-w-[85%]">
               <span className="inline-flex items-center self-start bg-white text-[#003B73] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm mb-3">
                 {t("home.heroSlides.alert")}
               </span>
@@ -49,8 +56,14 @@ export default function HeroSection() {
           </div>
         </SwiperSlide>
         <SwiperSlide>
-          <div className="relative w-full h-full bg-[#002f5a] flex items-center px-6 pt-10">
-            <div className="max-w-[85%]">
+<div className="relative w-full h-full bg-[#003B73]">
+            <img
+              src="/img/Banner3.png"
+              className="absolute inset-0 w-full h-full object-cover"
+              alt="Scam news"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#022d52] via-transparent to-transparent" />
+            <div className="absolute bottom-30 left-0 right-0 px-6 max-w-[85%]">
               <span className="inline-flex items-center self-start bg-white text-[#003B73] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm mb-3">
                 {t("home.heroSlides.tip")}
               </span>
