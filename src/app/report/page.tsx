@@ -135,14 +135,14 @@ export default function ReportPage() {
       </h1>
 
       {/* Risk gauge & verdict badge */}
-      <section className="text-center space-y-4">
-        <div className="bg-gradient-to-b from-[#f8f9fa] to-[#ffffff] rounded-2xl p-6">
+      <section className="bg-white p-3 rounded-sm space-y-4">
+        <div className=" p-6">
           <RiskGauge score={overallScore} level={riskLevel as RiskLevel} />
         </div>
-
+        <div className=" pb-6">
         {/* Verdict badge */}
         <VerdictBadge level={riskLevel as any} text={verdictBadgeText} />
-      </section>
+        </div>
 
       {/* Scam type */}
       {scamType && <ScamTypeCard scamType={scamType} />}
@@ -173,16 +173,18 @@ export default function ReportPage() {
           setReportType(type);
           setShowReportModal(true);
         }}
-      />
+        />
+        </section>  
 
       {/* Action buttons */}
       <div className="space-y-3 pt-2">
         <button
           onClick={handleShareWhatsApp}
           className="
-            w-full h-12 rounded-xl
-            bg-primary text-white text-base font-semibold
-            hover:bg-primary-dark active:scale-[0.98]
+            w-full h-12 rounded-sm
+            bg-[#00A6F4] text-white text-base font-semibold
+            active:scale-[0.98]
+            hover:scale-101
             transition-all duration-200 cursor-pointer shadow-sm
             flex items-center justify-center gap-2
           "
@@ -193,7 +195,7 @@ export default function ReportPage() {
         <button
           onClick={() => router.push("/scan")}
           className="
-            w-full h-12 rounded-xl
+            w-full h-12 rounded-sm
             bg-surface text-text-primary text-base font-semibold
             border border-border
             hover:bg-surface-hover active:scale-[0.98]
@@ -218,7 +220,7 @@ export default function ReportPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="p-3 bg-surface-hover rounded-xl">
+            <div className="p-3 bg-surface-hover rounded-sm">
               <p className="text-sm font-medium text-text-primary truncate">
                 {reportType === "phone" ? `${t("common.number")}: ${phoneResult?.number}` : `${t("common.link")}: ${firstUrl}`}
               </p>
@@ -237,7 +239,7 @@ export default function ReportPage() {
                 placeholder={t("report.reportPlaceholder")}
                 rows={3}
                 maxLength={500}
-                className="w-full p-3 bg-surface border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors duration-150 resize-none"
+                className="w-full p-3 bg-surface border border-border rounded-sm text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors duration-150 resize-none"
               />
             </div>
 

@@ -127,14 +127,16 @@ export default function RootLayout({
         />
         <JsonLd />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0F172A]`}>
         <LanguageProvider>
           <AuthProvider>
-            <Header />
-            <main className="pt-14 pb-20 min-h-screen">
-              {children}
-            </main>
-            <BottomNav />
+            <div className="max-w-[425px] mx-auto min-h-screen bg-bg relative shadow-2xl overflow-x-hidden">
+              <Header />
+              <main className="pt-14 pb-20 min-h-screen">
+                {children}
+              </main>
+              <BottomNav />
+            </div>
           </AuthProvider>
         </LanguageProvider>
       </body>

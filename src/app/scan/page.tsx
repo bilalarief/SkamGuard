@@ -10,6 +10,7 @@ import { fadeInUp, staggerContainer, staggerItem } from "@/lib/motion";
 import ScreenshotUploader from "@/components/scan/ScreenshotUploader";
 import UrlChecker from "@/components/scan/UrlChecker";
 import PhoneChecker from "@/components/scan/PhoneChecker";
+import MessageChecker from "@/components/scan/MessageChecker";
 import ScanModeCard from "@/components/scan/ScanModeCard";
 import AnalyzingProgress from "@/components/scan/AnalyzingProgress";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
@@ -214,21 +215,7 @@ function ScanContent() {
         )}
 
         {activeMode === "message" && (
-          <div className="space-y-2">
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder={t("scan.pastePlaceholder")}
-              rows={6}
-              className="
-                w-full p-4
-                bg-surface border-2 border-dashed border-border rounded-2xl
-                text-sm text-text-primary placeholder:text-text-muted
-                focus:outline-none focus:border-primary focus:border-solid focus:ring-1 focus:ring-primary/20
-                transition-colors duration-150 resize-none
-              "
-            />
-          </div>
+          <MessageChecker value={text} onChange={setText} />
         )}
 
         {activeMode === "url" && (
@@ -258,11 +245,11 @@ function ScanContent() {
         whileHover={canSubmit ? { scale: 1.01 } : {}}
         whileTap={canSubmit ? { scale: 0.98 } : {}}
         className={`
-          w-full h-12 rounded-xl
+          w-full h-12 rounded-sm
           text-base font-semibold
           transition-colors duration-200
           ${canSubmit
-            ? "bg-primary text-white hover:bg-primary-dark cursor-pointer shadow-sm"
+            ? "bg-[#00A6F4] text-white hover:bg-[#00A6F4] cursor-pointer shadow-sm"
             : "bg-[#D1D5DB] text-[#9CA3AF] cursor-not-allowed"
           }
         `}

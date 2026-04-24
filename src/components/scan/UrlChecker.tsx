@@ -27,7 +27,7 @@ export default function UrlChecker({ onSubmit, onChange }: UrlCheckerProps) {
 
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium text-text-primary">
+      <label className="text-xs text-text-primary uppercase">
         {t("scan.urlTitle")}
       </label>
 
@@ -41,9 +41,9 @@ export default function UrlChecker({ onSubmit, onChange }: UrlCheckerProps) {
           placeholder={t("scan.urlPlaceholder")}
           className="
             w-full h-11 pl-10 pr-4
-            bg-surface border border-border rounded-radius-sm
+            bg-surface border-2 border-border rounded-md border-dashed
             text-sm text-text-primary placeholder:text-text-muted
-            focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20
+            focus:outline-none focus:border-none focus:ring-1 focus:ring-primary/20
             transition-colors duration-150
           "
         />

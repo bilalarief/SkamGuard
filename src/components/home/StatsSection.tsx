@@ -39,18 +39,16 @@ export default function StatsSection() {
               <Icon className="w-8 h-8 text-[#E11D48]" />
               <div className="space-y-1">
                 <div className="text-[13px] font-medium text-[#475569] leading-snug">
-                  {stat.title || t(`home.${stat.key}`)}
+                  {t(`home.${stat.key}Title`)}
                 </div>
               </div>
               <div className="flex items-baseline gap-1.5 flex-wrap mt-auto pt-2">
                 <span className="text-2xl font-bold text-[#E11D48]">
                   {stat.value}
                 </span>
-                {stat.subtext && (
-                  <span className="text-[11px] text-text-secondary whitespace-nowrap">
-                    {stat.subtext}
-                  </span>
-                )}
+                <span className="text-[11px] text-text-secondary whitespace-nowrap">
+                  {t(`home.${stat.key}Subtext`)}
+                </span>
               </div>
             </motion.div>
           );

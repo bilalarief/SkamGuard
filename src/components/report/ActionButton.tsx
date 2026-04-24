@@ -71,7 +71,7 @@ export default function ActionButton({ action, index }: ActionButtonProps) {
     <Tag
       {...(isClickable && { onClick: handleClick })}
       className={`
-        w-full flex items-center gap-3 p-3.5 rounded-2xl border
+        w-full flex items-center gap-3 p-3.5 rounded-md 
         ${config.bgColor}
         ${isClickable
           ? 'hover:shadow-md active:scale-[0.98] cursor-pointer transition-all duration-200'
