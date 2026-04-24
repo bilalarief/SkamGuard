@@ -143,7 +143,7 @@ export default function HistoryPage() {
     >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold text-text-primary leading-tight">
+        <h1 className="text-2xl sm:text-[25px] md:text-[26px] font-extrabold text-text-primary leading-tight">
           {t("history.title")}
         </h1>
 

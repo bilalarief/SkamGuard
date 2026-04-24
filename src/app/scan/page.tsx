@@ -145,7 +145,7 @@ function ScanContent() {
         initial="hidden"
         animate="visible"
       >
-        <h1 className="text-2xl font-extrabold text-text-primary leading-tight">
+        <h1 className="text-2xl sm:text-[25px] md:text-[26px] font-extrabold text-text-primary leading-tight">
           {t("scan.title")}
         </h1>
 
@@ -199,7 +199,7 @@ function ScanContent() {
       </button>
 
       {/* Title */}
-      <h1 className="text-2xl font-extrabold text-text-primary leading-tight">
+      <h1 className="text-2xl sm:text-[25px] md:text-[26px] font-extrabold text-text-primary leading-tight">
         {currentCard ? t(currentCard.labelKey) : t("scan.title")}
       </h1>
 

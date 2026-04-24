@@ -36,17 +36,17 @@ export default function StatsSection() {
                 bg-white
               "
             >
-              <Icon className="w-8 h-8 text-[#E11D48]" />
+              <Icon className=" size-8 text-[#E11D48]" />
               <div className="space-y-1">
-                <div className="text-[13px] font-medium text-[#475569] leading-snug">
+                <div className="text-[13px] sm:text-[14px] md:text-[15px] font-medium text-[#475569] leading-snug">
                   {t(`home.${stat.key}Title`)}
                 </div>
               </div>
               <div className="flex items-baseline gap-1.5 flex-wrap mt-auto pt-2">
-                <span className="text-2xl font-bold text-[#E11D48]">
+                <span className="text-2xl sm:text-[25px] md:text-[26px] font-bold text-[#E11D48]">
                   {stat.value}
                 </span>
-                <span className="text-[11px] text-text-secondary whitespace-nowrap">
+                <span className="text-[11px] sm:text-xs md:text-[13px] text-text-secondary whitespace-nowrap">
                   {t(`home.${stat.key}Subtext`)}
                 </span>
               </div>

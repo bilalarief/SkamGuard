@@ -48,7 +48,7 @@ export default function Header() {
       <header
         id="main-header"
         className={`
-          fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[425px] z-50 transition-colors duration-300
+          fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[768px] z-50 transition-colors duration-300
           ${isHome ? "bg-transparent text-white" : "bg-surface/80 backdrop-blur-md border-b border-border text-text-primary"}
         `}
       >

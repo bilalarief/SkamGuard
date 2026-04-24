@@ -20,7 +20,8 @@
     "type": "Jenis",
     "link": "Pautan",
     "unknown": "Tidak Diketahui",
-    "thankYou": "Terima kasih!"
+    "thankYou": "Terima kasih!",
+    "desktopAlert": "Untuk pengalaman yang lebih baik, sila gunakan telefon pintar."
   },
   "nav": {
     "home": "Utama",

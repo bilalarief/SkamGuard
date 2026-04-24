@@ -20,7 +20,8 @@
     "type": "Type",
     "link": "Link",
     "unknown": "Unknown",
-    "thankYou": "Thank you!"
+    "thankYou": "Thank you!",
+    "desktopAlert": "For a better experience, please use a smartphone."
   },
   "nav": {
     "home": "Home",

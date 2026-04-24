@@ -22,6 +22,8 @@ export interface HeroSlide {
   badgeColor: string
   /** Badge text color */
   badgeTextColor: string
+  /** External URL to open when slide is clicked */
+  linkUrl?: string
 }
 
 /**
@@ -31,12 +33,13 @@ export interface HeroSlide {
 export const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'slide-1',
-    imageSrc: '/img/Banner1.png',
+    imageSrc: '/img/Banner3.png',
     imageAlt: 'RM1.47 billion scam losses news',
     badgeKey: 'home.heroSlides.news',
     titleKey: 'home.heroSlides.slide1Title',
     badgeColor: 'bg-white',
     badgeTextColor: 'text-[#003B73]',
+    linkUrl: 'https://www.google.com',
   },
   {
     id: 'slide-2',
@@ -46,15 +49,17 @@ export const HERO_SLIDES: HeroSlide[] = [
     titleKey: 'home.heroSlides.slide2Title',
     badgeColor: 'bg-red-500',
     badgeTextColor: 'text-white',
+    linkUrl: 'https://www.google.com',
   },
   {
     id: 'slide-3',
-    imageSrc: '/img/Banner3.png',
+    imageSrc: '/img/Banner1.png',
     imageAlt: 'SkamGuard verification tip',
     badgeKey: 'home.heroSlides.tip',
     titleKey: 'home.heroSlides.slide3Title',
     badgeColor: 'bg-emerald-500',
     badgeTextColor: 'text-white',
+    linkUrl: 'https://www.google.com',
   },
 ]
 

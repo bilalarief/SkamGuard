@@ -25,10 +25,10 @@ export default function FeatureCardList() {
           "
         >
           <div className="relative z-10 text-white space-y-1 pr-16">
-            <h2 className="text-[10px] font-bold uppercase tracking-widest opacity-80">
+            <h2 className="text-[10px] sm:text-[11px] md:text-xs font-bold uppercase tracking-widest opacity-80">
               {t("home.ctaAnalyze")}
             </h2>
-            <h3 className="font-bold text-[22px] leading-tight whitespace-pre-line">
+            <h3 className="font-bold text-[22px] sm:text-[23px] md:text-2xl leading-tight whitespace-pre-line">
               {t("home.ctaCheckNow")}
             </h3>
             <div className="pt-2">
