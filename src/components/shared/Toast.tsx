@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
   CheckCircle2,
   XCircle,
@@ -8,7 +8,7 @@ import {
   AlertTriangle,
   X,
 } from "lucide-react";
-import type { Toast as ToastItem, ToastStatus } from "@/hooks/useToast";
+import type { ResolvedToast, ToastStatus } from "@/hooks/useToast";
 
 /* ─── Status → style map ─────────────────────────────────────────────────── */
 
@@ -52,53 +52,86 @@ const STATUS_CONFIG: Record<
   },
 };
 
-/* ─── Single Toast item ──────────────────────────────────────────────────── */
+/* ─── Animation variants ─────────────────────────────────────────────────── */
+
+/**
+ * Slide in from above the viewport with a spring bounce when landing.
+ * On exit, slides back up cleanly (no bounce — already gone).
+ */
+const toastVariants = {
+  /** Start: above the screen, fully transparent */
+  hidden: {
+    opacity: 0,
+    y: -60,
+    scale: 0.95,
+  },
+  /** Visible: spring physics give the settling bounce */
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 380,
+      damping: 22,
+      mass: 0.9,
+    },
+  },
+  /** Exit: slide back up fast, fade out */
+  exit: {
+    opacity: 0,
+    y: -40,
+    scale: 0.95,
+    transition: {
+      duration: 0.22,
+      ease: "easeIn" as const,
+    },
+  },
+};
+
+/* ─── Component ──────────────────────────────────────────────────────────── */
 
 interface ToastProps {
-  toast: ToastItem;
+  toast: ResolvedToast;
   onDismiss: (id: string) => void;
 }
 
 /**
- * `Toast` — single notification card.
+ * `Toast` — animated single notification card.
  *
- * Renders the icon, message, optional description, progress bar,
- * and dismiss button. Status drives all colour tokens.
+ * Uses framer-motion for:
+ * - Slide-in from top with spring bounce on landing
+ * - Slide-out back to top on dismiss / auto-expire
+ *
+ * Status drives all colour tokens. Icon sourced from lucide-react.
  */
 export function Toast({ toast, onDismiss }: ToastProps) {
   const { id, status, message, description, duration = 4000 } = toast;
   const cfg = STATUS_CONFIG[status];
 
-  /* mount animation */
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    /* next frame so CSS transition fires */
-    const raf = requestAnimationFrame(() => setVisible(true));
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
   return (
-    <div
+    <motion.div
+      layout
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
+      variants={toastVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
       className={[
         "relative w-full max-w-sm rounded-lg border shadow-xl overflow-hidden",
-        "transition-all duration-300 ease-out",
         cfg.bg,
         cfg.border,
         cfg.text,
-        visible
-          ? "opacity-100 translate-y-0 scale-100"
-          : "opacity-0 -translate-y-3 scale-95",
       ].join(" ")}
     >
-      {/* Content */}
+      {/* Content row */}
       <div className="flex items-start gap-3 px-4 py-3 pr-10">
         {/* Status icon */}
         <span className="mt-0.5 opacity-90">{cfg.icon}</span>
 
-        {/* Text */}
+        {/* Text block */}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold leading-snug">{message}</p>
           {description && (
@@ -121,23 +154,19 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       {/* Auto-dismiss progress bar */}
       <div className="h-0.5 w-full">
         <div
-          className={[
-            "h-full origin-left",
-            cfg.progress,
-          ].join(" ")}
+          className={["h-full origin-left", cfg.progress].join(" ")}
           style={{
             animation: `toast-shrink ${duration}ms linear forwards`,
           }}
         />
       </div>
 
-      {/* Keyframe injected inline — avoids global CSS pollution */}
       <style>{`
         @keyframes toast-shrink {
           from { transform: scaleX(1); }
           to   { transform: scaleX(0); }
         }
       `}</style>
-    </div>
+    </motion.div>
   );
 }

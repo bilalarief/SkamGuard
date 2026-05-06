@@ -2,22 +2,22 @@
 
 import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { Toast } from "./Toast";
-import type { Toast as ToastItem } from "@/hooks/useToast";
+import type { ResolvedToast } from "@/hooks/useToast";
 
 interface ToastContainerProps {
-  toasts: ToastItem[];
+  toasts: ResolvedToast[];
   onDismiss: (id: string) => void;
 }
 
 /**
  * `ToastContainer` — fixed overlay at top-center of viewport.
  *
- * Renders via React portal so it escapes any overflow-hidden parents.
- * Place this once per page (or in root layout) and pass in the `toasts`
- * + `onDismiss` from `useToast`.
- *
- * Position: top-center, responsive padding, max-width mirrors app shell.
+ * - Renders via React portal (escapes overflow-hidden parents)
+ * - `AnimatePresence` drives enter/exit animations for each `<Toast>`
+ * - Position: top-center, responsive padding, max-width mirrors app shell
+ * - Stacks vertically; new toasts push older ones down
  *
  * @example
  * ```tsx
@@ -39,22 +39,26 @@ export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
         "fixed top-0 inset-x-0 z-[9999]",
         /* Responsive centering — matches app shell max-w */
         "flex flex-col items-center",
-        /* Safe-area + spacing */
-        "pt-[env(safe-area-inset-top,0px)]",
+        /* Safe-area padding + below fixed Header (56px) */
+        "pt-[calc(env(safe-area-inset-top,0px)+60px)]",
         "px-3 sm:px-4",
-        /* Stack with gap */
+        /* Stack gap */
         "gap-2",
-        /* Push toasts below the fixed Header (56px) */
-        "mt-[60px]",
-        /* Allow clicks to pass through empty areas */
+        /* Pass-through clicks in empty space */
         "pointer-events-none",
       ].join(" ")}
     >
-      {toasts.map((toast) => (
-        <div key={toast.id} className="pointer-events-auto w-full max-w-sm">
-          <Toast toast={toast} onDismiss={onDismiss} />
-        </div>
-      ))}
+      {/*
+        AnimatePresence enables exit animations.
+        mode="sync" keeps toasts visible during their exit motion.
+      */}
+      <AnimatePresence mode="sync">
+        {toasts.map((toast) => (
+          <div key={toast.id} className="pointer-events-auto w-full max-w-sm">
+            <Toast toast={toast} onDismiss={onDismiss} />
+          </div>
+        ))}
+      </AnimatePresence>
     </div>,
     document.body
   );

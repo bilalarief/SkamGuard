@@ -97,19 +97,19 @@ export default function ReportPage() {
         setShowReportModal(false);
         setReportDescription("");
         toastSuccess(
-          t("toast.reportSuccess"),
-          t("toast.reportSuccessDesc")
+          "toast.reportSuccess",
+          "toast.reportSuccessDesc"
         );
       } else {
         toastError(
-          t("toast.reportFailed"),
-          t("toast.reportFailedDesc")
+          "toast.reportFailed",
+          "toast.reportFailedDesc"
         );
       }
     } catch {
       toastError(
-        t("toast.networkError"),
-        t("toast.networkErrorDesc")
+        "toast.networkError",
+        "toast.networkErrorDesc"
       );
     } finally {
       setReportLoading(false);
