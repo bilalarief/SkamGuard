@@ -74,6 +74,30 @@ service cloud.firestore {
     }
 
     // ═══════════════════════════════════════
+    // Community Scans — anonymized dataset
+    // Server writes only; no client reads (analytics via admin SDK)
+    // ═══════════════════════════════════════
+    match /community_scans/{scanId} {
+      // No client reads — data accessed via Firebase Admin for analytics
+      allow read: if false;
+
+      // Allow create from any authenticated context (server API routes)
+      // Validate no PII fields are present
+      allow create: if request.auth != null
+                    && request.resource.data.riskScore is number
+                    && request.resource.data.riskLevel is string
+                    && request.resource.data.verdict is string
+                    && !('phoneNumber' in request.resource.data)
+                    && !('screenshot' in request.resource.data)
+                    && !('imageBase64' in request.resource.data)
+                    && !('email' in request.resource.data)
+                    && !('uid' in request.resource.data);
+
+      // No updates or deletes — append-only dataset
+      allow update, delete: if false;
+    }
+
+    // ═══════════════════════════════════════
     // Default deny — block everything else
     // ═══════════════════════════════════════
     match /{document=**} {

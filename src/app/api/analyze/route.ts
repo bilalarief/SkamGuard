@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { analyzeFlow } from '@/lib/ai/flows/analyze.flow'
 import { sanitizeBase64, sanitizeText, sanitizePhone } from '@/lib/utils/sanitize'
 import { rateLimit } from '@/lib/utils/rate-limit'
+import { storeCommunityAnonymizedScan } from '@/lib/firebase/community-scans'
 
 /** Maximum request body size: 12MB (accounts for base64 overhead on 10MB images) */
 const MAX_BODY_SIZE = 12 * 1024 * 1024
@@ -87,6 +88,28 @@ export async function POST(request: NextRequest) {
       manualPhone: sanitizedPhone,
       language,
     })
+
+    // Fire-and-forget: store anonymized scan to community dataset.
+    // Intentionally not awaited — never blocks the user's response.
+    const inputMethods = [
+      image ? 'image' : null,
+      text ? 'text' : null,
+      phoneNumber ? 'phone' : null,
+    ].filter(Boolean)
+    const inputMethod = inputMethods.length > 1
+      ? 'mixed'
+      : (inputMethods[0] as 'image' | 'text' | 'phone') || 'text'
+
+    storeCommunityAnonymizedScan({
+      scamType: result.scamType,
+      riskScore: result.overallScore,
+      riskLevel: result.riskLevel,
+      verdict: result.verdict,
+      redFlags: result.redFlags,
+      inputMethod,
+      urlCount: result.urlResults?.length ?? 0,
+      phoneDetected: !!result.phoneResult,
+    }).catch(() => { /* silent — best-effort community data */ })
 
     return NextResponse.json({ success: true, data: result }, { status: 200 })
   } catch (error) {

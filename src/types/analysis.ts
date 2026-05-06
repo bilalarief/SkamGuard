@@ -159,6 +159,30 @@ export interface ActionItem {
   phone?: string
 }
 
+/**
+ * Anonymized scan result stored to community database.
+ * Explicitly excludes: screenshots, personal info, user phone numbers.
+ * Used to build SkamGuard's Malaysian scam dataset organically.
+ */
+export interface CommunityAnonymizedScan {
+  /** Identified scam type (null if not identified) */
+  scamType: ScamTypeId
+  /** Composite risk score (0–100) */
+  riskScore: number
+  /** Risk level classification */
+  riskLevel: RiskLevel
+  /** Three-tier verdict */
+  verdict: Verdict
+  /** List of red flags detected (text only, no PII) */
+  redFlags: string[]
+  /** How the scan was initiated */
+  inputMethod: 'image' | 'text' | 'phone' | 'mixed'
+  /** Number of URLs detected (count only, not the URLs themselves) */
+  urlCount: number
+  /** Whether a phone number was detected (boolean only, not the number) */
+  phoneDetected: boolean
+}
+
 /** Complete risk report returned to the client */
 export interface RiskReport {
   /** Composite risk score (0–100) */
