@@ -23,7 +23,7 @@ const ReportSchema = z.object({
 export async function POST(request: NextRequest) {
   // 1. Rate limiting — 5 reports per minute per IP (stricter to prevent spam)
   const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous'
-  const { allowed, retryAfter } = rateLimit(`report:${clientIp}`, { maxRequests: 5, windowMs: 60_000 })
+  const { allowed, retryAfter } = rateLimit(`report:${clientIp}`, { maxRequests: 3, windowMs: 60_000 })
 
   if (!allowed) {
     return NextResponse.json(

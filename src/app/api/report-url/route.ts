@@ -13,7 +13,7 @@ import { submitUrlReport } from '@/lib/firebase/firestore'
 import crypto from 'crypto'
 
 const ReportSchema = z.object({
-  url: z.string().url('Invalid URL format'),
+  url: z.string(),
   scamType: z.string().optional(),
   description: z.string().max(500).optional(),
   uid: z.string().optional(),
