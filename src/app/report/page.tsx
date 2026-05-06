@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  AlertTriangle,
-  RotateCcw,
-  ShieldAlert,
   CheckCircle,
   Flag,
 } from "lucide-react";
@@ -23,6 +20,8 @@ import RedFlagsCard from "@/components/report/RedFlagsCard";
 import VerdictBadge from "@/components/report/VerdictBadge";
 import CommunityReportButtons from "@/components/report/CommunityReportButtons";
 import FooterDisclaimer from "@/components/shared/FooterDisclaimer";
+import { ToastContainer } from "@/components/shared/ToastContainer";
+import { useToast } from "@/hooks/useToast";
 import type { RiskLevel } from "@/types/analysis";
 
 export default function ReportPage() {
@@ -34,8 +33,8 @@ export default function ReportPage() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportType, setReportType] = useState<"phone" | "url">("phone");
   const [reportDescription, setReportDescription] = useState("");
-  const [reportSubmitted, setReportSubmitted] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
+  const { toasts, dismissToast, success: toastSuccess, error: toastError } = useToast();
 
   // Use authenticated user's uid if available, otherwise 'guest'
   const userId = user?.uid || "guest";
@@ -72,12 +71,13 @@ export default function ReportPage() {
 
   async function handleReportSubmit() {
     setReportLoading(true);
-    
+
     try {
       const endpoint = reportType === "phone" ? "/api/report-phone" : "/api/report-url";
-      const payload = reportType === "phone" 
-        ? { phoneNumber: phoneResult?.number }
-        : { url: firstUrl };
+      const payload =
+        reportType === "phone"
+          ? { phoneNumber: phoneResult?.number }
+          : { url: firstUrl };
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -91,16 +91,26 @@ export default function ReportPage() {
       });
 
       const result = await response.json();
+
       if (result.success) {
-        setReportSubmitted(true);
-        setTimeout(() => {
-          setShowReportModal(false);
-          setReportSubmitted(false); // Reset for next time
-          setReportDescription('');
-        }, 2000);
+        /* Close modal immediately — toast carries the confirmation. */
+        setShowReportModal(false);
+        setReportDescription("");
+        toastSuccess(
+          t("toast.reportSuccess"),
+          t("toast.reportSuccessDesc")
+        );
+      } else {
+        toastError(
+          t("toast.reportFailed"),
+          t("toast.reportFailedDesc")
+        );
       }
-    } catch (error) {
-      console.error("Report failed:", error);
+    } catch {
+      toastError(
+        t("toast.networkError"),
+        t("toast.networkErrorDesc")
+      );
     } finally {
       setReportLoading(false);
     }
@@ -116,6 +126,8 @@ export default function ReportPage() {
 
   return (
     <div className="container-app py-6 space-y-6">
+      {/* Toast portal — top-center, responsive */}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
       {/* Back button */}
       <button
         onClick={() => router.push(backPath)}
@@ -212,45 +224,51 @@ export default function ReportPage() {
 
       {/* Community report modal */}
       <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)} title={t("report.reportModalTitle")}>
-        {reportSubmitted ? (
-          <div className="text-center py-6 space-y-3">
-            <CheckCircle className="w-12 h-12 text-risk-low mx-auto" />
-            <p className="font-semibold text-text-primary">{t("common.thankYou")}</p>
-            <p className="text-sm text-text-secondary">{t("report.reportSuccess")}</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="p-3 bg-surface-hover rounded-sm">
-              <p className="text-sm font-medium text-text-primary truncate">
-                {reportType === "phone" ? `${t("common.number")}: ${phoneResult?.number}` : `${t("common.link")}: ${firstUrl}`}
+        <div className="space-y-4">
+          {/* Reporting target preview */}
+          <div className="p-3 bg-surface-hover rounded-sm">
+            <p className="text-sm font-medium text-text-primary truncate">
+              {reportType === "phone"
+                ? `${t("common.number")}: ${phoneResult?.number}`
+                : `${t("common.link")}: ${firstUrl}`}
+            </p>
+            {scamType && (
+              <p className="text-xs text-text-secondary mt-1">
+                {t("common.type")}: {t(`scamTypes.${scamType}.name`)}
               </p>
-              {scamType && (
-                <p className="text-xs text-text-secondary mt-1">
-                  {t("common.type")}: {t(`scamTypes.${scamType}.name`)}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-text-primary">{t("report.reportDescription")}</label>
-              <textarea
-                value={reportDescription}
-                onChange={(e) => setReportDescription(e.target.value)}
-                placeholder={t("report.reportPlaceholder")}
-                rows={3}
-                maxLength={500}
-                className="w-full p-3 bg-surface border border-border rounded-sm text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors duration-150 resize-none"
-              />
-            </div>
-
-            <Button variant="primary" size="lg" fullWidth loading={reportLoading} onClick={handleReportSubmit}>
-              <Flag className="w-4 h-4" />
-              {t("report.reportSubmit")}
-            </Button>
-
-            <p className="text-xs text-text-muted text-center">{t("report.reportAnonymous")}</p>
+            )}
           </div>
-        )}
+
+          {/* Optional description */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">
+              {t("report.reportDescription")}
+            </label>
+            <textarea
+              value={reportDescription}
+              onChange={(e) => setReportDescription(e.target.value)}
+              placeholder={t("report.reportPlaceholder")}
+              rows={3}
+              maxLength={500}
+              className="w-full p-3 bg-surface border border-border rounded-sm text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors duration-150 resize-none"
+            />
+          </div>
+
+          <Button
+            variant="primary"
+            size="lg"
+            fullWidth
+            loading={reportLoading}
+            onClick={handleReportSubmit}
+          >
+            <Flag className="w-4 h-4" />
+            {t("report.reportSubmit")}
+          </Button>
+
+          <p className="text-xs text-text-muted text-center">
+            {t("report.reportAnonymous")}
+          </p>
+        </div>
       </Modal>
     </div>
   );

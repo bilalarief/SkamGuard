@@ -194,6 +194,14 @@
       "desc": "Sale of fake or non-existent goods through online platforms."
     }
   },
+  "toast": {
+    "reportSuccess": "Report submitted!",
+    "reportSuccessDesc": "Thank you. Your report helps protect the community.",
+    "reportFailed": "Report failed",
+    "reportFailedDesc": "Could not submit your report. Please try again.",
+    "networkError": "Network error",
+    "networkErrorDesc": "Check your internet connection and try again."
+  },
   "errors": {
     "fileTooBig": "File is too large. Maximum size is 10MB.",
     "invalidFormat": "File format not supported. Please use PNG, JPG, or WEBP.",

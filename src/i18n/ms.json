@@ -194,6 +194,14 @@
       "desc": "Penjualan barangan palsu atau tidak wujud melalui platform dalam talian."
     }
   },
+  "toast": {
+    "reportSuccess": "Laporan berjaya dihantar!",
+    "reportSuccessDesc": "Terima kasih. Laporan anda membantu melindungi komuniti.",
+    "reportFailed": "Laporan gagal",
+    "reportFailedDesc": "Laporan tidak dapat dihantar. Sila cuba semula.",
+    "networkError": "Ralat rangkaian",
+    "networkErrorDesc": "Semak sambungan internet anda dan cuba semula."
+  },
   "errors": {
     "fileTooBig": "Saiz fail terlalu besar. Maksimum 10MB.",
     "invalidFormat": "Format fail tidak disokong. Sila gunakan PNG, JPG, atau WEBP.",
