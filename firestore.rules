@@ -9,14 +9,22 @@ service cloud.firestore {
     match /reported_phones/{phoneId} {
       // Anyone can read community reports
       allow read: if true;
-      // Authenticated users (including anonymous) can create/update
-      allow create, update: if request.auth != null;
+
+      // Authenticated users can create new reports
+      allow create: if request.auth != null
+                    && request.resource.data.phoneNumber is string
+                    && request.resource.data.source == 'community';
+
+      // Authenticated users can update (increment reportCount via merge)
+      allow update: if request.auth != null
+                    && request.resource.data.source == 'community';
     }
 
     // Phone report subcollection (individual reporter records)
     match /reported_phones/{phoneId}/reporters/{reporterId} {
       allow read: if true;
-      allow create: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.uid is string;
     }
 
     // ═══════════════════════════════════════
@@ -24,26 +32,45 @@ service cloud.firestore {
     // ═══════════════════════════════════════
     match /reports_url/{urlId} {
       allow read: if true;
-      allow create, update: if request.auth != null;
+
+      allow create: if request.auth != null
+                    && request.resource.data.url is string
+                    && request.resource.data.source == 'community';
+
+      allow update: if request.auth != null
+                    && request.resource.data.source == 'community';
     }
 
     match /reports_url/{urlId}/reporters/{reporterId} {
       allow read: if true;
-      allow create: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.uid is string;
     }
 
     // ═══════════════════════════════════════
     // User Profiles — owner-only access
     // ═══════════════════════════════════════
     match /users/{userId} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == userId;
+      allow read: if request.auth != null
+                  && request.auth.uid == userId;
+
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.uid == userId;
+
+      allow update: if request.auth != null
+                    && request.auth.uid == userId;
     }
 
     // User scan history — owner-only access
     match /users/{userId}/scan_history/{scanId} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == userId;
+      allow read: if request.auth != null
+                  && request.auth.uid == userId;
+
+      allow create: if request.auth != null
+                    && request.auth.uid == userId;
+
+      // No update/delete — scan history is append-only
     }
 
     // ═══════════════════════════════════════

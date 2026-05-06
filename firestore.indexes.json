@@ -1,0 +1,28 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "reported_phones",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "phoneNumber", "order": "ASCENDING" },
+        { "fieldPath": "reportedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "reported_phones",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "phoneNumber", "order": "ASCENDING" },
+        { "fieldPath": "lastReported", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "scan_history",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
