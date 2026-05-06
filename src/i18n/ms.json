@@ -78,7 +78,24 @@
     "loadingStep4": "Mengesan URL dan pautan...",
     "loadingStep5": "Menganalisis mesej dengan Gemini AI...",
     "checkMessage": "Semak Mesej",
-    "checkMessageDesc": "Masukkan mesej untuk disemak di pangkalan data scam"
+    "checkMessageDesc": "Masukkan mesej untuk disemak di pangkalan data scam",
+    "thinking": {
+      "extracting": "Membaca dan mengekstrak kandungan...",
+      "checking": "Menyemak pangkalan data...",
+      "analyzing": "Analisis mendalam sedang berjalan...",
+      "scoring": "Mengira penilaian risiko...",
+      "extract1": "Mengimbas imej untuk teks dan kandungan tersembunyi...",
+      "extract2": "Mengenal pasti butiran pengirim dan struktur mesej...",
+      "extract3": "Mengesan URL dan nombor telefon terbenam...",
+      "check1": "Menyemak URL di pangkalan data ancaman VirusTotal...",
+      "check2": "Merujuk silang nombor telefon dengan laporan scam...",
+      "check3": "Mencari pangkalan data corak scam Malaysia...",
+      "analyze1": "Menilai corak bahasa untuk taktik kejuruteraan sosial...",
+      "analyze2": "Membandingkan dengan template scam Malaysia yang dikenali...",
+      "analyze3": "Menilai isyarat kedesakan dan peniruan identiti...",
+      "score1": "Mengumpul bukti daripada semua alat analisis...",
+      "score2": "Mengira skor risiko akhir dan menjana pelan tindakan..."
+    }
   },
   "history": {
     "title": "Sejarah",

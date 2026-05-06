@@ -1,20 +1,64 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { CheckCircle2, Sparkles, ArrowLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useAnalysisStore, type AnalysisStep } from "@/store/analysis.store";
 
 interface AnalyzingProgressProps {
   onBack?: () => void;
 }
 
-const STEPS = [
-  { key: "scan.loadingStep1", duration: 2000 },
-  { key: "scan.loadingStep2", duration: 3500 },
-  { key: "scan.loadingStep3", duration: 5500 },
-  { key: "scan.loadingStep4", duration: 7500 },
-  { key: "scan.loadingStep5", duration: 10000 },
+/**
+ * Step definitions — mapped to SSE step events.
+ * Order matters: progress bar and checkmarks follow this sequence.
+ */
+const STEPS: { stepId: AnalysisStep; key: string; thinkingKey: string }[] = [
+  {
+    stepId: "extracting",
+    key: "scan.loadingStep1",
+    thinkingKey: "scan.thinking.extracting",
+  },
+  {
+    stepId: "checking_tools",
+    key: "scan.loadingStep4",
+    thinkingKey: "scan.thinking.checking",
+  },
+  {
+    stepId: "analyzing",
+    key: "scan.loadingStep5",
+    thinkingKey: "scan.thinking.analyzing",
+  },
+  {
+    stepId: "scoring",
+    key: "scan.loadingStep3",
+    thinkingKey: "scan.thinking.scoring",
+  },
 ];
+
+/** AI "thinking" text bubbles — rotates through variations */
+const THINKING_VARIANTS = {
+  extracting: [
+    "scan.thinking.extract1",
+    "scan.thinking.extract2",
+    "scan.thinking.extract3",
+  ],
+  checking_tools: [
+    "scan.thinking.check1",
+    "scan.thinking.check2",
+    "scan.thinking.check3",
+  ],
+  analyzing: [
+    "scan.thinking.analyze1",
+    "scan.thinking.analyze2",
+    "scan.thinking.analyze3",
+  ],
+  scoring: [
+    "scan.thinking.score1",
+    "scan.thinking.score2",
+  ],
+};
 
 /** Gemini AI logo as inline SVG */
 function GeminiLogo({ className = "" }: { className?: string }) {
@@ -27,10 +71,10 @@ function GeminiLogo({ className = "" }: { className?: string }) {
     >
       <path
         d="M14 28C14 21.75 9.25 16.5 3 15.75C2 15.65 1 15.5 0 15.5V12.5C1 12.5 2 12.35 3 12.25C9.25 11.5 14 6.25 14 0C14 6.25 18.75 11.5 25 12.25C26 12.35 27 12.5 28 12.5V15.5C27 15.5 26 15.65 25 15.75C18.75 16.5 14 21.75 14 28Z"
-        fill="url(#gemini_gradient)"
+        fill="url(#gemini_gradient_prog)"
       />
       <defs>
-        <linearGradient id="gemini_gradient" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+        <linearGradient id="gemini_gradient_prog" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
           <stop stopColor="#4285F4" />
           <stop offset="0.5" stopColor="#9B72CB" />
           <stop offset="1" stopColor="#D96570" />
@@ -42,39 +86,45 @@ function GeminiLogo({ className = "" }: { className?: string }) {
 
 export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
   const { t } = useLanguage();
-  const [progress, setProgress] = useState(0);
-  const [completedSteps, setCompletedSteps] = useState(0);
+  const currentStep = useAnalysisStore((s) => s.currentStep);
+  const [thinkingIndex, setThinkingIndex] = useState(0);
 
+  // Map SSE step to index in our STEPS array
+  const activeStepIndex = useMemo(() => {
+    if (!currentStep) return 0;
+    const idx = STEPS.findIndex((s) => s.stepId === currentStep);
+    return idx >= 0 ? idx : STEPS.length;
+  }, [currentStep]);
+
+  // Progress percentage — driven by actual step position
+  const progress = useMemo(() => {
+    if (currentStep === "complete") return 100;
+    if (currentStep === "error") return 0;
+    // Each step is ~25% of the total
+    const base = (activeStepIndex / STEPS.length) * 90;
+    return Math.round(base);
+  }, [activeStepIndex, currentStep]);
+
+  // Rotate AI thinking text every 2.5s
   useEffect(() => {
-    // Eased progress: fast start, slows near 90%
     const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 90) return 90;
-        // Logarithmic easing — slows down as it approaches 90
-        const remaining = 90 - prev;
-        const increment = Math.max(0.3, remaining * 0.04);
-        return Math.min(90, prev + increment);
-      });
-    }, 100);
-
+      setThinkingIndex((prev) => prev + 1);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const timers = STEPS.map((step, index) =>
-      setTimeout(() => {
-        setCompletedSteps(index + 1);
-      }, step.duration)
-    );
-
-    return () => timers.forEach(clearTimeout);
-  }, []);
+  // Get current thinking text
+  const thinkingText = useMemo(() => {
+    if (!currentStep || currentStep === "complete" || currentStep === "error") return null;
+    const stepKey = currentStep as keyof typeof THINKING_VARIANTS;
+    const variants = THINKING_VARIANTS[stepKey];
+    if (!variants || variants.length === 0) return null;
+    return t(variants[thinkingIndex % variants.length]);
+  }, [currentStep, thinkingIndex, t]);
 
   const circumference = 2 * Math.PI * 60;
   const offset = circumference - (progress / 100) * circumference;
-
-  // Check if we're on the last step (Gemini AI analysis)
-  const isGeminiStep = completedSteps === STEPS.length - 1;
+  const isGeminiStep = currentStep === "analyzing";
 
   return (
     <div className="container-app py-6 space-y-6">
@@ -119,7 +169,7 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={offset}
-              className="transition-all duration-300 ease-out"
+              className="transition-all duration-500 ease-out"
             />
             <defs>
               <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -134,28 +184,81 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
               <GeminiLogo className="w-5 h-5 animate-gentle-pulse" />
             )}
             <span className="text-3xl font-extrabold text-text-primary">
-              {Math.round(progress)}%
+              {progress}%
             </span>
           </div>
         </div>
       </div>
 
-      {/* Step indicators */}
+      {/* AI Thinking Bubble — Gemini-style */}
+      <AnimatePresence mode="wait">
+        {thinkingText && (
+          <motion.div
+            key={thinkingText}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="mx-auto max-w-sm"
+          >
+            <div className="relative bg-gradient-to-r from-[#f0f4ff] to-[#f5f0ff] border border-[#e0e7ff] rounded-2xl px-4 py-3 shadow-sm">
+              {/* Gemini sparkle icon */}
+              <div className="flex items-start gap-2.5">
+                <GeminiLogo className="w-4 h-4 mt-0.5 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-text-secondary leading-relaxed italic">
+                    {thinkingText}
+                  </p>
+                  {/* Pulsing dots */}
+                  <div className="flex gap-1 mt-1.5">
+                    {[0, 1, 2].map((i) => (
+                      <motion.div
+                        key={i}
+                        className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#4285F4] to-[#9B72CB]"
+                        animate={{
+                          opacity: [0.3, 1, 0.3],
+                          scale: [0.8, 1, 0.8],
+                        }}
+                        transition={{
+                          duration: 1.4,
+                          repeat: Infinity,
+                          delay: i * 0.2,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Step indicators — driven by SSE events */}
       <div className="space-y-3 px-2">
         {STEPS.map((step, index) => {
-          const isCompleted = index < completedSteps;
-          const isActive = index === completedSteps;
-          const isGemini = step.key === "scan.loadingStep5";
+          const isCompleted = index < activeStepIndex || currentStep === "complete";
+          const isActive = index === activeStepIndex && currentStep !== "complete";
+          const isGemini = step.stepId === "analyzing";
 
           return (
-            <div
-              key={step.key}
+            <motion.div
+              key={step.stepId}
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.08, duration: 0.3 }}
               className="flex items-center gap-3"
             >
               {isCompleted ? (
-                <CheckCircle2 className="w-5 h-5 text-[#2BB5E0] shrink-0" />
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                >
+                  <CheckCircle2 className="w-5 h-5 text-[#2BB5E0] shrink-0" />
+                </motion.div>
               ) : isActive && isGemini ? (
-                /* Gemini AI step — show Gemini logo + pulsing dots */
                 <div className="w-5 h-5 shrink-0 flex items-center justify-center">
                   <GeminiLogo className="w-4 h-4 animate-gentle-pulse" />
                 </div>
@@ -187,7 +290,7 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>

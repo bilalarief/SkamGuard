@@ -1,8 +1,15 @@
 /**
- * Main analysis API endpoint.
- * Receives image/text input, runs Genkit orchestrator flow, returns RiskReport.
+ * Main analysis API endpoint — SSE streaming variant.
+ * Streams step events as Server-Sent Events, then sends the final result.
  *
  * POST /api/analyze
+ *
+ * Event format:
+ *   data: {"step":"extracting"}
+ *   data: {"step":"checking_tools"}
+ *   data: {"step":"analyzing"}
+ *   data: {"step":"scoring"}
+ *   data: {"step":"complete","result":{...RiskReport}}
  *
  * Security: Zod validation, rate limiting, input sanitization, size limits.
  * @module app/api/analyze/route
@@ -10,7 +17,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { analyzeFlow } from '@/lib/ai/flows/analyze.flow'
+import { analyzeWithSteps } from '@/lib/ai/flows/analyze.flow'
 import { sanitizeBase64, sanitizeText, sanitizePhone } from '@/lib/utils/sanitize'
 import { rateLimit } from '@/lib/utils/rate-limit'
 import { storeCommunityAnonymizedScan } from '@/lib/firebase/community-scans'
@@ -26,9 +33,9 @@ const RequestSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  // 1. Rate limiting — 10 requests per minute per IP
+  // 1. Rate limiting
   const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous'
-  const { allowed, retryAfter } = rateLimit(clientIp, { maxRequests: 10, windowMs: 60_000 })
+  const { allowed, retryAfter } = rateLimit(clientIp, { maxRequests: 3, windowMs: 60_000 })
 
   if (!allowed) {
     return NextResponse.json(
@@ -37,7 +44,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 2. Check Content-Length to reject oversized payloads early
+  // 2. Check Content-Length
   const contentLength = request.headers.get('content-length')
   if (contentLength && parseInt(contentLength) > MAX_BODY_SIZE) {
     return NextResponse.json(
@@ -46,7 +53,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 3. Parse and validate request body
+  // 3. Parse and validate
   let body: unknown
   try {
     body = await request.json()
@@ -80,48 +87,80 @@ export async function POST(request: NextRequest) {
   const sanitizedText = text ? sanitizeText(text) : undefined
   const sanitizedPhone = phoneNumber ? sanitizePhone(phoneNumber) : undefined
 
-  // 6. Run Genkit orchestrator flow (all API keys handled server-side)
-  try {
-    const result = await analyzeFlow({
-      imageBase64: sanitizedImage ?? undefined,
-      text: sanitizedText,
-      manualPhone: sanitizedPhone,
-      language,
-    })
+  // 6. SSE streaming — emit step events as the flow progresses
+  const encoder = new TextEncoder()
 
-    // Fire-and-forget: store anonymized scan to community dataset.
-    // Intentionally not awaited — never blocks the user's response.
-    const inputMethods = [
-      image ? 'image' : null,
-      text ? 'text' : null,
-      phoneNumber ? 'phone' : null,
-    ].filter(Boolean)
-    const inputMethod = inputMethods.length > 1
-      ? 'mixed'
-      : (inputMethods[0] as 'image' | 'text' | 'phone') || 'text'
+  const stream = new ReadableStream({
+    async start(controller) {
+      function sendEvent(data: Record<string, unknown>) {
+        const chunk = `data: ${JSON.stringify(data)}\n\n`
+        controller.enqueue(encoder.encode(chunk))
+      }
 
-    storeCommunityAnonymizedScan({
-      scamType: result.scamType,
-      riskScore: result.overallScore,
-      riskLevel: result.riskLevel,
-      verdict: result.verdict,
-      redFlags: result.redFlags,
-      inputMethod,
-      urlCount: result.urlResults?.length ?? 0,
-      phoneDetected: !!result.phoneResult,
-    }).catch(() => { /* silent — best-effort community data */ })
+      try {
+        const result = await analyzeWithSteps(
+          {
+            imageBase64: sanitizedImage ?? undefined,
+            text: sanitizedText,
+            manualPhone: sanitizedPhone,
+            language,
+          },
+          // Step callback — emits SSE event for each pipeline step
+          (step) => {
+            if (step !== 'complete') {
+              sendEvent({ step })
+            }
+          }
+        )
 
-    return NextResponse.json({ success: true, data: result }, { status: 200 })
-  } catch (error) {
-    // Log server-side only — never leak error details to client
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('[API /analyze] Error:', error)
-    }
-    return NextResponse.json(
-      { success: false, error: { code: 'ANALYSIS_FAILED', message: 'Analysis service unavailable. Please try again.' } },
-      { status: 503 }
-    )
-  }
+        // Final event — includes full result
+        sendEvent({ step: 'complete', success: true, data: result })
+
+        // Fire-and-forget: community dataset
+        const inputMethods = [
+          image ? 'image' : null,
+          text ? 'text' : null,
+          phoneNumber ? 'phone' : null,
+        ].filter(Boolean)
+        const inputMethod = inputMethods.length > 1
+          ? 'mixed'
+          : (inputMethods[0] as 'image' | 'text' | 'phone') || 'text'
+
+        storeCommunityAnonymizedScan({
+          scamType: result.scamType,
+          riskScore: result.overallScore,
+          riskLevel: result.riskLevel,
+          verdict: result.verdict,
+          redFlags: result.redFlags,
+          inputMethod,
+          urlCount: result.urlResults?.length ?? 0,
+          phoneDetected: !!result.phoneResult,
+        }).catch(() => { /* silent — best-effort community data */ })
+
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('[API /analyze] Error:', error)
+        }
+        sendEvent({
+          step: 'error',
+          success: false,
+          error: { code: 'ANALYSIS_FAILED', message: 'Analysis service unavailable. Please try again.' },
+        })
+      } finally {
+        controller.close()
+      }
+    },
+  })
+
+  return new Response(stream, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+      'X-Content-Type-Options': 'nosniff',
+    },
+  })
 }
 
 /** Reject non-POST methods */

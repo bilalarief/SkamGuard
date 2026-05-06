@@ -78,7 +78,24 @@
     "loadingStep4": "Detecting URLs and links...",
     "loadingStep5": "Analysing message with Gemini AI...",
     "checkMessage": "Check Message",
-    "checkMessageDesc": "Enter a message to check against scam databases"
+    "checkMessageDesc": "Enter a message to check against scam databases",
+    "thinking": {
+      "extracting": "Reading and extracting content...",
+      "checking": "Cross-referencing databases...",
+      "analyzing": "Deep analysis in progress...",
+      "scoring": "Calculating risk assessment...",
+      "extract1": "Scanning image for text and hidden content...",
+      "extract2": "Identifying sender details and message structure...",
+      "extract3": "Detecting embedded URLs and phone numbers...",
+      "check1": "Checking URLs against VirusTotal threat database...",
+      "check2": "Cross-referencing phone numbers with scam reports...",
+      "check3": "Searching Malaysian scam pattern knowledge base...",
+      "analyze1": "Evaluating language patterns for social engineering tactics...",
+      "analyze2": "Comparing against known Malaysian scam templates...",
+      "analyze3": "Assessing urgency cues and impersonation signals...",
+      "score1": "Aggregating evidence from all analysis tools...",
+      "score2": "Computing final risk score and generating action plan..."
+    }
   },
   "history": {
     "title": "History",
