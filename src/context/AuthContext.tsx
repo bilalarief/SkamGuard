@@ -16,18 +16,21 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
+  signInAnonymously,
   GoogleAuthProvider,
   type User,
 } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/config";
 
 interface AuthContextValue {
-  /** Current Firebase user, null if not logged in */
+  /** Current Firebase user, null if not loaded yet */
   user: User | null;
   /** True while checking initial auth state */
   isLoading: boolean;
-  /** True if user is logged in (non-anonymous) */
+  /** True if user is logged in with a real (non-anonymous) account */
   isAuthenticated: boolean;
+  /** True if user is on a guest (anonymous) session */
+  isGuest: boolean;
   /** Sign in with email + password */
   signInWithEmail: (email: string, password: string) => Promise<void>;
   /** Register with email + password */
@@ -54,9 +57,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const auth = getFirebaseAuth();
-      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-        setUser(firebaseUser);
-        setIsLoading(false);
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (firebaseUser) {
+          // User already has a session (real or anonymous)
+          setUser(firebaseUser);
+          setIsLoading(false);
+        } else {
+          // No session at all — auto sign in as anonymous
+          // This gives guests a real Firebase Auth UID so Firestore
+          // rules (request.auth != null) pass without forcing sign-up.
+          try {
+            await signInAnonymously(auth);
+            // onAuthStateChanged fires again with the anonymous user
+          } catch {
+            // Anonymous auth disabled in Firebase console — continue without auth
+            setUser(null);
+            setIsLoading(false);
+          }
+        }
       });
       return unsubscribe;
     } catch {
@@ -116,6 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const isAuthenticated = !!user && !user.isAnonymous;
+  const isGuest = !!user && user.isAnonymous;
 
   return (
     <AuthContext.Provider
@@ -123,6 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isLoading,
         isAuthenticated,
+        isGuest,
         signInWithEmail,
         registerWithEmail,
         signInWithGoogle,
