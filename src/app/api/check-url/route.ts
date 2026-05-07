@@ -20,7 +20,7 @@ const CheckUrlSchema = z.object({
 export async function POST(request: NextRequest) {
   // 1. Rate limiting — 20 URL checks per minute per IP
   const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous'
-  const { allowed, retryAfter } = rateLimit(`url:${clientIp}`, { maxRequests: 20, windowMs: 60_000 })
+  const { allowed, retryAfter } = await rateLimit(`url:${clientIp}`, { maxRequests: 20, windowMs: 60_000 })
 
   if (!allowed) {
     return NextResponse.json(

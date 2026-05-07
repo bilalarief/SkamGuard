@@ -35,7 +35,7 @@ const RequestSchema = z.object({
 export async function POST(request: NextRequest) {
   // 1. Rate limiting
   const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous'
-  const { allowed, retryAfter } = rateLimit(clientIp, { maxRequests: 3, windowMs: 60_000 })
+  const { allowed, retryAfter } = await rateLimit(clientIp, { maxRequests: 3, windowMs: 60_000 })
 
   if (!allowed) {
     return NextResponse.json(
