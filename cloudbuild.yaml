@@ -1,0 +1,40 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/skamguard:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/skamguard:latest'
+      - '.'
+
+  # Step 2: Push both tags to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'gcr.io/$PROJECT_ID/skamguard'
+
+  # Step 3: Deploy to Cloud Run (always uses latest build)
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'skamguard'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/skamguard:$COMMIT_SHA'
+      - '--region'
+      - 'asia-southeast1'
+      - '--platform'
+      - 'managed'
+      - '--quiet'
+
+# Store built images in Artifact Registry
+images:
+  - 'gcr.io/$PROJECT_ID/skamguard:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/skamguard:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'   # faster build
