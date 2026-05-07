@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User, LogOut } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/hooks/useLanguage";
 import { scaleIn, backdropFade } from "@/lib/motion";
@@ -81,7 +81,7 @@ export default function Header() {
                 <AnimatePresence>
                   {showUserMenu && (
                     <>
-                      <motion.div
+                      <m.div
                         className="fixed inset-0 z-40"
                         onClick={() => setShowUserMenu(false)}
                         variants={backdropFade}
@@ -89,7 +89,7 @@ export default function Header() {
                         animate="visible"
                         exit="exit"
                       />
-                      <motion.div
+                      <m.div
                         className="absolute right-0 top-10 z-50 bg-surface rounded-md shadow-lg border border-border min-w-[160px] py-1"
                         variants={scaleIn}
                         initial="hidden"
@@ -109,13 +109,13 @@ export default function Header() {
                           <LogOut className="w-3.5 h-3.5" />
                           {t("auth.signOut")}
                         </button>
-                      </motion.div>
+                      </m.div>
                     </>
                   )}
                 </AnimatePresence>
               </div>
             ) : (
-              <motion.button
+              <m.button
                 onClick={() => setShowAuthModal(true)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -130,7 +130,7 @@ export default function Header() {
               >
                 <User className="w-3.5 h-3.5" />
                 {t("auth.signIn")}
-              </motion.button>
+              </m.button>
             )}
           </div>
         </div>

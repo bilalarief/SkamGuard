@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ScanSearch, History } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 
 const NAV_ITEMS = [
@@ -38,7 +38,7 @@ export default function BottomNav() {
               href={item.href}
               className="flex items-center justify-center no-underline"
             >
-              <motion.div
+              <m.div
                 layout
                 initial={false}
                 animate={{
@@ -56,7 +56,7 @@ export default function BottomNav() {
                 
                 <AnimatePresence mode="wait">
                   {isActive && (
-                    <motion.span
+                    <m.span
                       key={item.href}
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: "auto" }}
@@ -65,10 +65,10 @@ export default function BottomNav() {
                       className="text-[13px] sm:text-sm font-bold text-[#00A6F4] whitespace-nowrap overflow-hidden"
                     >
                       {t(item.labelKey)}
-                    </motion.span>
+                    </m.span>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </m.div>
             </Link>
           );
         })}

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { MotionProvider } from "@/components/providers/MotionProvider";
 import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 import DesktopAlert from "@/components/layout/DesktopAlert";
@@ -131,19 +132,21 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${plusJakartaSans.variable} antialiased bg-[#0F172A]`}>
         <LanguageProvider>
-          <AuthProvider>
-            {/* Smartphone alert — only visible on lg+ screens */}
-            <DesktopAlert />
+          <MotionProvider>
+            <AuthProvider>
+              {/* Smartphone alert — only visible on lg+ screens */}
+              <DesktopAlert />
 
-            {/* App shell — responsive up to tablet, centered on larger screens */}
-            <div className="max-w-[768px] mx-auto min-h-screen bg-bg relative shadow-2xl overflow-x-hidden">
-              <Header />
-              <main className="pt-14 pb-20 min-h-screen">
-                {children}
-              </main>
-              <BottomNav />
-            </div>
-          </AuthProvider>
+              {/* App shell — responsive up to tablet, centered on larger screens */}
+              <div className="max-w-[768px] mx-auto min-h-screen bg-bg relative shadow-2xl overflow-x-hidden">
+                <Header />
+                <main className="pt-14 pb-20 min-h-screen">
+                  {children}
+                </main>
+                <BottomNav />
+              </div>
+            </AuthProvider>
+          </MotionProvider>
         </LanguageProvider>
       </body>
     </html>

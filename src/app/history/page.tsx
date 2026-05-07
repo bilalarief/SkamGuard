@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ChevronRight, AlertTriangle, Trash2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useHistoryStore, type HistoryItem } from "@/store/history.store";
 import { useAnalysisStore } from "@/store/analysis.store";
@@ -66,7 +66,7 @@ function HistoryCard({
   const scamName = item.scamType ? t(`scamTypes.${item.scamType}.name`) : t("common.unknown");
 
   return (
-    <motion.button
+    <m.button
       onClick={onClick}
       whileHover={cardHover.whileHover}
       whileTap={cardHover.whileTap}
@@ -103,7 +103,7 @@ function HistoryCard({
 
         <ChevronRight className="w-5 h-5 text-[#94A3B8] shrink-0" />
       </div>
-    </motion.button>
+    </m.button>
   );
 }
 
@@ -135,7 +135,7 @@ export default function HistoryPage() {
   }
 
   return (
-    <motion.div
+    <m.div
       className="container-app py-6 space-y-6"
       variants={fadeInUp}
       initial="hidden"
@@ -148,7 +148,7 @@ export default function HistoryPage() {
         </h1>
 
         {items.length > 0 && (
-          <motion.button
+          <m.button
             onClick={clearAll}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -161,13 +161,13 @@ export default function HistoryPage() {
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>{t("history.clearAll")}</span>
-          </motion.button>
+          </m.button>
         )}
       </div>
 
       {/* Empty state */}
       {items.length === 0 && (
-        <motion.div
+        <m.div
           className="text-center py-16 space-y-4"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -179,26 +179,26 @@ export default function HistoryPage() {
           <p className="text-sm text-text-muted leading-relaxed max-w-xs mx-auto">
             {t("history.empty")}
           </p>
-        </motion.div>
+        </m.div>
       )}
 
       {/* History list */}
-      <motion.div
+      <m.div
         className="space-y-3"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
       >
         {items.map((item) => (
-          <motion.div key={item.id} variants={staggerItem}>
+          <m.div key={item.id} variants={staggerItem}>
             <HistoryCard
               item={item}
               onClick={() => handleItemClick(item)}
               t={t}
             />
-          </motion.div>
+          </m.div>
         ))}
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }

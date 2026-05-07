@@ -23,7 +23,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useReducedMotion, type Transition } from "framer-motion";
+import { m, AnimatePresence, useReducedMotion, type Transition } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 import { HERO_SLIDES, HERO_AUTOPLAY_DELAY } from "@/data/heroSlides";
 
@@ -135,7 +135,7 @@ export default function HeroSection() {
     >
       {/* ─── Slide layer ─── */}
       <AnimatePresence initial={false} custom={dragDirection} mode="wait">
-        <motion.div
+        <m.div
           key={activeSlide.id}
           custom={dragDirection}
           variants={slideVariants}
@@ -193,7 +193,7 @@ export default function HeroSection() {
               </h3>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
 
       {/* ─── Progress bar indicators ─── */}

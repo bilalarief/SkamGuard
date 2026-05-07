@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Smartphone, X, ArrowDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 
 /**
@@ -25,7 +25,7 @@ export default function DesktopAlert() {
   return (
     <AnimatePresence>
       {visible && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
@@ -42,7 +42,7 @@ export default function DesktopAlert() {
             "
           >
             {/* Animated phone icon */}
-            <motion.div
+            <m.div
               animate={{ y: [0, -3, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="
@@ -52,7 +52,7 @@ export default function DesktopAlert() {
               "
             >
               <Smartphone className="w-5 h-5 text-[#00A6F4]" />
-            </motion.div>
+            </m.div>
 
             {/* Message */}
             <div className="flex-1 min-w-0">
@@ -84,7 +84,7 @@ export default function DesktopAlert() {
               <X className="w-3.5 h-3.5 text-white/60" />
             </button>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

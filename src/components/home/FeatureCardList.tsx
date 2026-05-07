@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import Image from "next/image";
 import { useLanguage } from "@/hooks/useLanguage";
 import { cardHover } from "@/lib/motion";
@@ -13,7 +13,7 @@ export default function FeatureCardList() {
   return (
     <section className="space-y-3">
       <Link href="/scan" className="block no-underline">
-        <motion.div
+        <m.div
           whileHover={cardHover.whileHover}
           whileTap={cardHover.whileTap}
           transition={cardHover.transition}
@@ -37,18 +37,17 @@ export default function FeatureCardList() {
             </div>
           </div>
 
-          {/* Search Icon Background */}
+          {/* Search Icon Background — fill inside positioned container */}
           <div className="absolute right-[-15px] top-1/2 -translate-y-5/9 w-35 h-35 opacity-100 pointer-events-none">
             <Image
               src="/icons/IconSearchWhite.png"
               alt=""
-              width={140}
-              height={140}
-              className="w-full h-full object-contain"
+              fill
+              className="object-contain"
               aria-hidden="true"
             />
           </div>
-        </motion.div>
+        </m.div>
       </Link>
     </section>
   );

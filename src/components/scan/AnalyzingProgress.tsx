@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { CheckCircle2, Sparkles, ArrowLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAnalysisStore, type AnalysisStep } from "@/store/analysis.store";
 
@@ -193,7 +193,7 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
       {/* AI Thinking Bubble — Gemini-style */}
       <AnimatePresence mode="wait">
         {thinkingText && (
-          <motion.div
+          <m.div
             key={thinkingText}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -212,7 +212,7 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
                   {/* Pulsing dots */}
                   <div className="flex gap-1 mt-1.5">
                     {[0, 1, 2].map((i) => (
-                      <motion.div
+                      <m.div
                         key={i}
                         className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#4285F4] to-[#9B72CB]"
                         animate={{
@@ -231,7 +231,7 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -243,7 +243,7 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
           const isGemini = step.stepId === "analyzing";
 
           return (
-            <motion.div
+            <m.div
               key={step.stepId}
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
@@ -251,13 +251,13 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
               className="flex items-center gap-3"
             >
               {isCompleted ? (
-                <motion.div
+                <m.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 500, damping: 25 }}
                 >
                   <CheckCircle2 className="w-5 h-5 text-[#2BB5E0] shrink-0" />
-                </motion.div>
+                </m.div>
               ) : isActive && isGemini ? (
                 <div className="w-5 h-5 shrink-0 flex items-center justify-center">
                   <GeminiLogo className="w-4 h-4 animate-gentle-pulse" />
@@ -290,7 +290,7 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
                   </div>
                 )}
               </div>
-            </motion.div>
+            </m.div>
           );
         })}
       </div>

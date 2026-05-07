@@ -1,12 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 import { SCAM_STATS } from "@/data/scamStats";
 import { staggerContainer, staggerItem, cardHover } from "@/lib/motion";
 
 export default function StatsSection() {
   const { t } = useLanguage();
+  const prefersReducedMotion = useReducedMotion();
 
   // Show only statsCases and statsLoss
   const displayStats = SCAM_STATS.filter(
@@ -15,19 +16,19 @@ export default function StatsSection() {
 
   return (
     <section className="space-y-3">
-      <motion.div
+      <m.div
         className="grid grid-cols-2 gap-4"
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
+        variants={prefersReducedMotion ? undefined : staggerContainer}
+        initial={prefersReducedMotion ? undefined : "hidden"}
+        animate={prefersReducedMotion ? undefined : "visible"}
       >
         {displayStats.map((stat) => {
           const Icon = stat.icon;
 
           return (
-            <motion.div
+            <m.div
               key={stat.key}
-              variants={staggerItem}
+              variants={prefersReducedMotion ? undefined : staggerItem}
               whileHover={cardHover.whileHover}
               whileTap={cardHover.whileTap}
               className="
@@ -50,10 +51,10 @@ export default function StatsSection() {
                   {t(`home.${stat.key}Subtext`)}
                 </span>
               </div>
-            </motion.div>
+            </m.div>
           );
         })}
-      </motion.div>
+      </m.div>
     </section>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   CheckCircle2,
   XCircle,
@@ -110,7 +110,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
   const cfg = STATUS_CONFIG[status];
 
   return (
-    <motion.div
+    <m.div
       layout
       role="alert"
       aria-live="assertive"
@@ -167,6 +167,6 @@ export function Toast({ toast, onDismiss }: ToastProps) {
           to   { transform: scaleX(0); }
         }
       `}</style>
-    </motion.div>
+    </m.div>
   );
 }

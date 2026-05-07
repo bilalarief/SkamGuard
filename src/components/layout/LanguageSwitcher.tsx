@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 
 /**
@@ -63,7 +63,7 @@ export default function LanguageSwitcher() {
           >
             {/* Sliding active indicator */}
             {isActive && (
-              <motion.div
+              <m.div
                 layoutId="lang-indicator"
                 className={`
                   absolute inset-0 rounded-full

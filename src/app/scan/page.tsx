@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ScanSearch, Link2, Phone, MessageSquareText, ArrowLeft, Sparkles, ChevronRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAnalysis, fileToBase64 } from "@/hooks/useAnalysis";
 import { fadeInUp, staggerContainer, staggerItem } from "@/lib/motion";
@@ -139,7 +139,7 @@ function ScanContent() {
   // ──────────────────────────────────────────────
   if (!activeMode) {
     return (
-      <motion.div
+      <m.div
         className="container-app py-6 space-y-6"
         variants={fadeInUp}
         initial="hidden"
@@ -149,14 +149,14 @@ function ScanContent() {
           {t("scan.title")}
         </h1>
 
-        <motion.div
+        <m.div
           className="space-y-4"
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
         >
           {MODE_CARDS.map((card) => (
-            <motion.div key={card.mode} variants={staggerItem}>
+            <m.div key={card.mode} variants={staggerItem}>
               <ScanModeCard
                 icon={card.icon}
                 labelKey={card.labelKey}
@@ -166,10 +166,10 @@ function ScanContent() {
                 recommended={card.recommended}
                 onClick={() => setActiveMode(card.mode)}
               />
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     );
   }
 
@@ -179,7 +179,7 @@ function ScanContent() {
   const currentCard = MODE_CARDS.find((c) => c.mode === activeMode);
 
   return (
-    <motion.div
+    <m.div
       className="container-app py-6 space-y-6"
       variants={fadeInUp}
       initial="hidden"
@@ -204,7 +204,7 @@ function ScanContent() {
       </h1>
 
       {/* Mode Content */}
-      <motion.div
+      <m.div
         className="space-y-4"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -225,21 +225,21 @@ function ScanContent() {
         {activeMode === "phone" && (
           <PhoneChecker onSubmit={setPhoneInput} onChange={setPhoneInput} />
         )}
-      </motion.div>
+      </m.div>
 
       {/* Error display */}
       {error && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           className="p-3 bg-risk-high-bg/50 border border-risk-high/20 rounded-xl"
         >
           <p className="text-sm text-risk-high">{error}</p>
-        </motion.div>
+        </m.div>
       )}
 
       {/* Submit button */}
-      <motion.button
+      <m.button
         disabled={!canSubmit}
         onClick={handleAnalyze}
         whileHover={canSubmit ? { scale: 1.01 } : {}}
@@ -255,7 +255,7 @@ function ScanContent() {
         `}
       >
         {t("scan.analyzeButton")}
-      </motion.button>
+      </m.button>
 
       {/* Footer disclaimer */}
       <footer className="text-center space-y-2 pt-4">
@@ -267,7 +267,7 @@ function ScanContent() {
           <span className="font-medium">{t("common.poweredBy")}</span>
         </div>
       </footer>
-    </motion.div>
+    </m.div>
   );
 }
 

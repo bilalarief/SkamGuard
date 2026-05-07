@@ -9,7 +9,7 @@
 
 import { useState } from "react";
 import { X, Mail, Eye, EyeOff } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/hooks/useLanguage";
 import { drawerUp, backdropFade } from "@/lib/motion";
@@ -71,7 +71,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
           {/* Backdrop */}
-          <motion.div
+          <m.div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             variants={backdropFade}
             initial="hidden"
@@ -81,7 +81,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           />
 
           {/* Drawer */}
-          <motion.div
+          <m.div
             className="relative w-full max-w-md bg-surface rounded-t-3xl sm:rounded-2xl p-6 space-y-5 z-10"
             variants={drawerUp}
             initial="hidden"
@@ -102,7 +102,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </div>
 
             {/* Google Sign In */}
-            <motion.button
+            <m.button
               onClick={handleGoogleSignIn}
               disabled={loading}
               whileHover={{ scale: 1.01 }}
@@ -123,7 +123,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
               </svg>
               {t("auth.continueGoogle")}
-            </motion.button>
+            </m.button>
 
             {/* Divider */}
             <div className="flex items-center gap-3">
@@ -186,18 +186,18 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               {/* Error message */}
               <AnimatePresence>
                 {error && (
-                  <motion.p
+                  <m.p
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                     className="text-xs text-risk-high bg-risk-high-bg/50 px-3 py-2 rounded-lg overflow-hidden"
                   >
                     {error}
-                  </motion.p>
+                  </m.p>
                 )}
               </AnimatePresence>
 
-              <motion.button
+              <m.button
                 type="submit"
                 disabled={loading || !email || !password}
                 whileHover={{ scale: 1.01 }}
@@ -217,7 +217,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   ? t("auth.signIn")
                   : t("auth.register")
                 }
-              </motion.button>
+              </m.button>
             </form>
 
             {/* Switch mode */}
@@ -230,7 +230,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 {mode === "login" ? t("auth.register") : t("auth.signIn")}
               </button>
             </p>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>

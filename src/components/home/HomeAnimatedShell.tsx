@@ -12,31 +12,32 @@
 
 "use client";
 
-import { motion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/motion";
 import StatsSection from "./StatsSection";
 import FeatureCardList from "./FeatureCardList";
 import AppFooter from "./AppFooter";
 
 export default function HomeAnimatedShell() {
+  const prefersReducedMotion = useReducedMotion();
   return (
-    <motion.div
+    <m.div
       className="flex-1 bg-[#F8FAFC] rounded-t-[32px] -mt-6 relative z-10 px-5 pt-8 pb-6 space-y-6 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]"
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
+      variants={prefersReducedMotion ? undefined : staggerContainer}
+      initial={prefersReducedMotion ? undefined : "hidden"}
+      animate={prefersReducedMotion ? undefined : "visible"}
     >
       <div className="container-app">
-        <motion.div className="mb-4" variants={staggerItem}>
+        <m.div className="mb-4" variants={prefersReducedMotion ? undefined : staggerItem}>
           <StatsSection />
-        </motion.div>
-        <motion.div variants={staggerItem}>
+        </m.div>
+        <m.div variants={prefersReducedMotion ? undefined : staggerItem}>
           <FeatureCardList />
-        </motion.div>
-        <motion.div variants={staggerItem}>
+        </m.div>
+        <m.div variants={prefersReducedMotion ? undefined : staggerItem}>
           <AppFooter />
-        </motion.div>
+        </m.div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
