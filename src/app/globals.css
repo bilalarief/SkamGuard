@@ -38,7 +38,7 @@
   --color-error: #E74C3C;
   --color-info: #5FA8D3;
 
-  --font-family-primary: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-family-primary: var(--font-plus-jakarta), system-ui, -apple-system, sans-serif;
 
   --radius-sm: 8px;
   --radius-md: 12px;
