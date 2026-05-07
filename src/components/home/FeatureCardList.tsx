@@ -1,7 +1,8 @@
 "use client";
 
-import { Search, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useLanguage } from "@/hooks/useLanguage";
 import { cardHover } from "@/lib/motion";
 import Link from "next/link";
@@ -38,10 +39,13 @@ export default function FeatureCardList() {
 
           {/* Search Icon Background */}
           <div className="absolute right-[-15px] top-1/2 -translate-y-5/9 w-35 h-35 opacity-100 pointer-events-none">
-            <img 
-              src="/icons/IconSearchWhite.png" 
-              alt="" 
+            <Image
+              src="/icons/IconSearchWhite.png"
+              alt=""
+              width={140}
+              height={140}
               className="w-full h-full object-contain"
+              aria-hidden="true"
             />
           </div>
         </motion.div>

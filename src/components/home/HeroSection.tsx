@@ -23,7 +23,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, type Transition } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 import { HERO_SLIDES, HERO_AUTOPLAY_DELAY } from "@/data/heroSlides";
 
@@ -118,9 +118,9 @@ export default function HeroSection() {
     }),
   };
 
-  const transition = prefersReducedMotion
+  const transition: Transition = prefersReducedMotion
     ? { duration: 0 }
-    : { duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] };
+    : { duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] };
 
   const activeSlide = HERO_SLIDES[activeIndex];
 

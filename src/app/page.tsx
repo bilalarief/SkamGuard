@@ -1,49 +1,35 @@
-"use client";
+/**
+ * Home page — Server Component.
+ *
+ * P4 optimization: removed "use client" from page level.
+ * framer-motion animations isolated to HomeAnimatedShell (Client Component).
+ * HeroSection is also "use client" but Next.js handles that boundary correctly.
+ *
+ * Benefits:
+ * - Full page HTML rendered server-side → faster FCP + better SEO
+ * - Initial JS bundle for this route reduced (no framer on page level)
+ * - Suspense boundary still provides loading skeleton fallback
+ *
+ * @module app/page
+ */
 
 import { Suspense } from "react";
-import { motion } from "framer-motion";
 import HeroSection from "@/components/home/HeroSection";
-import FeatureCardList from "@/components/home/FeatureCardList";
-import StatsSection from "@/components/home/StatsSection";
-import AppFooter from "@/components/home/AppFooter";
+import HomeAnimatedShell from "@/components/home/HomeAnimatedShell";
 import { HomePageSkeleton } from "@/components/shared/Skeleton";
-import { fadeInUp, staggerContainer, staggerItem } from "@/lib/motion";
-
-function HomeContent() {
-  return (
-    <div className="w-full flex flex-col min-h-screen bg-surface">
-      {/* Top Banner Area */}
-      <div className="-mt-14 h-[440px] relative w-full overflow-hidden">
-        <HeroSection />
-      </div>
-
-      {/* White Container */}
-      <motion.div
-        className="flex-1 bg-[#F8FAFC] rounded-t-[32px] -mt-6 relative z-10 px-5 pt-8 pb-6 space-y-6 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]"
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="container-app">
-          <motion.div className="mb-4" variants={staggerItem}>
-            <StatsSection />
-          </motion.div>
-          <motion.div variants={staggerItem}>
-            <FeatureCardList />
-          </motion.div>
-          <motion.div variants={staggerItem}>
-            <AppFooter />
-          </motion.div>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
 
 export default function HomePage() {
   return (
     <Suspense fallback={<HomePageSkeleton />}>
-      <HomeContent />
+      <div className="w-full flex flex-col min-h-screen bg-surface">
+        {/* Hero banner — client component (carousel state) */}
+        <div className="-mt-14 h-[440px] relative w-full overflow-hidden">
+          <HeroSection />
+        </div>
+
+        {/* Animated content sections — client component (framer-motion) */}
+        <HomeAnimatedShell />
+      </div>
     </Suspense>
   );
 }
