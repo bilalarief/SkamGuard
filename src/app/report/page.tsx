@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -24,8 +24,9 @@ import FooterDisclaimer from "@/components/shared/FooterDisclaimer";
 import { ToastContainer } from "@/components/shared/ToastContainer";
 import { useToast } from "@/hooks/useToast";
 import type { RiskLevel } from "@/types/analysis";
+import { ReportPageSkeleton } from "@/components/shared/Skeleton";
 
-export default function ReportPage() {
+function ReportContent() {
   const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -299,5 +300,13 @@ export default function ReportPage() {
         verdict={riskLevel as any}
       />
     </div>
+  );
+}
+
+export default function ReportPage() {
+  return (
+    <Suspense fallback={<ReportPageSkeleton />}>
+      <ReportContent />
+    </Suspense>
   );
 }

@@ -96,3 +96,63 @@ export function ScanPageSkeleton() {
     </div>
   );
 }
+
+/** Report page skeleton */
+export function ReportPageSkeleton() {
+  return (
+    <div className="container-app py-6 space-y-6" aria-label="Loading report...">
+      {/* Back button */}
+      <Skeleton width="w-20" height="h-5" />
+
+      {/* Title */}
+      <Skeleton width="w-1/2" height="h-8" />
+
+      {/* Main white card section */}
+      <div className="bg-white p-3 rounded-sm space-y-4 shadow-sm">
+        {/* Risk Gauge Area */}
+        <div className="p-6 flex justify-center">
+          <Skeleton width="w-48" height="h-48" rounded="rounded-full" />
+        </div>
+        
+        {/* Verdict Badge */}
+        <div className="pb-6 flex justify-center">
+           <Skeleton width="w-32" height="h-8" rounded="rounded-full" />
+        </div>
+
+        {/* Scam Type Card */}
+        <Skeleton width="w-full" height="h-24" rounded="rounded-2xl" />
+
+        {/* Red Flags Card */}
+        <Skeleton width="w-full" height="h-32" rounded="rounded-2xl" />
+
+        {/* Action Plan Title */}
+        <div className="pt-2">
+          <Skeleton width="w-24" height="h-4" />
+        </div>
+        
+        {/* Action Plan Buttons */}
+        <div className="space-y-2">
+          <Skeleton width="w-full" height="h-14" rounded="rounded-xl" />
+          <Skeleton width="w-full" height="h-14" rounded="rounded-xl" />
+        </div>
+
+        {/* Community Report Buttons */}
+        <div className="pt-2 flex gap-3">
+          <Skeleton width="w-1/2" height="h-12" rounded="rounded-xl" />
+          <Skeleton width="w-1/2" height="h-12" rounded="rounded-xl" />
+        </div>
+      </div>
+
+      {/* Bottom Action Buttons (Share, Scan Again) */}
+      <div className="space-y-3 pt-2">
+         <Skeleton width="w-full" height="h-12" rounded="rounded-sm" />
+         <Skeleton width="w-full" height="h-12" rounded="rounded-sm" />
+      </div>
+      
+      {/* Footer */}
+      <div className="flex justify-center pt-4">
+        <Skeleton width="w-40" height="h-4" />
+      </div>
+    </div>
+  );
+}
