@@ -46,6 +46,16 @@ LOW (weight: LOW):
 - Standard business communication templates
 
 ═══════════════════════════════════════
+BEHAVIORAL & PSYCHOLOGICAL MANIPULATION
+═══════════════════════════════════════
+Look for these social engineering tactics:
+- Isolation: "Jangan beritahu keluarga/kawan", "Selesaikan hal ini secara senyap"
+- Artificial Scarcity / Urgency: "Tawaran sah untuk 20 minit sahaja", "Cepat sebelum terlambat"
+- Authority Escalation: Caller starts as customer service, quickly transfers to "Pegawai Polis" or "BNM"
+- Love Bombing (Love/Investment Scam): Excessive compliments and trust building before asking for financial help
+- Sunk Cost Fallacy: "Anda dah bayar yuran pendaftaran, bayar cukai sikit lagi untuk dapatkan semua duit anda"
+
+═══════════════════════════════════════
 SCORING RULES (Strict)
 ═══════════════════════════════════════
 Malaysian banks NEVER request TAC/OTP via WhatsApp, Telegram, or SMS links.
