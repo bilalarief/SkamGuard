@@ -40,6 +40,7 @@ export default function BottomNav() {
             >
               <m.div
                 layout
+                data-tour={item.href === '/history' ? 'history-nav-btn' : undefined}
                 initial={false}
                 animate={{
                   backgroundColor: isActive ? "#E0F2FE" : "transparent",

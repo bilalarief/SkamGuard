@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { ScanSearch, Link2, Phone, MessageSquareText, ArrowLeft, Sparkles, ChevronRight } from "lucide-react";
 import { m } from "framer-motion";
@@ -75,6 +75,13 @@ function ScanContent() {
 
   const initialMode = searchParams.get("mode") as ScanMode | null;
   const [activeMode, setActiveMode] = useState<ScanMode | null>(initialMode);
+
+  useEffect(() => {
+    const mode = searchParams.get("mode") as ScanMode | null;
+    if (mode) {
+      setActiveMode(mode);
+    }
+  }, [searchParams]);
   const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState("");
   const [urlInput, setUrlInput] = useState("");
@@ -130,7 +137,9 @@ function ScanContent() {
   // ──────────────────────────────────────────────
   //  Loading / Analyzing View
   // ──────────────────────────────────────────────
-  if (isLoading) {
+  const isMockLoading = searchParams.get("mock_loading") === "true";
+
+  if (isLoading || isMockLoading) {
     return <AnalyzingProgress />;
   }
 

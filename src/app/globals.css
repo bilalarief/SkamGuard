@@ -39,6 +39,7 @@
   --color-info: #5FA8D3;
 
   --font-family-primary: var(--font-plus-jakarta), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: 8px;
   --radius-md: 12px;

@@ -242,5 +242,77 @@
     "hasAccount": "Sudah ada akaun?",
     "signOut": "Log Keluar",
     "myAccount": "Akaun Saya"
+  },
+  "shareDrawer": {
+    "title": "Kongsi Amaran Scam Ini",
+    "subtext": "Beri amaran kepada keluarga dan rakan sebelum mereka menjadi mangsa.",
+    "whatsapp": "Whatsapp",
+    "messages": "Mesej",
+    "facebook": "Facebook",
+    "saveToPhotos": "Simpan Gambar",
+    "nativeShare": "Kongsi melalui..."
+  },
+  "onboarding": {
+    "step1": {
+      "headline": "Rasa pelik dengan mesej tu?",
+      "subtext1": "Anda tidak keseorangan.",
+      "millions": "Berjuta-juta",
+      "of": "rakyat",
+      "malaysians": "Malaysia",
+      "subtext2": "menerima mesej scam setiap hari. Biar kami semak untuk anda.",
+      "showMeHow": "Tunjukkan Caranya",
+      "skip": "Langkau"
+    },
+    "step2": {
+      "headline": "Mesej mencurigakan?",
+      "subtext": "Semak sekarang."
+    },
+    "step3": {
+      "headline": "Imbas tangkapan skrin",
+      "subtext": "Satu muat naik semak semuanya — mesej, pautan, dan nombor."
+    },
+    "step4": {
+      "headline": "Muat naik tangkapan skrin",
+      "subtext": "Muat naik tangkapan skrin mesej mencurigakan yang anda terima. Berfungsi dengan WhatsApp, SMS, Telegram & E-mel.",
+      "tip": "Tip: Pastikan mesej, nombor telefon dan pautan kelihatan dalam tangkapan skrin."
+    },
+    "step5": {
+      "headline": "Sedia untuk dianalisis",
+      "subtext": "Tekan Analisis Sekarang dan SkamGuard akan uruskan selebihnya.",
+      "analyseNow": "Analisis Sekarang"
+    },
+    "step6": {
+      "headline": "Biar SkamGuard semak",
+      "subtext": "Kami semak mesej, pautan dan nombor telefon sekaligus."
+    },
+    "step7": {
+      "headline": "Laporan SkamGuard",
+      "subtext": "Di sini anda akan melihat keputusan imbasan penuh. Tekan mana-mana untuk teruskan."
+    },
+    "step8": {
+      "headline": "Kongsi laporan",
+      "subtext": "Anda boleh kongsi laporan untuk memberi amaran kepada orang lain yang mungkin menerima mesej scam yang sama."
+    },
+    "step9": {
+      "headline": "Kongsi laporan",
+      "subtext": "Kongsi ke WhatsApp, Mesej, Facebook, atau simpan gambar."
+    },
+    "step10": {
+      "headline": "Imbas semula",
+      "subtext": "Ada mesej mencurigakan lain? Mulakan imbasan baru di sini."
+    },
+    "step11": {
+      "headline": "Sejarah",
+      "subtext": "Semua keputusan imbasan lepas anda disimpan di sini."
+    },
+    "step12": {
+      "headline": "Sejarah",
+      "subtext": "Lihat semula mana-mana keputusan imbasan lepas anda di sini.",
+      "gotIt": "Faham! 🎉"
+    },
+    "fakeHistory": {
+      "dangerous": "Berbahaya",
+      "date": "Semalam · 11:11 PM"
+    }
   }
 }

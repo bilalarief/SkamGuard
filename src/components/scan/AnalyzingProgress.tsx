@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { CheckCircle2, Sparkles, ArrowLeft } from "lucide-react";
 import { m, AnimatePresence } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAnalysisStore, type AnalysisStep } from "@/store/analysis.store";
 
@@ -86,8 +87,42 @@ function GeminiLogo({ className = "" }: { className?: string }) {
 
 export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
   const { t } = useLanguage();
-  const currentStep = useAnalysisStore((s) => s.currentStep);
+  const realCurrentStep = useAnalysisStore((s) => s.currentStep);
+  const searchParams = useSearchParams();
+  const isMock = searchParams.get("mock_loading") === "true";
+
   const [thinkingIndex, setThinkingIndex] = useState(0);
+  const [mockStep, setMockStep] = useState<AnalysisStep | "complete" | "error">("extracting");
+  const [mockProgress, setMockProgress] = useState(0);
+
+  // Mock progress simulation for onboarding tour
+  useEffect(() => {
+    if (!isMock) return;
+    let current = 0;
+    const interval = setInterval(() => {
+      // randomly increment progress by 1 to 3
+      current += Math.floor(Math.random() * 3) + 1;
+      if (current >= 100) {
+        current = 100;
+        setMockStep("complete");
+        clearInterval(interval);
+        window.dispatchEvent(new Event("mock_analysis_complete"));
+      } else if (current >= 80) {
+        setMockStep("scoring");
+      } else if (current >= 40) {
+        setMockStep("analyzing");
+      } else if (current >= 15) {
+        setMockStep("checking_tools");
+      } else {
+        setMockStep("extracting");
+      }
+      setMockProgress(current);
+    }, 80); // Updates every 80ms, finishes in roughly 4-5 seconds
+    
+    return () => clearInterval(interval);
+  }, [isMock]);
+
+  const currentStep = isMock ? mockStep : realCurrentStep;
 
   // Map SSE step to index in our STEPS array
   const activeStepIndex = useMemo(() => {
@@ -98,12 +133,13 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
 
   // Progress percentage — driven by actual step position
   const progress = useMemo(() => {
+    if (isMock) return mockProgress;
     if (currentStep === "complete") return 100;
     if (currentStep === "error") return 0;
     // Each step is ~25% of the total
     const base = (activeStepIndex / STEPS.length) * 90;
     return Math.round(base);
-  }, [activeStepIndex, currentStep]);
+  }, [activeStepIndex, currentStep, isMock, mockProgress]);
 
   // Rotate AI thinking text every 2.5s
   useEffect(() => {
@@ -148,8 +184,9 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
         {t("scan.analyzing")}
       </h1>
 
-      {/* Circular progress with Gemini branding */}
-      <div className="flex justify-center py-4">
+      <div id="analyzing-content" className="space-y-6">
+        {/* Circular progress with Gemini branding */}
+        <div className="flex justify-center py-4">
         <div
           className="relative w-40 h-40 bg-surface rounded-2xl flex items-center justify-center p-4"
           style={{ background: "linear-gradient(145deg, #f8f9fa, #ffffff)" }}
@@ -293,6 +330,7 @@ export default function AnalyzingProgress({ onBack }: AnalyzingProgressProps) {
             </m.div>
           );
         })}
+      </div>
       </div>
 
       {/* Gemini branding footer */}

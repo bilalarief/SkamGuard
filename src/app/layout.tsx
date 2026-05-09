@@ -7,6 +7,7 @@ import { MotionProvider } from "@/components/providers/MotionProvider";
 import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 import DesktopAlert from "@/components/layout/DesktopAlert";
+import OnboardingTour from "@/components/onboarding/OnboardingTour";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -126,11 +127,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ms" suppressHydrationWarning>
+    <html lang="ms" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} ${plusJakartaSans.variable}`}>
       <head>
         <JsonLd />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${plusJakartaSans.variable} antialiased bg-[#0F172A]`}>
+      <body className="antialiased bg-[#0F172A]">
         <LanguageProvider>
           <MotionProvider>
             <AuthProvider>
@@ -144,6 +145,7 @@ export default function RootLayout({
                   {children}
                 </main>
                 <BottomNav />
+                <OnboardingTour />
               </div>
             </AuthProvider>
           </MotionProvider>

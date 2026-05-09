@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   CheckCircle,
@@ -13,6 +13,7 @@ import { useAnalysisStore } from "@/store/analysis.store";
 import { getRiskBgColor, getRiskColor } from "@/lib/utils/formatters";
 import RiskGauge from "@/components/report/RiskGauge";
 import ActionButton from "@/components/report/ActionButton";
+import ShareDrawer from "@/components/report/ShareDrawer";
 import Button from "@/components/shared/Button";
 import Modal from "@/components/shared/Modal";
 import ScamTypeCard from "@/components/report/ScamTypeCard";
@@ -27,10 +28,12 @@ import type { RiskLevel } from "@/types/analysis";
 export default function ReportPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { report, source } = useAnalysisStore();
+  const searchParams = useSearchParams();
+  const { report, source, setReport } = useAnalysisStore();
   const { user } = useAuth();
 
   const [showReportModal, setShowReportModal] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [reportType, setReportType] = useState<"phone" | "url">("phone");
   const [reportDescription, setReportDescription] = useState("");
   const [reportLoading, setReportLoading] = useState(false);
@@ -43,27 +46,43 @@ export default function ReportPage() {
   const backPath = source === "history" ? "/history" : "/scan";
 
   useEffect(() => {
-    if (!report) router.replace(backPath);
-  }, [report, router, backPath]);
+    if (!report) {
+      if (searchParams.get("debug") === "true") {
+        setReport({
+          overallScore: 80,
+          riskLevel: "high",
+          verdict: "DANGEROUS",
+          scamType: "macauScam",
+          redFlags: [
+            "Mengaku sebagai pihak berkuasa (polis/mahkamah)",
+            "Mendesak untuk tindakan segera",
+          ],
+          explanation: "This message is likely a scam.",
+          actionPlan: [
+            { type: "do_not_pay", label: "JANGAN pindahkan wang ke mana-mana akaun" },
+            { type: "call_nsrc", label: "Hubungi NSRC 997 segera (8 pagi - 8 malam)", phone: "997" },
+          ],
+          extractedContent: {
+            messageText: "Mock analysis content",
+            urls: [],
+            phoneNumbers: [],
+            sender: "Unknown",
+          },
+          phoneResult: null,
+          urlResults: [],
+          semakMuleUrl: null,
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        router.replace(backPath);
+      }
+    }
+  }, [report, router, backPath, searchParams, setReport]);
 
   if (!report) return null;
 
   const { overallScore, riskLevel, verdict, scamType, redFlags, explanation, actionPlan, phoneResult, urlResults, semakMuleUrl } = report;
   const firstUrl = urlResults?.[0]?.url;
-
-  function handleShareWhatsApp() {
-    const verdictText = t(`report.verdicts.${riskLevel}`);
-    const scamLine = scamType ? `${t("common.type")}: ${t(`scamTypes.${scamType}.name`)}\n` : "";
-
-    const message = t("report.shareMessage")
-      .replace("{{score}}", String(overallScore))
-      .replace("{{verdict}}", verdictText)
-      .replace("{{scamLine}}", scamLine)
-      .replace("{{explanation}}", explanation)
-      .replace("{{url}}", typeof window !== "undefined" ? window.location.origin : "");
-
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
-  }
 
   function handleSemakMule() {
     if (semakMuleUrl) window.open(semakMuleUrl, "_blank");
@@ -147,7 +166,7 @@ export default function ReportPage() {
       </h1>
 
       {/* Risk gauge & verdict badge */}
-      <section className="bg-white p-3 rounded-sm space-y-4">
+      <section id="report-risk-card" className="bg-white p-3 rounded-sm space-y-4">
         <div className=" p-6">
           <RiskGauge score={overallScore} level={riskLevel as RiskLevel} />
         </div>
@@ -169,7 +188,7 @@ export default function ReportPage() {
             {t("report.actionPlan")}
           </h2>
           <div className="space-y-2">
-            {actionPlan.map((action, i) => (
+            {actionPlan.map((action: any, i: number) => (
               <ActionButton key={`action-${i}`} action={action} index={i} />
             ))}
           </div>
@@ -191,7 +210,8 @@ export default function ReportPage() {
       {/* Action buttons */}
       <div className="space-y-3 pt-2">
         <button
-          onClick={handleShareWhatsApp}
+          data-tour="share-score-btn"
+          onClick={() => setIsShareOpen(true)}
           className="
             w-full h-12 rounded-sm
             bg-[#00A6F4] text-white text-base font-semibold
@@ -205,6 +225,7 @@ export default function ReportPage() {
         </button>
 
         <button
+          data-tour="scan-again-btn"
           onClick={() => router.push("/scan")}
           className="
             w-full h-12 rounded-sm
@@ -270,6 +291,13 @@ export default function ReportPage() {
           </p>
         </div>
       </Modal>
+
+      <ShareDrawer
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        score={overallScore}
+        verdict={riskLevel as any}
+      />
     </div>
   );
 }

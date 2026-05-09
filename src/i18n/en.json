@@ -242,5 +242,77 @@
     "hasAccount": "Already have an account?",
     "signOut": "Sign Out",
     "myAccount": "My Account"
+  },
+  "shareDrawer": {
+    "title": "Share this Scam Alert",
+    "subtext": "Warn your friends and family before they fall for it.",
+    "whatsapp": "Whatsapp",
+    "messages": "Messages",
+    "facebook": "Facebook",
+    "saveToPhotos": "Save to Photos",
+    "nativeShare": "Share via..."
+  },
+  "onboarding": {
+    "step1": {
+      "headline": "Something feels off about that message?",
+      "subtext1": "You're not alone.",
+      "millions": "Millions",
+      "of": "of",
+      "malaysians": "Malaysians",
+      "subtext2": "receive scam messages every single day. Let us check it for you.",
+      "showMeHow": "Show Me How",
+      "skip": "Skip"
+    },
+    "step2": {
+      "headline": "Suspicious message?",
+      "subtext": "Check it now."
+    },
+    "step3": {
+      "headline": "Scan the screenshot",
+      "subtext": "One upload checks everything — message, link, and number."
+    },
+    "step4": {
+      "headline": "Upload a screenshot",
+      "subtext": "Upload a screenshot of the suspicious message you received. Works with WhatsApp, SMS, Telegram & Email.",
+      "tip": "Tip: Make sure the message, phone number and link are visible in the screenshot."
+    },
+    "step5": {
+      "headline": "Ready to analyse",
+      "subtext": "Tap Analyse Now and SkamGuard will do the rest.",
+      "analyseNow": "Analyse Now"
+    },
+    "step6": {
+      "headline": "Let SkamGuard do the thing",
+      "subtext": "We check the message, links and phone number all at once."
+    },
+    "step7": {
+      "headline": "SkamGuard Report",
+      "subtext": "This is where you'll see the full scan result. Tap anywhere to finish the tour."
+    },
+    "step8": {
+      "headline": "Share the report",
+      "subtext": "You can share the reports to warn others who might receive the same scam message."
+    },
+    "step9": {
+      "headline": "Share the report",
+      "subtext": "Share to WhatsApp, Messages, Facebook, or save the image."
+    },
+    "step10": {
+      "headline": "Scan again",
+      "subtext": "Have another suspicious message? Start a new scan here."
+    },
+    "step11": {
+      "headline": "History",
+      "subtext": "All your past scan results are saved here."
+    },
+    "step12": {
+      "headline": "History",
+      "subtext": "Revisit any of your previous scan results here.",
+      "gotIt": "Got it! 🎉"
+    },
+    "fakeHistory": {
+      "dangerous": "Dangerous",
+      "date": "Yesterday · 11:11 PM"
+    }
   }
 }
