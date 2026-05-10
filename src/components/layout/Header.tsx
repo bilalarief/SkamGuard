@@ -101,6 +101,7 @@ export default function Header() {
               return (
                 <Link key={item.href} href={item.href} className="no-underline">
                   <div
+                    data-tour={item.href === '/history' ? 'history-nav-btn' : undefined}
                     className={`flex items-center gap-2 px-4 py-2 md:rounded-sm rounded-full transition-colors cursor-pointer ${
                       isActive
                         ? "bg-[#E0F2FE] text-[#00A6F4]"

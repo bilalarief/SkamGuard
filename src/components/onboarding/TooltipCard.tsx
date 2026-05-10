@@ -51,7 +51,7 @@ export default function TooltipCard({
       initial={{ opacity: 0, y: isTopNotch(notchPosition) ? -10 : 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="relative bg-white rounded-2xl p-5 shadow-xl w-[calc(100vw-2rem)] mx-auto"
+      className="relative bg-white rounded-2xl p-5 shadow-xl w-[calc(100vw-2rem)] max-w-[400px] mx-auto"
     >
       {/* Triangle notch */}
       <div className={NOTCH_CLASSES[notchPosition]} />

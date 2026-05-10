@@ -158,7 +158,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="w-full h-full relative overflow-hidden md:rounded-2xl"
+      className="w-full h-full relative overflow-hidden md:rounded-sm"
       role="region"
       aria-label="Scam awareness carousel"
       aria-roledescription="carousel"

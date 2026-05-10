@@ -43,6 +43,16 @@ export default function OnboardingTour() {
   const pathname = usePathname()
   const router = useRouter()
   const { t } = useLanguage()
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  // Detect desktop
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    setIsDesktop(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   // Element rects
   const [ctaRect, setCtaRect] = useState<DOMRect | null>(null)
@@ -114,7 +124,16 @@ export default function OnboardingTour() {
 
   useEffect(() => {
     if (step !== 2) return
-    return trackElement(() => document.querySelector('a[href="/scan"]'), setCtaRect, 50)
+    return trackElement(() => {
+      // Find the VISIBLE scan link — on mobile the desktop nav is hidden
+      const all = document.querySelectorAll('a[href="/scan"]')
+      for (const el of Array.from(all)) {
+        const rect = el.getBoundingClientRect()
+        // Skip elements with zero size (hidden by CSS)
+        if (rect.width > 0 && rect.height > 0) return el
+      }
+      return null
+    }, setCtaRect, 50)
   }, [step])
 
   useEffect(() => {
@@ -169,6 +188,39 @@ export default function OnboardingTour() {
     notchPosition: cfg.notchPosition,
   } : null
 
+  /** Helper: position tooltip BELOW the highlighted element, clamped to viewport */
+  const tooltipBelow = (rect: DOMRect): React.CSSProperties => {
+    const w = Math.min(rect.width, 400)
+    let left = rect.left
+    // Clamp so tooltip doesn't overflow right edge
+    if (left + w > window.innerWidth - 16) left = window.innerWidth - w - 16
+    // Clamp so tooltip doesn't overflow left edge
+    if (left < 16) left = 16
+    return { top: rect.bottom + 16, left, width: w }
+  }
+
+  /** Helper: position tooltip ABOVE the highlighted element */
+  const tooltipAbove = (rect: DOMRect): React.CSSProperties => {
+    if (isDesktop) {
+      const w = 400
+      let left = rect.left + rect.width / 2 - w / 2
+      left = Math.max(16, Math.min(left, window.innerWidth - w - 16))
+      return { bottom: window.innerHeight - rect.top + 16, left, width: w }
+    }
+    return { bottom: window.innerHeight - rect.top + 16, left: '50%', transform: 'translateX(-50%)' }
+  }
+
+  /** Helper: step 11 tooltip — below on desktop (header nav), above on mobile (bottom nav) */
+  const step11Pos = (rect: DOMRect): React.CSSProperties => {
+    if (isDesktop) {
+      const w = 400
+      let left = rect.left + rect.width / 2 - w / 2
+      left = Math.max(16, Math.min(left, window.innerWidth - w - 16))
+      return { top: rect.bottom + 16, left, width: w }
+    }
+    return { bottom: window.innerHeight - rect.top + 24, left: '50%', transform: 'translateX(-50%)' }
+  }
+
   return (
     <AnimatePresence mode="wait">
       {/* Step 1 — Welcome */}
@@ -195,31 +247,31 @@ export default function OnboardingTour() {
       {/* Step 2 — CTA */}
       {step === 2 && tooltipProps && (
         <DimOverlay key="s2" highlightRect={ctaRect} cursor onClick={nextStep}>
-          {ctaRect && <div className="absolute pointer-events-none" style={{ top: ctaRect.bottom + 16, left: ctaRect.left, width: ctaRect.width }}><TooltipCard {...tooltipProps} /></div>}
+          {ctaRect && <div className="absolute pointer-events-none" style={tooltipBelow(ctaRect)}><TooltipCard {...tooltipProps} /></div>}
         </DimOverlay>
       )}
 
       {/* Step 3 — Scan card */}
       {step === 3 && pathname === '/scan' && showStep3 && tooltipProps && (
         <DimOverlay key="s3" highlightRect={scanCardRect} cursor onClick={nextStep}>
-          {scanCardRect && <div className="absolute pointer-events-none" style={{ top: scanCardRect.bottom + 16, left: scanCardRect.left, width: scanCardRect.width }}><TooltipCard {...tooltipProps} /></div>}
+          {scanCardRect && <div className="absolute pointer-events-none" style={tooltipBelow(scanCardRect)}><TooltipCard {...tooltipProps} /></div>}
         </DimOverlay>
       )}
 
       {/* Step 4 — Upload */}
       {step === 4 && pathname === '/scan' && showStep4 && tooltipProps && (
         <DimOverlay key="s4" highlightRect={uploadZoneRect} cursor onClick={nextStep}>
-          {uploadZoneRect && <div className="absolute pointer-events-none" style={{ top: uploadZoneRect.bottom + 16, left: uploadZoneRect.left, width: uploadZoneRect.width }}><TooltipCard {...tooltipProps} /></div>}
+          {uploadZoneRect && <div className="absolute pointer-events-none" style={tooltipBelow(uploadZoneRect)}><TooltipCard {...tooltipProps} /></div>}
         </DimOverlay>
       )}
 
       {/* Step 5 — Fake preview + analyse */}
       {step === 5 && pathname === '/scan' && showStep5 && tooltipProps && (
         <DimOverlay key="s5" highlightRect={analyzeBtnRect} borderRadius="rounded-sm" cursor onClick={nextStep}>
-          <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
             {uploadZoneRect && <FakeUploadPreview uploadZoneRect={uploadZoneRect} />}
             {analyzeBtnRect && <FakeAnalyzeButton analyzeBtnRect={analyzeBtnRect} label={t('onboarding.step5.analyseNow')} />}
-            {analyzeBtnRect && <div className="absolute" style={{ top: analyzeBtnRect.bottom + 16, left: analyzeBtnRect.left, width: analyzeBtnRect.width, zIndex: 60 }}><TooltipCard {...tooltipProps} /></div>}
+            {analyzeBtnRect && <div className="absolute" style={{ ...tooltipBelow(analyzeBtnRect), zIndex: 60 }}><TooltipCard {...tooltipProps} /></div>}
           </div>
         </DimOverlay>
       )}
@@ -241,7 +293,7 @@ export default function OnboardingTour() {
       {/* Step 8 — Share */}
       {step === 8 && tooltipProps && (
         <DimOverlay key="s8" highlightRect={highlightRect} borderRadius="rounded-xl" cursor onClick={nextStep}>
-          {highlightRect && <div className="fixed z-[60] w-full max-w-[400px]" style={{ bottom: window.innerHeight - highlightRect.top + 16, left: '50%', transform: 'translateX(-50%)' }}><TooltipCard {...tooltipProps} /></div>}
+          {highlightRect && <div className="fixed z-[60] w-full max-w-[400px]" style={tooltipAbove(highlightRect)}><TooltipCard {...tooltipProps} /></div>}
         </DimOverlay>
       )}
 
@@ -249,28 +301,32 @@ export default function OnboardingTour() {
       {step === 9 && tooltipProps && (
         <DimOverlay key="s9" highlightRect={null} cursor onClick={nextStep}>
           <ShareDrawer isOpen onClose={nextStep} score={80} verdict="DANGEROUS" isTourActive />
-          <div className="absolute bottom-[360px] left-0 w-full max-w-[400px] z-[110]"><TooltipCard {...tooltipProps} /></div>
+          <div className="absolute bottom-[360px] left-1/2 -translate-x-1/2 w-full max-w-[400px] z-[110]"><TooltipCard {...tooltipProps} /></div>
         </DimOverlay>
       )}
 
       {/* Step 10 — Scan Again */}
       {step === 10 && tooltipProps && (
         <DimOverlay key="s10" highlightRect={highlightRect} borderRadius="rounded-xl" cursor onClick={nextStep}>
-          {highlightRect && <div className="fixed z-[60] w-full max-w-[400px]" style={{ bottom: window.innerHeight - highlightRect.top + 16, left: '50%', transform: 'translateX(-50%)' }}><TooltipCard {...tooltipProps} /></div>}
+          {highlightRect && <div className="fixed z-[60] w-full max-w-[400px]" style={tooltipAbove(highlightRect)}><TooltipCard {...tooltipProps} /></div>}
         </DimOverlay>
       )}
 
       {/* Step 11 — History nav */}
       {step === 11 && tooltipProps && (
-        <DimOverlay key="s11" highlightRect={highlightRect} borderRadius="rounded-full" cursor onClick={nextStep}>
-          {highlightRect && <div className="fixed z-[60] w-full max-w-[400px]" style={{ bottom: window.innerHeight - highlightRect.top + 24, left: '50%', transform: 'translateX(-50%)' }}><TooltipCard {...tooltipProps} /></div>}
+        <DimOverlay key="s11" highlightRect={highlightRect} borderRadius={isDesktop ? "rounded-sm" : "rounded-full"} cursor onClick={nextStep}>
+          {highlightRect && (
+            <div className="fixed z-[60] w-full max-w-[400px]" style={step11Pos(highlightRect)}>
+              <TooltipCard {...tooltipProps} notchPosition={isDesktop ? 'top-center' : tooltipProps.notchPosition} />
+            </div>
+          )}
         </DimOverlay>
       )}
 
       {/* Step 12 — History card */}
       {step === 12 && pathname === '/history' && showStep12 && tooltipProps && (
         <DimOverlay key="s12" highlightRect={null} cursor onClick={nextStep}>
-          <div className="absolute left-4 right-4 z-50" style={{ top: 140 }}><FakeHistoryCard t={t} /></div>
+          <div className="absolute left-4 right-4 z-50 max-w-[600px] mx-auto" style={{ top: 140 }}><FakeHistoryCard t={t} /></div>
           <div className="absolute z-[60] w-full max-w-[400px]" style={{ top: 280, left: '50%', transform: 'translateX(-50%)' }}>
             <TooltipCard {...tooltipProps}>
               <button className="w-full bg-sky-500 text-white font-bold py-3 px-4 rounded-xl shadow-md hover:bg-sky-600 transition-colors" onClick={nextStep}>{t('onboarding.step12.gotIt')}</button>
