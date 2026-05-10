@@ -10,8 +10,10 @@
 export interface HeroSlide {
   /** Unique slide ID */
   id: string
-  /** Path to banner image in /public */
+  /** Path to banner image in /public (mobile) */
   imageSrc: string
+  /** Path to banner image in /public (desktop) — falls back to imageSrc */
+  desktopImageSrc?: string
   /** Alt text for accessibility */
   imageAlt: string
   /** i18n key for the badge label (e.g. "Berita", "Amaran", "Petua") */
@@ -34,6 +36,7 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'slide-1',
     imageSrc: '/img/Banner1.png',
+    desktopImageSrc: '/img/BannerDekstop1.png',
     imageAlt: 'RM1.47 billion scam losses news',
     badgeKey: 'home.heroSlides.news',
     titleKey: 'home.heroSlides.slide1Title',
@@ -44,6 +47,7 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'slide-2',
     imageSrc: '/img/Banner2.png',
+    desktopImageSrc: '/img/BannerDekstop2.png',
     imageAlt: 'Online scam awareness alert',
     badgeKey: 'home.heroSlides.alert',
     titleKey: 'home.heroSlides.slide2Title',
@@ -54,6 +58,7 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'slide-3',
     imageSrc: '/img/Banner3.png',
+    desktopImageSrc: '/img/BannerDekstop3.png',
     imageAlt: 'SkamGuard verification tip',
     badgeKey: 'home.heroSlides.tip',
     titleKey: 'home.heroSlides.slide3Title',

@@ -6,7 +6,6 @@ import { AuthProvider } from "@/context/AuthContext";
 import { MotionProvider } from "@/components/providers/MotionProvider";
 import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
-import DesktopAlert from "@/components/layout/DesktopAlert";
 import OnboardingTour from "@/components/onboarding/OnboardingTour";
 
 const geistSans = Geist({
@@ -135,11 +134,8 @@ export default function RootLayout({
         <LanguageProvider>
           <MotionProvider>
             <AuthProvider>
-              {/* Smartphone alert — only visible on lg+ screens */}
-              <DesktopAlert />
-
-              {/* App shell — responsive up to tablet, centered on larger screens */}
-              <div className="max-w-[768px] mx-auto min-h-screen bg-bg relative shadow-2xl overflow-x-hidden">
+              {/* App shell — full width on all screens */}
+              <div className="w-full min-h-screen bg-bg relative overflow-x-hidden">
                 <Header />
                 <main className="pt-14 pb-20 min-h-screen">
                   {children}

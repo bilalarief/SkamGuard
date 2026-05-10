@@ -1,88 +1,93 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { m } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
+import { Languages, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { scaleIn } from "@/lib/motion";
 
-/**
- * Compact language toggle — pill with two segments.
- * Only two locales (BM / EN), so a segmented toggle is cleaner than a dropdown.
- *
- * Refactoring-UI principles applied:
- * - Ghost-level emphasis (secondary action, not primary)
- * - No dropdown for binary choice
- * - Motion indicator for active state
- * - Adaptive styling for hero (transparent) vs inner pages
- */
 export default function LanguageSwitcher() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const { locale, setLocale } = useLanguage();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const options = [
-    { code: "ms", label: "BM" },
-    { code: "en", label: "EN" },
+    { code: "ms", label: "Bahasa Melayu", short: "BM" },
+    { code: "en", label: "English", short: "EN" },
   ];
+
+  const currentOption = options.find((opt) => opt.code === locale) || options[0];
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div
       id="language-switcher"
-      className={`
-        relative inline-flex items-center
-        h-8 rounded-full p-0.5
-        ${isHome
-          ? "bg-white/10 border border-white/20"
-          : "bg-gray-100 border border-gray-200/60"
-        }
-      `}
-      role="radiogroup"
-      aria-label="Select language"
+      className="relative inline-flex items-center"
+      ref={dropdownRef}
     >
-      {options.map((opt) => {
-        const isActive = locale === opt.code;
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`
+          flex items-center gap-1.5 h-8 px-2.5 md:rounded-sm rounded-md border text-xs font-semibold
+          transition-colors duration-200 cursor-pointer
+          ${isHome 
+            ? "border-white/20 text-white bg-white/10 hover:bg-white/20 md:border-gray-200/60 md:text-gray-700 md:bg-gray-50 md:hover:bg-gray-100" 
+            : "border-gray-200/60 text-gray-700 bg-gray-50 hover:bg-gray-100"}
+        `}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+      >
+        <Languages className="w-3.5 h-3.5" />
+        <span className="inline">{currentOption.short}</span>
+        <ChevronDown className="w-3 h-3 opacity-70" />
+      </button>
 
-        return (
-          <button
-            key={opt.code}
-            role="radio"
-            aria-checked={isActive}
-            onClick={() => setLocale(opt.code)}
-            className={`
-              relative z-10 px-3 h-7 rounded-full
-              text-xs font-semibold tracking-wide
-              transition-colors duration-200 cursor-pointer
-              ${isActive
-                ? isHome
-                  ? "text-white"
-                  : "text-gray-900"
-                : isHome
-                  ? "text-white/50 hover:text-white/80"
-                  : "text-gray-400 hover:text-gray-600"
-              }
-            `}
+      <AnimatePresence>
+        {isOpen && (
+          <m.div
+            className="absolute right-0 top-10 z-50 bg-surface rounded-md shadow-lg border border-border min-w-[140px] py-1"
+            variants={scaleIn}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            style={{ transformOrigin: "top right" }}
+            role="listbox"
           >
-            {/* Sliding active indicator */}
-            {isActive && (
-              <m.div
-                layoutId="lang-indicator"
-                className={`
-                  absolute inset-0 rounded-full
-                  ${isHome
-                    ? "bg-white/20 shadow-sm"
-                    : "bg-white shadow-sm"
-                  }
-                `}
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 28,
+            {options.map((opt) => (
+              <button
+                key={opt.code}
+                role="option"
+                aria-selected={locale === opt.code}
+                onClick={() => {
+                  setLocale(opt.code);
+                  setIsOpen(false);
                 }}
-              />
-            )}
-            <span className="relative z-10">{opt.label}</span>
-          </button>
-        );
-      })}
+                className={`
+                  w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer
+                  ${locale === opt.code 
+                    ? "bg-[#E0F2FE] text-[#00A6F4] font-semibold" 
+                    : "text-text-primary hover:bg-surface-hover font-medium"}
+                `}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </m.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

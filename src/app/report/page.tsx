@@ -166,29 +166,37 @@ function ReportContent() {
         {t("report.scoreTitle")}
       </h1>
 
-      {/* Risk gauge & verdict badge */}
-      <section id="report-risk-card" className="bg-white p-3 rounded-sm space-y-4">
-        <div className=" p-6">
-          <RiskGauge score={overallScore} level={riskLevel as RiskLevel} />
+      {/* Risk gauge + details — side-by-side on desktop */}
+      <section id="report-risk-card" className="bg-white p-3 md:p-6 rounded-sm space-y-4">
+        <div className="md:flex md:items-start md:gap-8">
+          {/* LEFT: Gauge + Verdict badge */}
+          <div className="flex flex-col items-center md:w-[200px] md:shrink-0">
+            <div className="p-6">
+              <RiskGauge score={overallScore} level={riskLevel as RiskLevel} />
+            </div>
+            <div className="pb-4 md:pb-0">
+              <VerdictBadge level={riskLevel as any} text={verdictBadgeText} />
+            </div>
+          </div>
+
+          {/* RIGHT: Scam type + Red flags */}
+          <div className="flex-1 space-y-4 mt-4 md:mt-0">
+            {/* Scam type */}
+            {scamType && <ScamTypeCard scamType={scamType} />}
+
+            {/* Red flags */}
+            <RedFlagsCard flags={redFlags} />
+          </div>
         </div>
-        <div className=" pb-6">
-        {/* Verdict badge */}
-        <VerdictBadge level={riskLevel as any} text={verdictBadgeText} />
-        </div>
+      </section>
 
-      {/* Scam type */}
-      {scamType && <ScamTypeCard scamType={scamType} />}
-
-      {/* Red flags */}
-      <RedFlagsCard flags={redFlags} />
-
-      {/* Action plan — Agent-style interactive buttons */}
+      {/* Action plan — 2 columns on desktop */}
       {actionPlan.length > 0 && (
-        <section className="space-y-2">
+        <section className="bg-white p-3 md:p-6 rounded-sm space-y-3">
           <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
             {t("report.actionPlan")}
           </h2>
-          <div className="space-y-2">
+          <div className="space-y-2 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
             {actionPlan.map((action: any, i: number) => (
               <ActionButton key={`action-${i}`} action={action} index={i} />
             ))}
@@ -205,11 +213,10 @@ function ReportContent() {
           setReportType(type);
           setShowReportModal(true);
         }}
-        />
-        </section>  
+      />
 
-      {/* Action buttons */}
-      <div className="space-y-3 pt-2">
+      {/* Action buttons — side-by-side on desktop */}
+      <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 pt-2">
         <button
           data-tour="share-score-btn"
           onClick={() => setIsShareOpen(true)}

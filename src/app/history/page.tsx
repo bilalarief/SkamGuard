@@ -184,7 +184,7 @@ export default function HistoryPage() {
 
       {/* History list */}
       <m.div
-        className="space-y-3"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"

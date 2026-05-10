@@ -21,9 +21,9 @@ import { HomePageSkeleton } from "@/components/shared/Skeleton";
 export default function HomePage() {
   return (
     <Suspense fallback={<HomePageSkeleton />}>
-      <div className="w-full flex flex-col min-h-screen bg-surface">
+      <div className="w-full flex flex-col min-h-screen bg-surface md:bg-[#F8FAFC]">
         {/* Hero banner — client component (carousel state) */}
-        <div className="-mt-14 h-[440px] relative w-full overflow-hidden">
+        <div className="w-full -mt-14 h-[440px] md:mt-6 md:h-auto md:aspect-[5/1] md:max-w-[1280px] md:mx-auto md:px-4 relative overflow-hidden">
           <HeroSection />
         </div>
 

@@ -17,7 +17,7 @@ export default function BottomNav() {
   const { t } = useLanguage();
 
   return (
-    <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[88%] max-w-[420px] z-50">
+    <div className="md:hidden fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[88%] max-w-[420px] z-50">
       <nav
         id="bottom-nav"
         className="

@@ -22,19 +22,19 @@ export default function HomeAnimatedShell() {
   const prefersReducedMotion = useReducedMotion();
   return (
     <m.div
-      className="flex-1 bg-[#F8FAFC] rounded-t-[32px] -mt-6 relative z-10 px-5 pt-8 pb-6 space-y-6 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]"
-      variants={prefersReducedMotion ? undefined : staggerContainer}
-      initial={prefersReducedMotion ? undefined : "hidden"}
-      animate={prefersReducedMotion ? undefined : "visible"}
+      className="flex-1 bg-[#F8FAFC] md:bg-transparent rounded-t-[32px] md:rounded-none -mt-6 md:mt-0 relative z-10 px-5 md:px-0 pt-8 md:pt-6 pb-6 space-y-6 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] md:shadow-none"
+      variants={staggerContainer}
+      initial="hidden"
+      animate="visible"
     >
       <div className="container-app">
-        <m.div className="mb-4" variants={prefersReducedMotion ? undefined : staggerItem}>
+        <m.div className="mb-4" variants={staggerItem}>
           <StatsSection />
         </m.div>
-        <m.div variants={prefersReducedMotion ? undefined : staggerItem}>
+        <m.div variants={staggerItem}>
           <FeatureCardList />
         </m.div>
-        <m.div variants={prefersReducedMotion ? undefined : staggerItem}>
+        <m.div variants={staggerItem}>
           <AppFooter />
         </m.div>
       </div>

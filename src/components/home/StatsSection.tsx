@@ -18,9 +18,9 @@ export default function StatsSection() {
     <section className="space-y-3">
       <m.div
         className="grid grid-cols-2 gap-4"
-        variants={prefersReducedMotion ? undefined : staggerContainer}
-        initial={prefersReducedMotion ? undefined : "hidden"}
-        animate={prefersReducedMotion ? undefined : "visible"}
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
       >
         {displayStats.map((stat) => {
           const Icon = stat.icon;
@@ -28,7 +28,7 @@ export default function StatsSection() {
           return (
             <m.div
               key={stat.key}
-              variants={prefersReducedMotion ? undefined : staggerItem}
+              variants={staggerItem}
               whileHover={cardHover.whileHover}
               whileTap={cardHover.whileTap}
               className="
