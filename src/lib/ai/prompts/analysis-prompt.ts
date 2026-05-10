@@ -43,16 +43,14 @@ export function buildAnalysisPrompt(params: {
 
   const urlContext = urlResults.length > 0
     ? `\nURL CHECK RESULTS:\n${urlResults.map((r) =>
-        `- ${r.url}: verdict=${r.verdict}, malicious=${r.isMalicious}, vendors_flagged=${r.vendorsFlagged}/${r.totalVendors}, TLD=${r.tld}, free_domain=${r.isFreeDomain}${
-          r.bankPhishingMatch ? `, PHISHING_TARGET=${r.bankPhishingMatch.bankName} (official: ${r.bankPhishingMatch.officialDomain})` : ''
-        }`
-      ).join('\n')}`
+      `- ${r.url}: verdict=${r.verdict}, malicious=${r.isMalicious}, vendors_flagged=${r.vendorsFlagged}/${r.totalVendors}, TLD=${r.tld}, free_domain=${r.isFreeDomain}${r.bankPhishingMatch ? `, PHISHING_TARGET=${r.bankPhishingMatch.bankName} (official: ${r.bankPhishingMatch.officialDomain})` : ''
+      }`
+    ).join('\n')}`
     : ''
 
   const phoneContext = phoneResult
-    ? `\nPHONE CHECK RESULT:\n- Number: ${phoneResult.number}, Status: ${phoneResult.status}, Reports: ${phoneResult.reportCount}${
-        phoneResult.scamType ? `, ScamType: ${phoneResult.scamType}` : ''
-      }`
+    ? `\nPHONE CHECK RESULT:\n- Number: ${phoneResult.number}, Status: ${phoneResult.status}, Reports: ${phoneResult.reportCount}${phoneResult.scamType ? `, ScamType: ${phoneResult.scamType}` : ''
+    }`
     : ''
 
   const ragSection = ragContext

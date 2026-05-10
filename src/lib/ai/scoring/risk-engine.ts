@@ -39,31 +39,55 @@ interface ScoringInput {
 export function calculateRiskScore(input: ScoringInput): RiskReport {
   const { contentAnalysis, urlResults, phoneResult, extracted } = input
 
+  // --- Detect which signals are actually present in this scan ---
+  // Only present signals contribute to the scoring denominator.
+  // A missing signal is excluded (null), not counted as 0 out of its max.
+  const hasUrl = urlResults.length > 0
+  const hasPhone = extracted.phoneNumbers.length > 0
+  // hasContent: strip out URLs and phone numbers, check if real text remains
+  let cleanText = extracted.messageText
+  extracted.urls.forEach(u => { cleanText = cleanText.replace(u, '') })
+  extracted.phoneNumbers.forEach(p => { cleanText = cleanText.replace(p, '') })
+  const hasContent = cleanText.trim().length > 3
+
+  // Total weight = sum of weights for present signals only.
+  // Fallback to CONTENT weight if nothing detected (e.g. blank image upload).
+  const totalWeight = (
+    (hasContent ? SCORE_WEIGHTS.CONTENT : 0) +
+    (hasUrl ? SCORE_WEIGHTS.URL : 0) +
+    (hasPhone ? SCORE_WEIGHTS.PHONE : 0)
+  ) || SCORE_WEIGHTS.CONTENT
+
   // --- Component 1: Content analysis score (0–40) ---
   const rawContentScore = Math.max(0, Math.min(100, contentAnalysis.risk_score))
-  const contentScore = Math.round(rawContentScore * (SCORE_WEIGHTS.CONTENT / 100))
+  const contentScore = hasContent
+    ? Math.round(rawContentScore * (SCORE_WEIGHTS.CONTENT / 100))
+    : 0
 
   // --- Component 2: URL check score (0–30) ---
-  const urlScore = urlResults.length === 0
+  const urlScore = !hasUrl
     ? 0
     : Math.min(SCORE_WEIGHTS.URL, urlResults.reduce((acc, r) => {
-        let score = 0
-        if (r.verdict === 'DANGEROUS') score += 30
-        else if (r.verdict === 'SUSPICIOUS') score += 15
+      let score = 0
+      if (r.verdict === 'DANGEROUS') score += 30
+      else if (r.verdict === 'SUSPICIOUS') score += 15
 
-        // Bonus for bank phishing
-        if (r.bankPhishingMatch) score += 10
+      // Bonus for bank phishing
+      if (r.bankPhishingMatch) score += 10
 
-        // Bonus for free/new domains
-        if (r.isFreeDomain) score += 5
-        if (r.domainAgeDays !== null && r.domainAgeDays < 30) score += 5
+      // Bonus for free/new domains
+      if (r.isFreeDomain) score += 5
+      if (r.domainAgeDays !== null && r.domainAgeDays < 30) score += 5
 
-        return acc + score
-      }, 0))
+      return acc + score
+    }, 0))
 
   // --- Component 3: Phone check score (0–30) ---
+  // Guard: only apply if a phone number was actually extracted.
+  // checkPhone() always returns an object — never null — so we must
+  // check extracted.phoneNumbers to know if a real phone was present.
   let phoneScore = 0
-  if (phoneResult) {
+  if (hasPhone && phoneResult) {
     switch (phoneResult.status) {
       case 'SCAMMER':
         phoneScore = 30
@@ -80,14 +104,20 @@ export function calculateRiskScore(input: ScoringInput): RiskReport {
     }
   }
 
-  // --- Composite score ---
-  const overallScore = Math.min(100, contentScore + urlScore + phoneScore)
+  // --- Composite score (normalized by active weight) ---
+  // Formula: (sum of present scores) / totalWeight * 100
+  // Example URL-only: 30/30 * 100 = 100 (DANGEROUS) ✓
+  // Example text-only: 40/40 * 100 = 100 (can reach DANGEROUS) ✓
+  // Example text+URL:  (20+15)/70 * 100 = 50 (SUSPICIOUS) ✓
+  const overallScore = Math.round(
+    Math.min(100, ((contentScore + urlScore + phoneScore) / totalWeight) * 100)
+  )
 
   // --- Verdict classification ---
   const verdict: Verdict =
     overallScore >= RISK_THRESHOLDS.DANGEROUS ? 'DANGEROUS'
-    : overallScore >= RISK_THRESHOLDS.SUSPICIOUS ? 'SUSPICIOUS'
-    : 'SAFE'
+      : overallScore >= RISK_THRESHOLDS.SUSPICIOUS ? 'SUSPICIOUS'
+        : 'SAFE'
 
   const riskLevel: RiskLevel = classifyRiskLevel(overallScore)
 

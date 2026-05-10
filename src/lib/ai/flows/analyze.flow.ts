@@ -80,7 +80,7 @@ export const analyzeFlow = ai.defineFlow(
   },
   async (input: AnalyzeInput): Promise<RiskReport> => {
     // Use internal callback — set by analyzeWithSteps wrapper
-    const emitStep = (input as AnalyzeInput & { __onStep?: StepCallback }).__onStep || (() => {})
+    const emitStep = (input as AnalyzeInput & { __onStep?: StepCallback }).__onStep || (() => { })
 
     // ═══════════════════════════════════════════════════════════════
     // Step 1: Gemini extracts content (structured output — no tools)
@@ -103,10 +103,10 @@ export const analyzeFlow = ai.defineFlow(
       // URL checks — each has 4s timeout, null filtered out after
       allUrls.length > 0
         ? Promise.all(
-            allUrls.map((url) =>
-              withTimeout(checkUrl(url), 4000, null as URLCheckResult | null)
-            )
-          ).then((results) => results.filter((r): r is URLCheckResult => r !== null))
+          allUrls.map((url) =>
+            withTimeout(checkUrl(url), 4000, null as URLCheckResult | null)
+          )
+        ).then((results) => results.filter((r): r is URLCheckResult => r !== null))
         : Promise.resolve([] as URLCheckResult[]),
 
       // Phone check — local DB + Firebase, fast
@@ -114,7 +114,7 @@ export const analyzeFlow = ai.defineFlow(
 
       // RAG — skip if insufficient text (phone-only, URL-only, etc.)
       hasSubstantialText
-        ? withTimeout(searchScamDatabase(extracted.messageText.slice(0, 300)), 3000, '')
+        ? withTimeout(searchScamDatabase(extracted.messageText.slice(0, 1500)), 5000, '')
         : Promise.resolve(''),
     ])
 
@@ -255,9 +255,9 @@ async function analyzeContent(params: {
       explanation: output.explanation || '',
       action_plan: Array.isArray(output.action_plan)
         ? output.action_plan.map((a: { actionType?: string; label?: string }) => ({
-            actionType: a.actionType || 'info',
-            label: a.label || '',
-          }))
+          actionType: a.actionType || 'info',
+          label: a.label || '',
+        }))
         : [],
     }
   } catch (error) {
