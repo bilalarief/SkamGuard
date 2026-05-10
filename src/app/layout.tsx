@@ -7,6 +7,7 @@ import { MotionProvider } from "@/components/providers/MotionProvider";
 import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 import OnboardingTour from "@/components/onboarding/OnboardingTour";
+import FloatingCTA from "@/components/layout/FloatingCTA";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -141,6 +142,7 @@ export default function RootLayout({
                   {children}
                 </main>
                 <BottomNav />
+                <FloatingCTA />
                 <OnboardingTour />
               </div>
             </AuthProvider>
