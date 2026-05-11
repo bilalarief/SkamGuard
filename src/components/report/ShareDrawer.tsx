@@ -71,18 +71,27 @@ export default function ShareDrawer({ isOpen, onClose, score, verdict, isTourAct
       const overlayEl = document.querySelector("[data-share-overlay]") as HTMLElement | null;
       if (overlayEl) overlayEl.style.display = "none";
 
+      // Save original styles and apply temporary padding for capture whitespace
+      const origPadding = reportCard.style.padding;
+      const origBg = reportCard.style.backgroundColor;
+      const origBorderRadius = reportCard.style.borderRadius;
+      reportCard.style.padding = "28px 32px 0px 32px";
+      reportCard.style.backgroundColor = "#ffffff";
+      reportCard.style.borderRadius = "16px";
+
       // Small delay to let repaint happen
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, 150));
 
       const dataUrl = await toPng(reportCard, {
         cacheBust: true,
         pixelRatio: 3,
         backgroundColor: "#ffffff",
-        style: {
-          padding: "24px",
-          borderRadius: "12px",
-        },
       });
+
+      // Restore original styles
+      reportCard.style.padding = origPadding;
+      reportCard.style.backgroundColor = origBg;
+      reportCard.style.borderRadius = origBorderRadius;
 
       // Restore overlay
       if (overlayEl) overlayEl.style.display = "";
@@ -94,6 +103,12 @@ export default function ShareDrawer({ isOpen, onClose, score, verdict, isTourAct
       link.click();
     } catch (err) {
       console.error("Failed to save report image:", err);
+      // Restore original styles on error
+      if (reportCard) {
+        reportCard.style.padding = "";
+        reportCard.style.backgroundColor = "";
+        reportCard.style.borderRadius = "";
+      }
       // Restore overlay on error
       const overlayEl = document.querySelector("[data-share-overlay]") as HTMLElement | null;
       if (overlayEl) overlayEl.style.display = "";
