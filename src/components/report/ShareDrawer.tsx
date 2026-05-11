@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { MessageCircle, MessageSquare, ThumbsUp, Download, Share } from "lucide-react";
+import { MessageCircle, MessageSquare, ThumbsUp, Download, Share, Loader2 } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { toPng } from "html-to-image";
 
 interface ShareDrawerProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface ShareDrawerProps {
 export default function ShareDrawer({ isOpen, onClose, score, verdict, isTourActive }: ShareDrawerProps) {
   const { t } = useLanguage();
   const [canNativeShare, setCanNativeShare] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (typeof navigator !== "undefined" && "share" in navigator) {
@@ -56,16 +58,54 @@ export default function ShareDrawer({ isOpen, onClose, score, verdict, isTourAct
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, "_blank");
   };
 
-  const handleSaveToPhotos = () => {
-    if (isTourActive) return;
-    // Fallback since html2canvas is not installed
-    window.print();
-  };
+  const handleSaveToPhotos = useCallback(async () => {
+    if (isTourActive || isSaving) return;
+
+    const reportCard = document.getElementById("report-capture-area");
+    if (!reportCard) return;
+
+    setIsSaving(true);
+
+    try {
+      // Temporarily hide the drawer overlay so it doesn't obscure the capture
+      const overlayEl = document.querySelector("[data-share-overlay]") as HTMLElement | null;
+      if (overlayEl) overlayEl.style.display = "none";
+
+      // Small delay to let repaint happen
+      await new Promise((r) => setTimeout(r, 100));
+
+      const dataUrl = await toPng(reportCard, {
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: "#ffffff",
+        style: {
+          padding: "24px",
+          borderRadius: "12px",
+        },
+      });
+
+      // Restore overlay
+      if (overlayEl) overlayEl.style.display = "";
+
+      // Create download link
+      const link = document.createElement("a");
+      link.download = `SkamGuard-Report-${score}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to save report image:", err);
+      // Restore overlay on error
+      const overlayEl = document.querySelector("[data-share-overlay]") as HTMLElement | null;
+      if (overlayEl) overlayEl.style.display = "";
+    } finally {
+      setIsSaving(false);
+    }
+  }, [isTourActive, isSaving, score]);
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center sm:justify-center">
+        <div data-share-overlay className="fixed inset-0 z-[100] flex items-end sm:items-center sm:justify-center">
           {/* Overlay */}
           <m.div
             initial={{ opacity: 0 }}
@@ -149,12 +189,19 @@ export default function ShareDrawer({ isOpen, onClose, score, verdict, isTourAct
               <div className="flex flex-col items-center gap-2">
                 <button
                   onClick={handleSaveToPhotos}
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white border border-slate-200 text-slate-800 active:scale-95 transition-transform shadow-sm"
+                  disabled={isSaving}
+                  className={`w-16 h-16 rounded-2xl flex items-center justify-center border border-slate-200 text-slate-800 active:scale-95 transition-all shadow-sm ${
+                    isSaving ? "bg-slate-100 opacity-70" : "bg-white"
+                  }`}
                 >
-                  <Download className="w-8 h-8" />
+                  {isSaving ? (
+                    <Loader2 className="w-7 h-7 animate-spin text-slate-500" />
+                  ) : (
+                    <Download className="w-8 h-8" />
+                  )}
                 </button>
                 <span className="text-xs text-slate-600 font-medium whitespace-nowrap">
-                  {t("shareDrawer.saveToPhotos")}
+                  {isSaving ? "Saving..." : t("shareDrawer.saveToPhotos")}
                 </span>
               </div>
             </div>

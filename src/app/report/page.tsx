@@ -161,48 +161,51 @@ function ReportContent() {
         <span>{t("common.back")}</span>
       </button>
 
-      {/* Title */}
-      <h1 className="text-2xl sm:text-[25px] md:text-[26px] font-extrabold text-text-primary leading-tight">
-        {t("report.scoreTitle")}
-      </h1>
+      {/* ===== Capturable Report Area (for Save to Photos) ===== */}
+      <div id="report-capture-area" className="space-y-6">
+        {/* Title */}
+        <h1 className="text-2xl sm:text-[25px] md:text-[26px] font-extrabold text-text-primary leading-tight">
+          {t("report.scoreTitle")}
+        </h1>
 
-      {/* Risk gauge + details — side-by-side on desktop */}
-      <section id="report-risk-card" className="bg-white p-3 md:p-6 rounded-sm space-y-4">
-        <div className="md:flex md:items-start md:gap-8">
-          {/* LEFT: Gauge + Verdict badge */}
-          <div className="flex flex-col items-center md:w-[200px] md:shrink-0">
-            <div className="p-6">
-              <RiskGauge score={overallScore} level={riskLevel as RiskLevel} />
+        {/* Risk gauge + details — side-by-side on desktop */}
+        <section id="report-risk-card" className="bg-white p-3 md:p-6 rounded-sm space-y-4">
+          <div className="md:flex md:items-start md:gap-8">
+            {/* LEFT: Gauge + Verdict badge */}
+            <div className="flex flex-col items-center md:w-[200px] md:shrink-0">
+              <div className="p-6">
+                <RiskGauge score={overallScore} level={riskLevel as RiskLevel} />
+              </div>
+              <div className="pb-4 md:pb-0">
+                <VerdictBadge level={riskLevel as any} text={verdictBadgeText} />
+              </div>
             </div>
-            <div className="pb-4 md:pb-0">
-              <VerdictBadge level={riskLevel as any} text={verdictBadgeText} />
+
+            {/* RIGHT: Scam type + Red flags */}
+            <div className="flex-1 space-y-4 mt-4 md:mt-0">
+              {/* Scam type */}
+              {scamType && <ScamTypeCard scamType={scamType} />}
+
+              {/* Red flags */}
+              <RedFlagsCard flags={redFlags} />
             </div>
-          </div>
-
-          {/* RIGHT: Scam type + Red flags */}
-          <div className="flex-1 space-y-4 mt-4 md:mt-0">
-            {/* Scam type */}
-            {scamType && <ScamTypeCard scamType={scamType} />}
-
-            {/* Red flags */}
-            <RedFlagsCard flags={redFlags} />
-          </div>
-        </div>
-      </section>
-
-      {/* Action plan — 2 columns on desktop */}
-      {actionPlan.length > 0 && (
-        <section className="bg-white p-3 md:p-6 rounded-sm space-y-3">
-          <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
-            {t("report.actionPlan")}
-          </h2>
-          <div className="space-y-2 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
-            {actionPlan.map((action: any, i: number) => (
-              <ActionButton key={`action-${i}`} action={action} index={i} />
-            ))}
           </div>
         </section>
-      )}
+
+        {/* Action plan — 2 columns on desktop */}
+        {actionPlan.length > 0 && (
+          <section className="bg-white p-3 md:p-6 rounded-sm space-y-3">
+            <h2 className="text-xs font-bold text-text-primary uppercase tracking-widest">
+              {t("report.actionPlan")}
+            </h2>
+            <div className="space-y-2 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
+              {actionPlan.map((action: any, i: number) => (
+                <ActionButton key={`action-${i}`} action={action} index={i} />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
 
       {/* Community Report Buttons */}
       <CommunityReportButtons 
