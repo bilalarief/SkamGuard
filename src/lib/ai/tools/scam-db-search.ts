@@ -81,14 +81,29 @@ export async function searchScamDatabase(query: string): Promise<string> {
     if (results.length === 0) return ''
 
 
-    const contextParts = results.map((result: VertexSearchResult, i: number) => {
+    const contextParts = results.map((result: any, i: number) => {
       const doc = result.document?.derivedStructData || result.document?.structData || {}
+      
+      // Try to get document title (Vertex AI usually populates this with the filename)
       const title = doc.title || `Pattern ${i + 1}`
-      const snippet = doc.snippet || doc.content || ''
+      
+      // Extract the relevant text. Unstructured documents return an array of 'snippets'.
+      let snippet = ''
+      if (doc.snippets && Array.isArray(doc.snippets) && doc.snippets.length > 0) {
+        snippet = doc.snippets[0].snippet || ''
+        // Remove the <b> tags that Vertex AI adds for search term highlighting
+        snippet = snippet.replace(/<\/?b>/g, '')
+      } else if (doc.extractive_segments && Array.isArray(doc.extractive_segments) && doc.extractive_segments.length > 0) {
+        snippet = doc.extractive_segments[0].content || ''
+      } else {
+        // Fallback for structured data or custom schemas
+        snippet = doc.snippet || doc.content || JSON.stringify(doc)
+      }
+      
       return `[${i + 1}] ${title}: ${snippet}`
     })
 
-    return contextParts.join('\n')
+    return contextParts.join('\n\n')
   } catch (error) {
     console.warn('[SkamGuard] Vertex Search error:', error)
     return ''
