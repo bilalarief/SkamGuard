@@ -10,12 +10,8 @@
  * @module lib/firebase/community-scans
  */
 
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-} from 'firebase/firestore'
-import { getFirestoreDb } from './config'
+import { getAdminDb } from './admin'
+import { FieldValue } from 'firebase-admin/firestore'
 import type { CommunityAnonymizedScan } from '@/types/analysis'
 
 const COLLECTION_NAME = 'community_scans'
@@ -23,6 +19,7 @@ const COLLECTION_NAME = 'community_scans'
 /**
  * Strips a RiskReport down to anonymized fields and writes to Firestore.
  * Intentionally fire-and-forget — caller should NOT await this.
+ * Uses Admin SDK so writes bypass client security rules correctly.
  *
  * @param scanData - Anonymized scan fields (no PII)
  */
@@ -30,10 +27,9 @@ export async function storeCommunityAnonymizedScan(
   scanData: CommunityAnonymizedScan
 ): Promise<void> {
   try {
-    const db = getFirestoreDb()
-    const colRef = collection(db, COLLECTION_NAME)
+    const db = getAdminDb()
 
-    await addDoc(colRef, {
+    await db.collection(COLLECTION_NAME).add({
       scamType: scanData.scamType,
       riskScore: scanData.riskScore,
       riskLevel: scanData.riskLevel,
@@ -42,7 +38,7 @@ export async function storeCommunityAnonymizedScan(
       inputMethod: scanData.inputMethod,
       urlCount: scanData.urlCount,
       phoneDetected: scanData.phoneDetected,
-      createdAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     })
   } catch (error) {
     // Silent fail — community dataset is best-effort.

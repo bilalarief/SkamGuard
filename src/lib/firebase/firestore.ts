@@ -2,21 +2,8 @@
  * @module lib/firebase/firestore
  */
 
-import {
-  collection,
-  doc,
-  setDoc,
-  addDoc,
-  query,
-  where,
-  getDocs,
-  getDoc,
-  serverTimestamp,
-  increment,
-  orderBy,
-  limit,
-} from 'firebase/firestore'
-import { getFirestoreDb } from './config'
+import { getAdminDb } from './admin'
+import { FieldValue } from 'firebase-admin/firestore'
 
 const COLLECTION_NAME = 'reported_phones'
 
@@ -25,7 +12,7 @@ export interface FirestorePhoneReport {
   displayNumber: string
   scamType: string | null
   description: string
-  reportedAt: ReturnType<typeof serverTimestamp>
+  reportedAt: FirebaseFirestore.Timestamp
   source: 'community'
 }
 
@@ -41,34 +28,30 @@ export async function submitPhoneReport(report: {
   uid?: string
 }): Promise<{ id: string; totalReports: number }> {
   try {
-    const db = getFirestoreDb()
-    const docRef = doc(db, COLLECTION_NAME, report.phoneNumber)
+    const db = getAdminDb()
+    const docRef = db.collection(COLLECTION_NAME).doc(report.phoneNumber)
 
-    // Merge document to increment report count and append scam type
-    await setDoc(
-      docRef,
+    await docRef.set(
       {
         phoneNumber: report.phoneNumber,
         displayNumber: report.displayNumber,
-        reportCount: increment(1),
-        lastReported: serverTimestamp(),
+        reportCount: FieldValue.increment(1),
+        lastReported: FieldValue.serverTimestamp(),
         source: 'community',
-        ...(report.scamType ? { scamTypes: [report.scamType] } : {}), // Will overwrite field, but we check and merge on read
+        ...(report.scamType ? { scamTypes: [report.scamType] } : {}),
       },
       { merge: true }
     )
 
-    // Add detailed reporter record in subcollection to prevent abuse mapping
-    const reportersCol = collection(docRef, 'reporters')
-    await addDoc(reportersCol, {
+    const reportersCol = docRef.collection('reporters')
+    await reportersCol.add({
       uid: report.uid || 'anonymous',
       description: report.description,
       scamType: report.scamType,
-      createdAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     })
 
-    // Fetch the updated general stats
-    const snap = await getDoc(docRef)
+    const snap = await docRef.get()
     const data = snap.data()
 
     return {
@@ -90,42 +73,36 @@ export async function checkCommunityReports(normalizedPhone: string): Promise<{
   scamTypes: string[]
   lastReported: string | null
 }> {
-  const db = getFirestoreDb()
-  const colRef = collection(db, COLLECTION_NAME)
-
-  const q = query(
-    colRef,
-    where('phoneNumber', '==', normalizedPhone),
-    orderBy('reportedAt', 'desc'),
-    limit(50)
-  )
+  const db = getAdminDb()
+  const q = db.collection(COLLECTION_NAME)
+    .where('phoneNumber', '==', normalizedPhone)
+    .orderBy('reportedAt', 'desc')
+    .limit(50)
 
   try {
-    const snapshot = await getDocs(q)
+    const snapshot = await q.get()
 
     if (snapshot.empty) {
-      // It's possible the data structure is the new counter schema, check document directly
-      const docRef = doc(db, COLLECTION_NAME, normalizedPhone)
-      const directSnap = await getDoc(docRef)
-      
-      if (!directSnap.exists()) {
+      const docRef = db.collection(COLLECTION_NAME).doc(normalizedPhone)
+      const directSnap = await docRef.get()
+
+      if (!directSnap.exists) {
         return { totalReports: 0, scamTypes: [], lastReported: null }
       }
-      
+
       const data = directSnap.data()
       return {
-        totalReports: data.reportCount || 1,
-        scamTypes: data.scamTypes || [],
-        lastReported: data.lastReported?.toDate?.()?.toISOString() || null
+        totalReports: data?.reportCount || 1,
+        scamTypes: data?.scamTypes || [],
+        lastReported: data?.lastReported?.toDate?.()?.toISOString() || null,
       }
     }
 
     const scamTypes = new Set<string>()
     let lastReported: string | null = null
 
-    // For backwards compatibility with old unstructured reports
-    snapshot.forEach((doc) => {
-      const data = doc.data()
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data()
       if (data.scamType) {
         scamTypes.add(data.scamType as string)
       }
@@ -159,31 +136,30 @@ export async function submitUrlReport(report: {
   uid?: string
 }): Promise<{ id: string; totalReports: number }> {
   try {
-    const db = getFirestoreDb()
-    const docRef = doc(db, URL_COLLECTION_NAME, report.urlHash)
+    const db = getAdminDb()
+    const docRef = db.collection(URL_COLLECTION_NAME).doc(report.urlHash)
 
-    await setDoc(
-      docRef,
+    await docRef.set(
       {
         url: report.url,
         urlHash: report.urlHash,
-        reportCount: increment(1),
-        lastReported: serverTimestamp(),
+        reportCount: FieldValue.increment(1),
+        lastReported: FieldValue.serverTimestamp(),
         source: 'community',
         ...(report.scamType ? { scamTypes: [report.scamType] } : {}),
       },
       { merge: true }
     )
 
-    const reportersCol = collection(docRef, 'reporters')
-    await addDoc(reportersCol, {
+    const reportersCol = docRef.collection('reporters')
+    await reportersCol.add({
       uid: report.uid || 'anonymous',
       description: report.description,
       scamType: report.scamType,
-      createdAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     })
 
-    const snap = await getDoc(docRef)
+    const snap = await docRef.get()
     const data = snap.data()
 
     return {
@@ -201,21 +177,21 @@ export async function checkUrlCommunityReports(urlHash: string): Promise<{
   scamTypes: string[]
   lastReported: string | null
 }> {
-  const db = getFirestoreDb()
-  const docRef = doc(db, URL_COLLECTION_NAME, urlHash)
+  const db = getAdminDb()
+  const docRef = db.collection(URL_COLLECTION_NAME).doc(urlHash)
 
   try {
-    const snap = await getDoc(docRef)
+    const snap = await docRef.get()
 
-    if (!snap.exists()) {
+    if (!snap.exists) {
       return { totalReports: 0, scamTypes: [], lastReported: null }
     }
 
     const data = snap.data()
     return {
-      totalReports: data.reportCount || 0,
-      scamTypes: data.scamTypes || [],
-      lastReported: data.lastReported?.toDate?.()?.toISOString() || null,
+      totalReports: data?.reportCount || 0,
+      scamTypes: data?.scamTypes || [],
+      lastReported: data?.lastReported?.toDate?.()?.toISOString() || null,
     }
   } catch (error) {
     console.warn('[SkamGuard] Firestore URL query failed:', error)

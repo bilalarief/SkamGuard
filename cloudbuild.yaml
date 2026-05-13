@@ -28,6 +28,10 @@ steps:
       - 'asia-southeast1'
       - '--platform'
       - 'managed'
+      - '--service-account'                                             
+      - 'firebase-adminsdk-fbsvc@myai-gdg.iam.gserviceaccount.com'
+      - '--set-env-vars'
+      - 'FIREBASE_PROJECT_ID=$PROJECT_ID'   
       - '--quiet'
 
 # Store built images in Artifact Registry

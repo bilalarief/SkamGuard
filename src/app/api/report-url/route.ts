@@ -6,6 +6,7 @@
  *
  * Security:
  *   - Rate limited (3 reports/min/IP)
+ *   - Firebase ID token required (Authorization: Bearer <token>)
  *   - Zod schema validation
  *   - URL format validation + SSRF block
  *   - Input sanitization (description)
@@ -20,17 +21,18 @@ import { submitUrlReport } from '@/lib/firebase/firestore'
 import { isValidUrl } from '@/lib/validators/url'
 import { rateLimit, isPrivateUrl } from '@/lib/utils/rate-limit'
 import { sanitizeUrl, sanitizeDescription } from '@/lib/utils/sanitize'
+import { getAdminAuth } from '@/lib/firebase/admin'
 import crypto from 'crypto'
 
 const ReportSchema = z.object({
   url: z.string().min(1).max(2048),
   scamType: z.string().max(100).optional(),
   description: z.string().max(500).optional(),
-  uid: z.string().max(128).optional(),
+  // uid intentionally removed — derived server-side from verified Firebase ID token
 })
 
 export async function POST(request: NextRequest) {
-  // 1. Rate limiting — 3 reports per minute per IP to prevent Firestore spam
+  // 1. Rate limiting
   const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous'
   const { allowed, retryAfter } = await rateLimit(`report-url:${clientIp}`, { maxRequests: 3, windowMs: 60_000 })
 
@@ -41,8 +43,30 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  // 2. Verify Firebase ID token from Authorization header
+  const authHeader = request.headers.get('authorization')
+  const idToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
+
+  if (!idToken) {
+    return NextResponse.json(
+      { success: false, error: { code: 'UNAUTHENTICATED', message: 'Sign in required to submit reports.' } },
+      { status: 401 }
+    )
+  }
+
+  let verifiedUid: string
   try {
-    // 2. Parse and validate
+    const decoded = await getAdminAuth().verifyIdToken(idToken)
+    verifiedUid = decoded.uid
+  } catch {
+    return NextResponse.json(
+      { success: false, error: { code: 'UNAUTHENTICATED', message: 'Invalid or expired session. Please sign in again.' } },
+      { status: 401 }
+    )
+  }
+
+  try {
+    // 3. Parse and validate
     const body = await request.json()
     const parsed = ReportSchema.safeParse(body)
 
@@ -53,13 +77,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { url, scamType, description, uid } = parsed.data
+    const { url, scamType, description } = parsed.data
 
-    // 3. Sanitize inputs
+    // 4. Sanitize inputs
     const sanitizedUrl = sanitizeUrl(url)
     const sanitizedDesc = description ? sanitizeDescription(description) : ''
 
-    // 4. Validate URL format
+    // 5. Validate URL format
     if (!isValidUrl(sanitizedUrl)) {
       return NextResponse.json(
         { success: false, error: { code: 'INVALID_URL', message: 'Please provide a valid URL.' } },
@@ -67,7 +91,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 5. SSRF prevention — block internal/private network URLs
+    // 6. SSRF prevention
     if (isPrivateUrl(sanitizedUrl)) {
       return NextResponse.json(
         { success: false, error: { code: 'BLOCKED_URL', message: 'This URL cannot be reported.' } },
@@ -75,7 +99,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 6. Create a safe document ID from the URL (Firestore IDs cannot contain slashes)
+    // 7. Hash the URL for Firestore document ID
     const urlHash = crypto.createHash('sha256').update(sanitizedUrl).digest('hex')
 
     const result = await submitUrlReport({
@@ -83,7 +107,7 @@ export async function POST(request: NextRequest) {
       urlHash,
       scamType: scamType || null,
       description: sanitizedDesc,
-      uid: uid || 'anonymous',
+      uid: verifiedUid, // trusted — cryptographically verified by Firebase Admin
     })
 
     return NextResponse.json({

@@ -40,9 +40,6 @@ function ReportContent() {
   const [reportLoading, setReportLoading] = useState(false);
   const { toasts, dismissToast, success: toastSuccess, error: toastError } = useToast();
 
-  // Use authenticated user's uid if available, otherwise 'guest'
-  const userId = user?.uid || "guest";
-
   // Back destination depends on where the user came from
   const backPath = source === "history" ? "/history" : "/scan";
 
@@ -93,6 +90,15 @@ function ReportContent() {
     setReportLoading(true);
 
     try {
+      // Get Firebase ID token — works for real users AND anonymous users
+      const idToken = user ? await user.getIdToken() : null;
+
+      if (!idToken) {
+        toastError("toast.reportFailed", "toast.reportFailedDesc");
+        setReportLoading(false);
+        return;
+      }
+
       const endpoint = reportType === "phone" ? "/api/report-phone" : "/api/report-url";
       const payload =
         reportType === "phone"
@@ -101,36 +107,29 @@ function ReportContent() {
 
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`,
+        },
         body: JSON.stringify({
           ...payload,
           scamType: scamType || undefined,
           description: reportDescription.trim() || undefined,
-          uid: userId,
+          // uid removed — server derives it from the verified token
         }),
       });
 
       const result = await response.json();
 
       if (result.success) {
-        /* Close modal immediately — toast carries the confirmation. */
         setShowReportModal(false);
         setReportDescription("");
-        toastSuccess(
-          "toast.reportSuccess",
-          "toast.reportSuccessDesc"
-        );
+        toastSuccess("toast.reportSuccess", "toast.reportSuccessDesc");
       } else {
-        toastError(
-          "toast.reportFailed",
-          "toast.reportFailedDesc"
-        );
+        toastError("toast.reportFailed", "toast.reportFailedDesc");
       }
     } catch {
-      toastError(
-        "toast.networkError",
-        "toast.networkErrorDesc"
-      );
+      toastError("toast.networkError", "toast.networkErrorDesc");
     } finally {
       setReportLoading(false);
     }
