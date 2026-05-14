@@ -221,12 +221,22 @@
     "networkErrorDesc": "Check your internet connection and try again."
   },
   "errors": {
-    "fileTooBig": "File is too large. Maximum size is 10MB.",
-    "invalidFormat": "File format not supported. Please use PNG, JPG, or WEBP.",
-    "networkError": "Network issue. Please check your internet connection.",
-    "analysisError": "Error during analysis. Please try again.",
-    "invalidUrl": "Invalid URL. Please enter a valid URL.",
-    "invalidPhone": "Invalid phone number. Please use Malaysian format (01X-XXXXXXX)."
+  "fileTooBig": "File is too large. Maximum size is 10MB.",
+  "invalidFormat": "File format not supported. Please use PNG, JPG, or WEBP.",
+  "networkError": "Network issue. Please check your internet connection.",
+  "analysisError": "Error during analysis. Please try again.",
+  "invalidUrl": "Invalid URL. Please enter a valid URL.",
+  "invalidPhone": "Invalid phone number. Please use Malaysian format (01X-XXXXXXX).",
+  "globalTitle": "Unexpected Error",
+  "globalDesc": "Something unexpected happened. Please try again.",
+  "globalDigest": "digest",
+  "scanTitle": "Scan Failed",
+  "scanDesc": "An error occurred while loading the scan page. Please try again or go back to the home page.",
+  "reportTitle": "Report Unavailable",
+  "reportDesc": "The analysis report could not be loaded. This may happen if you opened this page directly. Please start a new scan.",
+  "tryAgain": "Try Again",
+  "goHome": "Home",
+  "startNewScan": "Start New Scan"
   },
   "footer": {
     "disclaimer": "SkamGuard uses AI for analysis. Results are for reference only and do not constitute legal advice.",

@@ -5,6 +5,13 @@
 import { getAdminDb } from './admin'
 import { FieldValue } from 'firebase-admin/firestore'
 
+export class DuplicateReportError extends Error {
+  constructor(public readonly reportType: 'phone' | 'url') {
+    super('DUPLICATE_REPORT')
+    this.name = 'DuplicateReportError'
+  }
+}
+
 const COLLECTION_NAME = 'reported_phones'
 
 export interface FirestorePhoneReport {
@@ -30,6 +37,18 @@ export async function submitPhoneReport(report: {
   try {
     const db = getAdminDb()
     const docRef = db.collection(COLLECTION_NAME).doc(report.phoneNumber)
+    const reportersCol = docRef.collection('reporters')
+
+    // Duplicate check — skip for anonymous callers (defensive)
+    if (report.uid && report.uid !== 'anonymous') {
+      const existing = await reportersCol
+        .where('uid', '==', report.uid)
+        .limit(1)
+        .get()
+      if (!existing.empty) {
+        throw new DuplicateReportError('phone')
+      }
+    }
 
     await docRef.set(
       {
@@ -43,7 +62,6 @@ export async function submitPhoneReport(report: {
       { merge: true }
     )
 
-    const reportersCol = docRef.collection('reporters')
     await reportersCol.add({
       uid: report.uid || 'anonymous',
       description: report.description,
@@ -59,6 +77,7 @@ export async function submitPhoneReport(report: {
       totalReports: data?.reportCount || 1,
     }
   } catch (error) {
+    if (error instanceof DuplicateReportError) throw error  // re-throw, don't wrap
     console.warn('[SkamGuard] Firestore write failed:', error)
     throw new Error('Failed to submit report. Firestore rules may not be configured.')
   }
@@ -138,6 +157,17 @@ export async function submitUrlReport(report: {
   try {
     const db = getAdminDb()
     const docRef = db.collection(URL_COLLECTION_NAME).doc(report.urlHash)
+    const reportersCol = docRef.collection('reporters')
+
+    if (report.uid && report.uid !== 'anonymous') {
+      const existing = await reportersCol
+        .where('uid', '==', report.uid)
+        .limit(1)
+        .get()
+      if (!existing.empty) {
+        throw new DuplicateReportError('url')
+      }
+    }
 
     await docRef.set(
       {
@@ -151,7 +181,6 @@ export async function submitUrlReport(report: {
       { merge: true }
     )
 
-    const reportersCol = docRef.collection('reporters')
     await reportersCol.add({
       uid: report.uid || 'anonymous',
       description: report.description,
@@ -167,6 +196,7 @@ export async function submitUrlReport(report: {
       totalReports: data?.reportCount || 1,
     }
   } catch (error) {
+    if (error instanceof DuplicateReportError) throw error  // re-throw, don't wrap
     console.warn('[SkamGuard] Firestore URL write failed:', error)
     throw new Error('Failed to submit URL report.')
   }

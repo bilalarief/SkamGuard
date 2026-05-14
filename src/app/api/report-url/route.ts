@@ -17,7 +17,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { submitUrlReport } from '@/lib/firebase/firestore'
+import { submitUrlReport, DuplicateReportError } from '@/lib/firebase/firestore'
 import { isValidUrl } from '@/lib/validators/url'
 import { rateLimit, isPrivateUrl } from '@/lib/utils/rate-limit'
 import { sanitizeUrl, sanitizeDescription } from '@/lib/utils/sanitize'
@@ -118,6 +118,12 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
+    if (error instanceof DuplicateReportError) {
+      return NextResponse.json(
+        { success: false, error: { code: 'DUPLICATE_REPORT', message: 'You have already reported this URL.' } },
+        { status: 409 }
+      )
+    }
     if (process.env.NODE_ENV !== 'production') {
       console.error('[API /report-url] Error:', error)
     }

@@ -120,7 +120,7 @@ async function virusTotalScan(url: string): Promise<{
 
     const response = await fetch(`${VIRUSTOTAL_BASE}/urls/${urlId}`, {
       headers: { 'x-apikey': apiKey },
-      signal: AbortSignal.timeout(8000), // 8s timeout
+      signal: AbortSignal.timeout(3000), // 8s timeout
     })
 
     if (response.status === 404) {
@@ -175,7 +175,7 @@ async function submitUrlForScan(url: string, apiKey: string): Promise<{
 
     if (!submitResponse.ok) return null
 
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
     const urlId = Buffer.from(url).toString('base64url')
     const resultResponse = await fetch(`${VIRUSTOTAL_BASE}/urls/${urlId}`, {

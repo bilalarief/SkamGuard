@@ -221,12 +221,22 @@
     "networkErrorDesc": "Semak sambungan internet anda dan cuba semula."
   },
   "errors": {
-    "fileTooBig": "Saiz fail terlalu besar. Maksimum 10MB.",
-    "invalidFormat": "Format fail tidak disokong. Sila gunakan PNG, JPG, atau WEBP.",
-    "networkError": "Masalah rangkaian. Sila pastikan anda ada sambungan internet.",
-    "analysisError": "Ralat semasa analisis. Sila cuba semula.",
-    "invalidUrl": "URL tidak sah. Sila masukkan URL yang betul.",
-    "invalidPhone": "Nombor telefon tidak sah. Sila gunakan format Malaysia (01X-XXXXXXX)."
+  "fileTooBig": "Saiz fail terlalu besar. Maksimum 10MB.",
+  "invalidFormat": "Format fail tidak disokong. Sila gunakan PNG, JPG, atau WEBP.",
+  "networkError": "Masalah rangkaian. Sila pastikan anda ada sambungan internet.",
+  "analysisError": "Ralat semasa analisis. Sila cuba semula.",
+  "invalidUrl": "URL tidak sah. Sila masukkan URL yang betul.",
+  "invalidPhone": "Nombor telefon tidak sah. Sila gunakan format Malaysia (01X-XXXXXXX).",
+  "globalTitle": "Ralat Tidak Dijangka",
+  "globalDesc": "Sesuatu yang tidak dijangka berlaku. Sila cuba semula.",
+  "globalDigest": "digest",
+  "scanTitle": "Imbasan Gagal",
+  "scanDesc": "Ralat berlaku semasa memuat halaman imbasan. Sila cuba semula atau kembali ke laman utama.",
+  "reportTitle": "Laporan Tidak Tersedia",
+  "reportDesc": "Laporan analisis tidak dapat dimuatkan. Ini mungkin berlaku jika anda membuka halaman ini secara terus. Sila mulakan imbasan baharu.",
+  "tryAgain": "Cuba Semula",
+  "goHome": "Laman Utama",
+  "startNewScan": "Mula Imbasan Baharu"
   },
   "footer": {
     "disclaimer": "SkamGuard menggunakan AI untuk analisis. Keputusan adalah untuk rujukan sahaja dan bukan nasihat undang-undang.",

@@ -31,7 +31,10 @@ steps:
       - '--service-account'                                             
       - 'firebase-adminsdk-fbsvc@myai-gdg.iam.gserviceaccount.com'
       - '--set-env-vars'
-      - 'FIREBASE_PROJECT_ID=$PROJECT_ID'   
+      - 'FIREBASE_PROJECT_ID=$PROJECT_ID'
+      - '--set-secrets'                                           
+      - 'GOOGLE_GENAI_API_KEY=GOOGLE_GENAI_API_KEY:latest,VIRUSTOTAL_API_KEY=VIRUSTOTAL_API_KEY:latest,UPSTASH_REDIS_REST_URL=UPSTASH_REDIS_REST_URL:latest,UPSTASH_REDIS_REST_TOKEN=UPSTASH_REDIS_REST_TOKEN:latest'
+      - '--allow-unauthenticated'   
       - '--quiet'
 
 # Store built images in Artifact Registry

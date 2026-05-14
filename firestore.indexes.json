@@ -1,33 +1,10 @@
 {
   "indexes": [
     {
-      "collectionGroup": "reported_phones",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "phoneNumber", "order": "ASCENDING" },
-        { "fieldPath": "reportedAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "reported_phones",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "phoneNumber", "order": "ASCENDING" },
-        { "fieldPath": "lastReported", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "scan_history",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        { "fieldPath": "timestamp", "order": "DESCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "community_scans",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "scamType", "order": "ASCENDING" },
+        { "fieldPath": "scamType",  "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     },
@@ -43,7 +20,7 @@
       "collectionGroup": "community_scans",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "verdict", "order": "ASCENDING" },
+        { "fieldPath": "verdict",   "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     }

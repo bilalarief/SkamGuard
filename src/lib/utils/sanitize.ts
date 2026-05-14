@@ -66,12 +66,27 @@ export function sanitizeBase64(input: string): string | null {
  * @returns Clean text string (may be empty)
  */
 export function sanitizeText(input: string): string {
-  return input
+  let sanitized = input
     .trim()
-    .replace(NULL_BYTE, '')       // Null byte injection
-    .replace(HTML_TAGS, '')       // XSS via stored HTML
-    .replace(CONTROL_CHARS, '')   // Non-printable control chars
+    .replace(NULL_BYTE, '')
+    .replace(CONTROL_CHARS, '')
     .slice(0, MAX_TEXT_LENGTH)
+
+  // Multi-pass tag stripping (handles nested/broken tags)
+  let prev = ''
+  while (prev !== sanitized) {
+    prev = sanitized
+    sanitized = sanitized.replace(/<[^>]*>/g, '')
+  }
+
+  // Strip javascript: and data: protocol URIs
+  sanitized = sanitized.replace(/javascript\s*:/gi, '')
+  sanitized = sanitized.replace(/data\s*:/gi, '')
+
+  // Strip event handler attributes
+  sanitized = sanitized.replace(/on\w+\s*=/gi, '')
+
+  return sanitized
 }
 
 /**

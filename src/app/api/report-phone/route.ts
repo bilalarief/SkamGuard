@@ -10,7 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { isValidMalaysianPhone, normalizeToE164, formatPhoneNumber } from '@/lib/validators/phone'
-import { submitPhoneReport } from '@/lib/firebase/firestore'
+import { submitPhoneReport, DuplicateReportError } from '@/lib/firebase/firestore'
 import { getAdminAuth } from '@/lib/firebase/admin'
 import { rateLimit } from '@/lib/utils/rate-limit'
 
@@ -94,6 +94,12 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
+    if (error instanceof DuplicateReportError) {
+      return NextResponse.json(
+        { success: false, error: { code: 'DUPLICATE_REPORT', message: 'You have already reported this number.' } },
+        { status: 409 }
+      )
+    }
     if (process.env.NODE_ENV !== 'production') {
       console.error('[API /report-phone] Error:', error)
     }

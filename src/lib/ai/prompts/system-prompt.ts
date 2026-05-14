@@ -110,4 +110,4 @@ RESPONSE RULES
  * System prompt version — tracks which prompt generated which analysis.
  * Increment on every significant prompt change.
  */
-export const SYSTEM_PROMPT_VERSION = '2.0.0'
+export const SYSTEM_PROMPT_VERSION = '2.1.0'

@@ -45,18 +45,26 @@ export async function POST(request: NextRequest) {
   }
 
   // 2. Check Content-Length
-  const contentLength = request.headers.get('content-length')
-  if (contentLength && parseInt(contentLength) > MAX_BODY_SIZE) {
-    return NextResponse.json(
-      { success: false, error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body exceeds 12MB limit.' } },
-      { status: 413 }
-    )
+  const chunks: Uint8Array[] = []
+  let totalBytes = 0
+  const reader = request.body!.getReader() // request.body is always present for POST
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    totalBytes += value.byteLength
+    if (totalBytes > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body exceeds 12MB limit.' } },
+        { status: 413 }
+      )
+    }
+    chunks.push(value)
   }
-
-  // 3. Parse and validate
+  
   let body: unknown
   try {
-    body = await request.json()
+    const bodyText = new TextDecoder().decode(Buffer.concat(chunks))
+    body = JSON.parse(bodyText)
   } catch {
     return NextResponse.json(
       { success: false, error: { code: 'INVALID_JSON', message: 'Malformed request body' } },

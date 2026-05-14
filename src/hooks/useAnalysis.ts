@@ -39,6 +39,20 @@ export function useAnalysis() {
   const addHistoryItem = useHistoryStore((s) => s.addItem)
   const router = useRouter()
 
+  /**
+   * U3: Trigger device vibration if supported.
+   * Silently no-ops on unsupported browsers (desktop, iOS Safari).
+   */
+  const triggerHaptic = useCallback((pattern: number | number[]) => {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate(pattern)
+      } catch {
+        // Silently ignore — vibrate not supported or blocked by browser policy
+      }
+    }
+  }, [])
+
   const submit = useCallback(async (params: SubmitParams) => {
     setLoading(true)
 
@@ -102,6 +116,12 @@ export function useAnalysis() {
               const report = data.data as RiskReport
               addHistoryItem(report)
               setReport(report)
+
+              // U3: Haptic feedback on scan complete
+              // Dangerous verdict → urgent triple pulse; otherwise → single short pulse
+              const isHighRisk = report.verdict === 'DANGEROUS'
+              triggerHaptic(isHighRisk ? [100, 50, 100, 50, 200] : [50])
+
               router.push('/report')
               return
             } else if (data.step === 'error' || data.success === false) {
@@ -121,7 +141,7 @@ export function useAnalysis() {
       const message = err instanceof Error ? err.message : 'Something went wrong'
       setError(message)
     }
-  }, [setReport, setLoading, setError, setCurrentStep, router, addHistoryItem])
+  }, [setReport, setLoading, setError, setCurrentStep, router, addHistoryItem, triggerHaptic])
 
   return { submit, isLoading, error, currentStep }
 }

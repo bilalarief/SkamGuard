@@ -104,7 +104,7 @@ export const analyzeFlow = ai.defineFlow(
       allUrls.length > 0
         ? Promise.all(
           allUrls.map((url) =>
-            withTimeout(checkUrl(url), 4000, null as URLCheckResult | null)
+            withTimeout(checkUrl(url), 2000, null as URLCheckResult | null)
           )
         ).then((results) => results.filter((r): r is URLCheckResult => r !== null))
         : Promise.resolve([] as URLCheckResult[]),
