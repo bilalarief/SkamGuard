@@ -16,7 +16,7 @@
 
 import { z } from 'genkit'
 import { ai } from '../genkit'
-import { SKAMGUARD_SYSTEM_PROMPT } from '../prompts/system-prompt'
+import { SKAMGUARD_SYSTEM_PROMPT, SKAMGUARD_EXTRACTION_PROMPT } from '../prompts/system-prompt'
 import { buildExtractionPrompt } from '../prompts/extraction-prompt'
 import { buildAnalysisPrompt } from '../prompts/analysis-prompt'
 import { checkUrl } from '../tools/url-checker'
@@ -97,7 +97,7 @@ export const analyzeFlow = ai.defineFlow(
     emitStep('checking_tools')
     const allUrls = extracted.urls
     const primaryPhone = input.manualPhone || extracted.phoneNumbers[0] || null
-    const hasSubstantialText = extracted.messageText.length > 20
+    const hasSubstantialText = extracted.messageText.length > 60
 
     const [urlResults, phoneResult, ragContext] = await Promise.all([
       // URL checks — each has 4s timeout, null filtered out after
@@ -114,7 +114,7 @@ export const analyzeFlow = ai.defineFlow(
 
       // RAG — skip if insufficient text (phone-only, URL-only, etc.)
       hasSubstantialText
-        ? withTimeout(searchScamDatabase(extracted.messageText.slice(0, 1500)), 5000, '')
+        ? withTimeout(searchScamDatabase(extracted.messageText.slice(0, 800)), 2000, '')
         : Promise.resolve(''),
     ])
 
@@ -163,6 +163,11 @@ export async function analyzeWithSteps(
 
 
 async function extractContent(input: AnalyzeInput): Promise<ExtractedContent> {
+
+  if (!input.imageBase64 && input.text) {
+    return buildFallbackExtraction(input)
+  }
+
   const promptText = buildExtractionPrompt({
     imageBase64: input.imageBase64,
     text: input.text,
@@ -187,6 +192,10 @@ async function extractContent(input: AnalyzeInput): Promise<ExtractedContent> {
       system: SKAMGUARD_SYSTEM_PROMPT,
       prompt: promptParts,
       output: { schema: ExtractionOutputSchema },
+      config: {
+        temperature: 0,        // deterministic extraction
+        maxOutputTokens: 800,  // extraction never needs more
+      },
     })
 
     const output = result.output
@@ -240,6 +249,11 @@ async function analyzeContent(params: {
       system: SKAMGUARD_SYSTEM_PROMPT,
       prompt: prompt,
       output: { schema: AnalysisOutputSchema },
+      config: {
+        temperature: 0.2,       // low variance, more consistent verdicts
+        maxOutputTokens: 1200,  // analysis output is bounded
+        topP: 0.9,
+      },
     })
 
     const output = result.output
@@ -271,13 +285,23 @@ async function analyzeContent(params: {
  */
 function buildFallbackExtraction(input: AnalyzeInput): ExtractedContent {
   const text = input.text || ''
-  const urlRegex = /https?:\/\/[^\s]+/gi
-  const phoneRegex = /(\+?60|0)(1[0-9])\d{7,8}/g
+
+  // Catch http(s):// AND bare domains (bit.ly/xyz, maybank2u.fake.tk/login)
+  const urlRegex = /(https?:\/\/[^\s]+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s]*)?)/gi
+  // Malaysian phones: +60, 60, or 0 prefix; 9–11 digits total
+  const phoneRegex = /(?:\+?60|0)1[0-9][\s-]?\d{3,4}[\s-]?\d{3,4}/g
+
+  const rawUrls = text.match(urlRegex) || []
+  // Dedupe + strip trailing punctuation that regex sometimes catches
+  const urls = Array.from(new Set(rawUrls.map((u) => u.replace(/[.,;:!?]+$/, ''))))
+
+  const rawPhones = text.match(phoneRegex) || []
+  const phoneNumbers = Array.from(new Set(rawPhones.map((p) => p.replace(/[\s-]/g, ''))))
 
   return {
     messageText: text,
-    urls: text.match(urlRegex) || [],
-    phoneNumbers: text.match(phoneRegex) || [],
+    urls,
+    phoneNumbers,
     sender: null,
   }
 }

@@ -106,6 +106,14 @@ RESPONSE RULES
 - Consider cultural context — Malaysian communication patterns, business customs, and common legitimate SMS formats
 `
 
+export const SKAMGUARD_EXTRACTION_PROMPT = `You are SkamGuard's content extraction module.
+Your only job: extract structured information from the provided message or screenshot.
+- Perform OCR on images. Preserve original language exactly.
+- Extract URLs (full, including query strings), phone numbers (Malaysian formats: +60, 60, 0-prefix), and sender identity.
+- If a phone number is partially visible, output "PARTIAL" instead of guessing.
+- Do NOT analyze, score, or interpret. Extraction only.
+- Respond ONLY in valid JSON matching the requested schema.`
+
 /**
  * System prompt version — tracks which prompt generated which analysis.
  * Increment on every significant prompt change.

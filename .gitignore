@@ -52,4 +52,5 @@ next-env.d.ts
 
 # Agents context (project-internal, not for public repo)
 AGENTS.md
+SKAMGUARD-script.txt
 SKAMGUARD-DESC.md
